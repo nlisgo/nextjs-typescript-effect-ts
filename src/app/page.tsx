@@ -1,11 +1,12 @@
-import Image from "next/image";
+import Image from 'next/image';
+import { JSX } from 'react';
 
-export default function Home() {
+export default function Home(): JSX.Element {
   return (
     <div className="home-wrapper">
       <main className="main">
         <Image
-          className="dark:invert"
+          className="home-logo"
           src="/next.svg"
           alt="Next.js logo"
           width={100}
@@ -17,18 +18,18 @@ export default function Home() {
             To get started, edit the page.tsx file.
           </h1>
           <p>
-            Looking for a starting point or more instructions? Head over to{" "}
+            Looking for a starting point or more instructions? Head over to{' '}
             <a
               href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             >
               Templates
-            </a>{" "}
-            or the{" "}
+            </a>{' '}
+            or the{' '}
             <a
               href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             >
               Learning
-            </a>{" "}
+            </a>{' '}
             center.
           </p>
         </div>
@@ -40,7 +41,7 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             <Image
-              className="dark:invert"
+              className="main-actions-image"
               src="/vercel.svg"
               alt="Vercel logomark"
               width={16}
