@@ -24,3 +24,43 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.home-wrapper {
+  @apply flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black;
+}
+
+.main {
+  @apply flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start;
+}
+
+.main-content {
+  @apply flex flex-col items-center gap-6 text-center sm:items-start sm:text-left;
+    
+  p {
+    @apply max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400;
+  }
+    
+  a {
+    @apply font-medium text-zinc-950 dark:text-zinc-50;
+  }
+}
+
+.main-actions {
+  @apply flex flex-col gap-4 text-base font-medium sm:flex-row;
+}
+
+.main-actions a {
+  @apply flex h-12 w-full items-center justify-center rounded-full transition-colors md:w-[158px];
+}
+
+.main-actions a.primary {
+  @apply gap-2 bg-foreground px-5 text-background hover:bg-[#383838] dark:hover:bg-[#ccc];
+}
+
+.main-actions a.secondary {
+  @apply border border-solid border-black/[.08] px-5 hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a];
+}
+
+.header-1 {
+  @apply max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50;
+}
