@@ -17,6 +17,7 @@ export const Default: Story = {
   args: {
     title: 'Categories',
     categories: Array<number>(18).fill(1).map((_, i) => i + 1).map((i) => ({
+      id: `category-${i}`,
       title: `Category ${i}`,
       uri: '#',
       image: {
