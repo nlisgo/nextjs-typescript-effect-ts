@@ -35,7 +35,14 @@ export const Highlights = ({
             <h2 className="highlight__title">
               <a href={highlight.uri} className="highlight__title_link">{highlight.title}</a>
             </h2>
-            {highlight.description && <p className="highlight__description">{highlight.description}</p>}
+            {highlight.description && (
+              <p
+                className="highlight__description"
+                dangerouslySetInnerHTML={{
+                  __html: highlight.description,
+                }}
+              />
+            )}
           </div>
         </li>)}
       </ul>
