@@ -8,6 +8,24 @@ import { httpGetAndValidate } from '@/queries/http';
 const coverCodec = Schema.Struct({
   title: Schema.String,
   impactStatement: Schema.optional(Schema.String),
+  image: Schema.Struct({
+    uri: Schema.String,
+    alt: Schema.String,
+    source: Schema.Struct({
+      mediaType: Schema.String,
+      uri: Schema.String,
+      filename: Schema.String,
+    }),
+    size: Schema.Struct({
+      width: Schema.Int,
+      height: Schema.Int,
+    }),
+    attribution: Schema.optional(
+      Schema.Array(
+        Schema.String,
+      ),
+    ),
+  }),
   item: Schema.Struct({
     type: Schema.String,
     doi: Schema.String,
