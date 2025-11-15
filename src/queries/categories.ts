@@ -23,7 +23,7 @@ HttpClient.HttpClient
   Effect.map((category) => ({
     id: category.id,
     title: category.name,
-    uri: `https://elifesciences.org/subjects/${category.id}`,
+    uri: `categories/${category.id}`,
     image: {
       uri: iiifUri(
         category.image.banner,
@@ -54,7 +54,7 @@ HttpClient.HttpClient
   Effect.map(Array.map((category) => ({
     id: category.id,
     title: category.name,
-    uri: `https://elifesciences.org/subjects/${category.id}`,
+    uri: `categories/${category.id}`,
     image: {
       uri: iiifUri(
         category.image.thumbnail,
