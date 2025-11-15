@@ -12,7 +12,7 @@ export const Page = ({ children }: PropsWithChildren): JSX.Element => {
   const [user, setUser] = useState<User>();
 
   return (
-    <article>
+    <>
       <Header
         user={user}
         onLogin={() => setUser({ name: 'Jane Doe' })}
@@ -20,9 +20,9 @@ export const Page = ({ children }: PropsWithChildren): JSX.Element => {
         onCreateAccount={() => setUser({ name: 'Jane Doe' })}
       />
 
-      <section className="storybook-page">
+      <section className="content-wrapper">
         {children}
       </section>
-    </article>
+    </>
   );
 };

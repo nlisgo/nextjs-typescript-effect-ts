@@ -1,42 +1,10 @@
 @import "../../styles/theme.css";
 @import "tailwindcss";
 
-.storybook-page {
-  @apply mx-auto max-w-[600px] py-12 px-5 text-[#333] text-sm leading-6 font-['Nunito_Sans','Helvetica_Neue',Helvetica,Arial,sans-serif];
-}
+.content-wrapper {
+  @apply grid grid-cols-1 p-20;
 
-.storybook-page h2 {
-  @apply inline-block align-top mb-1 font-bold text-[32px] leading-none;
-}
-
-.storybook-page p {
-  @apply my-4;
-}
-
-.storybook-page a {
-  @apply text-inherit;
-}
-
-.storybook-page ul {
-  @apply my-4 pl-[30px];
-}
-
-.storybook-page li {
-  @apply mb-2;
-}
-
-.storybook-page .tip {
-  @apply inline-block align-top mr-2.5 rounded-[1em] bg-[#e7fdd8] py-1 px-3 text-[#357a14] font-bold text-[11px] leading-3;
-}
-
-.storybook-page .tip-wrapper {
-  @apply my-10 text-[13px] leading-5;
-}
-
-.storybook-page .tip-wrapper svg {
-  @apply inline-block align-top mt-[3px] mr-1 w-3 h-3;
-}
-
-.storybook-page .tip-wrapper svg path {
-  @apply fill-[#1ea7fd];
+  h1 {
+    @apply font-extrabold text-3xl mb-6 text-brand;
+  }
 }
