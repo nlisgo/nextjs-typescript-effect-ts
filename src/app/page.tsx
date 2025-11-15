@@ -8,18 +8,15 @@ import { getCategories } from '@/queries/categories';
 import { getHighlights } from '@/queries/highlights';
 
 export default async function Home(): Promise<JSX.Element> {
-  const highlights = await Effect.runPromise(
-    getHighlights({ imageWidth: 463, imageHeight: 260 })
-      .pipe(
-        Effect.provide(FetchHttpClient.layer),
-      ),
-  );
-  const categories = await Effect.runPromise(
-    getCategories({ imageWidth: 80, imageHeight: 80 })
-      .pipe(
-        Effect.provide(FetchHttpClient.layer),
-      ),
-  );
+  const [
+    highlights,
+    categories,
+  ] = await Effect.runPromise(Effect.all([
+    getHighlights({ imageWidth: 463, imageHeight: 260 }),
+    getCategories({ imageWidth: 80, imageHeight: 80 }),
+  ]).pipe(
+    Effect.provide(FetchHttpClient.layer),
+  ));
 
   return (
     <Page>
