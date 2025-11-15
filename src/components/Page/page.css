@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 .content-wrapper {
-  @apply grid grid-cols-1 p-20;
+  @apply grid grid-cols-1 p-2;
 
   h1 {
     @apply font-extrabold text-3xl mb-6 text-brand;

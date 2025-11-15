@@ -7,7 +7,7 @@ import { getHighlights } from '@/queries/highlights';
 
 export default async function Home(): Promise<JSX.Element> {
   const highlights = await Effect.runPromise(
-    getHighlights({ limit: 3, imageWidth: 250, imageHeight: 100 })
+    getHighlights({ imageWidth: 250, imageHeight: 100 })
       .pipe(
         Effect.provide(FetchHttpClient.layer),
       ),

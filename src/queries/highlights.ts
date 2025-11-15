@@ -15,7 +15,7 @@ ReadonlyArray<HighlightProps>,
 HttpClientError.HttpClientError | ParseError,
 HttpClient.HttpClient
 > => pipe(
-  'https://api.prod.elifesciences.org/covers/current',
+  `https://api.prod.elifesciences.org/covers?per-page=${Math.min((limit ?? 3) * 2, 100)}&page=1`,
   httpGetAndValidate(highlightsCodec),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(highlightCodec))),

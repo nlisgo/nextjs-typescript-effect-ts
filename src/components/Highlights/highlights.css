@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 .highlights {
-  @apply w-full px-4 sm:px-6 lg:px-8 py-8 bg-white;
+  @apply w-full px-1 lg:px-8 py-8 bg-white;
 }
 
 .highlights__title {
@@ -10,8 +10,7 @@
 }
 
 .highlights__list {
-  @apply grid gap-6 list-none p-0 m-0;
-  @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  @apply grid gap-6 list-none p-0 m-0 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
 }
 
 .highlights__list_item {
