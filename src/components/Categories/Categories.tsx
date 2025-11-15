@@ -2,6 +2,19 @@ import Image from 'next/image';
 import type { JSX } from 'react';
 import './categories.css';
 
+export type CategorySnippetProps = {
+  title: string,
+  uri: string,
+  description?: string,
+  image: {
+    uri: string,
+    alt: string,
+    width: number,
+    height: number,
+    attribution?: Array<string>,
+  },
+};
+
 export type CategoryProps = {
   title: string,
   uri: string,
@@ -17,7 +30,7 @@ export type CategoryProps = {
 
 export type CategoriesProps = {
   title: string,
-  categories: Array<CategoryProps>,
+  categories: Array<CategorySnippetProps>,
 };
 
 export const Categories = ({

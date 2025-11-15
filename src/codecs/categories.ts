@@ -6,6 +6,15 @@ export const categoryCodec = Schema.Struct({
   id: Schema.String,
   impactStatement: Schema.optional(Schema.String),
   image: Schema.Struct({
+    banner: imageCodec,
+  }),
+});
+
+export const categorySnippetCodec = Schema.Struct({
+  name: Schema.String,
+  id: Schema.String,
+  impactStatement: Schema.optional(Schema.String),
+  image: Schema.Struct({
     thumbnail: imageCodec,
   }),
 });
