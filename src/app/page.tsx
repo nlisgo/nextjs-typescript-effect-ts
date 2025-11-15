@@ -6,7 +6,7 @@ import { getCovers } from '@/queries/covers';
 
 export default async function Home(): Promise<JSX.Element> {
   const covers = await Effect.runPromise(
-    getCovers()
+    getCovers(3)
       .pipe(
         Effect.provide(FetchHttpClient.layer),
       ),
@@ -43,8 +43,19 @@ export default async function Home(): Promise<JSX.Element> {
           <p>No covers available.</p>
         ) : (
           <ul>
-            {covers.map((cover) => (
-              <li key={cover.title}>{cover.title}</li>
+            {covers.map((cover, i) => (
+              <li key={i}>
+                {cover.title}
+                {cover.impactStatement && (
+                  <>
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: ` - ${cover.impactStatement}`,
+                      }}
+                    />
+                  </>
+                )}
+              </li>
             ))}
           </ul>
         )}

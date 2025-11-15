@@ -5,6 +5,7 @@ import { httpGetAndValidate } from '@/queries/http';
 
 const coverCodec = Schema.Struct({
   title: Schema.String,
+  impactStatement: Schema.optional(Schema.String),
 });
 
 const coversCodec = Schema.Struct({
@@ -17,12 +18,12 @@ const coversCodec = Schema.Struct({
 // type Person = Schema.Schema.Type<typeof Person>
 type Cover = Schema.Schema.Type<typeof coverCodec>;
 
-export const getCovers = (): Effect.Effect<
+export const getCovers = (limit?: number): Effect.Effect<
 ReadonlyArray<Cover>,
 HttpClientError.HttpClientError | ParseError,
 HttpClient.HttpClient
 > => pipe(
   'https://api.prod.elifesciences.org/covers/current',
   httpGetAndValidate(coversCodec),
-  Effect.map(({ items }) => items),
+  Effect.map(({ items }) => (limit !== undefined ? items.slice(0, limit) : items)),
 );
