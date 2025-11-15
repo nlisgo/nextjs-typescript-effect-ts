@@ -1,4 +1,6 @@
-import React, { JSX, PropsWithChildren } from 'react';
+'use client';
+
+import { JSX, PropsWithChildren, useState } from 'react';
 
 import { Header } from './Header';
 import './page.css';
@@ -8,7 +10,7 @@ type User = {
 };
 
 export const Page = ({ children }: PropsWithChildren): JSX.Element => {
-  const [user, setUser] = React.useState<User>();
+  const [user, setUser] = useState<User>();
 
   return (
     <article>

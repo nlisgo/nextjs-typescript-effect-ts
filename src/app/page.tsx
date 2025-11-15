@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import { JSX } from 'react';
 import { Page } from '@/stories/Page';
 
 export default function Home(): JSX.Element {
