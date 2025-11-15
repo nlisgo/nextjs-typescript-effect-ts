@@ -16,6 +16,19 @@ const meta: Meta<typeof Page> = {
 export default meta;
 type Story = StoryObj<typeof Page>;
 
+export const Sandbox: Story = {
+  args: {
+    children: <>
+      <div className="bg-green-300 tablet:bg-brand-muted desktop:bg-brand border-green-600 border-b p-4 m-4 rounded">
+        Hello World
+      </div>
+      <div className="bg-gray-500 hover:bg-red-600">
+        One
+      </div>
+    </>,
+  },
+};
+
 export const LoggedOut: Story = {
   args: {
     children: <>
