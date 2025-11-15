@@ -4,14 +4,7 @@ module.exports = {
     es2020: true,
     node: true,
   },
-  extends: [
-    'airbnb-base',
-    'airbnb-typescript/base',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:import/recommended',
-    'plugin:import/typescript',
-    'plugin:fp-ts/all',
-  ],
+  extends: ['airbnb-base', 'airbnb-typescript/base', 'plugin:@typescript-eslint/recommended', 'plugin:import/recommended', 'plugin:import/typescript', 'plugin:fp-ts/all', 'plugin:storybook/recommended'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: './tsconfig.json',
@@ -114,7 +107,7 @@ module.exports = {
     'node/prefer-global/url-search-params': ['error', 'never'],
     'prefer-destructuring': 'off',
     'unused-imports/no-unused-imports-ts': 'error',
-    'import/no-extraneous-dependencies': ['error', { devDependencies: ['feature-test/**/*.ts', 'test/**/*.ts'] }],
+    'import/no-extraneous-dependencies': ['error', { devDependencies: ['feature-test/**/*.ts', 'test/**/*.ts', 'src/stories/**/*.ts', 'src/stories/**/*.tsx'] }],
     'import/no-restricted-paths': ['error', {
       zones: [
         {

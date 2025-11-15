@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+.storybook-button {
+  @apply inline-block cursor-pointer border-0 rounded-[3em] font-bold leading-none font-['Nunito_Sans','Helvetica_Neue',Helvetica,Arial,sans-serif];
+}
+
+.storybook-button--primary {
+  @apply bg-[#555ab9] text-white;
+}
+
+.storybook-button--secondary {
+  @apply bg-transparent text-[#333] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.15)];
+}
+
+.storybook-button--small {
+  @apply py-[10px] px-4 text-xs;
+}
+
+.storybook-button--medium {
+  @apply py-[11px] px-5 text-sm;
+}
+
+.storybook-button--large {
+  @apply py-3 px-6 text-base;
+}

@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+.storybook-header {
+  @apply flex items-center justify-between border-b border-b-black/10 py-[15px] px-5 font-['Nunito_Sans','Helvetica_Neue',Helvetica,Arial,sans-serif];
+}
+
+.storybook-header svg {
+  @apply inline-block align-top;
+}
+
+.storybook-header h1 {
+  @apply inline-block align-top my-[6px] ml-[10px] font-bold text-[20px] leading-none;
+}
+
+.storybook-header button + button {
+  @apply ml-[10px];
+}
+
+.storybook-header .welcome {
+  @apply mr-[10px] text-sm text-[#333];
+}
