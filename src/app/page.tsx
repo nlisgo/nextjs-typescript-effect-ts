@@ -45,7 +45,9 @@ export default async function Home(): Promise<JSX.Element> {
           <ul>
             {covers.map((cover, i) => (
               <li key={i}>
-                {cover.title}
+                <a href={`https://dx.doi.org/${cover.item.doi}`}>
+                  <strong>{cover.title}</strong>
+                </a>
                 {cover.impactStatement && (
                   <>
                     <span
