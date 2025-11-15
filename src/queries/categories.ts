@@ -8,8 +8,8 @@ import { CategoryProps } from '@/components/Categories/Categories';
 import { httpGetAndValidate } from '@/queries/http';
 import { iiifUri } from '@/tools/iiif-uri';
 
-const defaultThumbnailImageWidth = 50;
-const defaultThumbnailImageHeight = 50;
+const defaultThumbnailImageWidth = 80;
+const defaultThumbnailImageHeight = 80;
 
 export const getCategory = (
   { id, imageWidth, imageHeight }: { id: string, imageWidth?: number, imageHeight?: number },
@@ -21,6 +21,7 @@ HttpClient.HttpClient
   `https://api.prod.elifesciences.org/subjects/${id}`,
   httpGetAndValidate(categoryCodec),
   Effect.map((category) => ({
+    id: category.id,
     title: category.name,
     uri: `https://elifesciences.org/subjects/${category.id}`,
     image: {
@@ -40,7 +41,7 @@ HttpClient.HttpClient
 );
 
 export const getCategories = (
-  { imageWidth, imageHeight }: { imageWidth?: number, imageHeight?: number },
+  { imageWidth, imageHeight }: { imageWidth?: number, imageHeight?: number } = {},
 ): Effect.Effect<
 ReadonlyArray<CategoryProps>,
 HttpClientError.HttpClientError | ParseError,
@@ -51,6 +52,7 @@ HttpClient.HttpClient
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(categorySnippetCodec))),
   Effect.map(Array.map((category) => ({
+    id: category.id,
     title: category.name,
     uri: `https://elifesciences.org/subjects/${category.id}`,
     image: {

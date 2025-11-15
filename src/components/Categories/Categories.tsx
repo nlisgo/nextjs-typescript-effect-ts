@@ -3,6 +3,7 @@ import type { JSX } from 'react';
 import './categories.css';
 
 export type CategorySnippetProps = {
+  id: string,
   title: string,
   uri: string,
   description?: string,
@@ -15,18 +16,7 @@ export type CategorySnippetProps = {
   },
 };
 
-export type CategoryProps = {
-  title: string,
-  uri: string,
-  description?: string,
-  image: {
-    uri: string,
-    alt: string,
-    width: number,
-    height: number,
-    attribution?: Array<string>,
-  },
-};
+export type CategoryProps = CategorySnippetProps;
 
 export type CategoriesProps = {
   title: string,

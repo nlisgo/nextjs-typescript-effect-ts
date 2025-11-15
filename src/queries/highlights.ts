@@ -9,7 +9,7 @@ import { httpGetAndValidate } from '@/queries/http';
 import { iiifUri } from '@/tools/iiif-uri';
 
 export const getHighlights = (
-  { imageWidth, imageHeight, limit }: { imageWidth?: number, imageHeight?: number, limit?: number },
+  { imageWidth, imageHeight, limit }: { imageWidth?: number, imageHeight?: number, limit?: number } = {},
 ): Effect.Effect<
 ReadonlyArray<HighlightProps>,
 HttpClientError.HttpClientError | ParseError,
