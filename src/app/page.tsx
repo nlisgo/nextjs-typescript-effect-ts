@@ -1,6 +1,7 @@
 import { FetchHttpClient } from '@effect/platform';
 import { Effect } from 'effect';
 import { JSX } from 'react';
+import { CoverList } from '@/components/Cover/CoverList';
 import { Page } from '@/components/Page/Page';
 import { getCovers } from '@/queries/covers';
 
@@ -42,27 +43,7 @@ export default async function Home(): Promise<JSX.Element> {
         {covers.length === 0 ? (
           <p>No covers available.</p>
         ) : (
-          <ul>
-            {covers.map((cover, i) => (
-              <li key={i}>
-                <a href={`https://dx.doi.org/${cover.item.doi}`}>
-                  <img src={cover.iiifUri} alt={cover.image.alt} />
-                </a>
-                <a href={`https://dx.doi.org/${cover.item.doi}`}>
-                  <strong>{cover.title}</strong>
-                </a>
-                {cover.impactStatement && (
-                  <>
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: ` - ${cover.impactStatement}`,
-                      }}
-                    />
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
+          <CoverList title="Highlights" covers={[...covers]} />
         )}
       </section>
       <p>

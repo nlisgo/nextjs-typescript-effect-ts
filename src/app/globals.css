@@ -1,6 +1,2 @@
 @import "../styles/theme.css";
 @import "tailwindcss";
-
-h2 {
-  @apply drop-shadow-gray-400 2xl:animate-wiggle;
-}
