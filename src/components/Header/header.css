@@ -10,13 +10,13 @@
 }
 
 .storybook-header h1 {
-  @apply inline-block align-top my-[6px] ml-[10px] font-bold text-[20px] leading-none;
+  @apply inline-block align-top my-1.5 ml-2.5 font-bold text-[20px] leading-none;
 }
 
 .storybook-header button + button {
-  @apply ml-[10px];
+  @apply ml-2.5;
 }
 
 .storybook-header .welcome {
-  @apply mr-[10px] text-sm text-[#333];
+  @apply mr-2,5 text-sm text-[#333];
 }

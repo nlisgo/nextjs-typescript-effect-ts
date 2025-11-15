@@ -26,7 +26,7 @@
 }
 
 .storybook-page .tip {
-  @apply inline-block align-top mr-[10px] rounded-[1em] bg-[#e7fdd8] py-1 px-3 text-[#357a14] font-bold text-[11px] leading-[12px];
+  @apply inline-block align-top mr-2.5 rounded-[1em] bg-[#e7fdd8] py-1 px-3 text-[#357a14] font-bold text-[11px] leading-3;
 }
 
 .storybook-page .tip-wrapper {
