@@ -6,7 +6,7 @@ import { getCovers } from '@/queries/covers';
 
 export default async function Home(): Promise<JSX.Element> {
   const covers = await Effect.runPromise(
-    getCovers(3)
+    getCovers({ limit: 3, imageWidth: 250, imageHeight: 100 })
       .pipe(
         Effect.provide(FetchHttpClient.layer),
       ),
@@ -45,6 +45,9 @@ export default async function Home(): Promise<JSX.Element> {
           <ul>
             {covers.map((cover, i) => (
               <li key={i}>
+                <a href={`https://dx.doi.org/${cover.item.doi}`}>
+                  <img src={cover.iiifUri} alt={cover.image.alt} />
+                </a>
                 <a href={`https://dx.doi.org/${cover.item.doi}`}>
                   <strong>{cover.title}</strong>
                 </a>
