@@ -26,8 +26,8 @@ HttpClient.HttpClient
     image: {
       uri: iiifUri(highlight.image, imageWidth ?? 100, imageHeight ?? 100),
       alt: highlight.image.alt,
-      width: highlight.image.size.width,
-      height: highlight.image.size.height,
+      width: imageWidth ?? 100,
+      height: imageHeight ?? 100,
     },
     ...(highlight.impactStatement ? {
       description: highlight.impactStatement,
