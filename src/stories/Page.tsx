@@ -1,7 +1,6 @@
 'use client';
 
 import { JSX, PropsWithChildren, useState } from 'react';
-
 import { Header } from './Header';
 import './page.css';
 
