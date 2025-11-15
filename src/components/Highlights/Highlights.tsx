@@ -33,7 +33,7 @@ export const Highlights = ({
               <Image className="highlight__image" src={highlight.image.uri} alt={highlight.image.alt} width={highlight.image.width} height={highlight.image.height} />
             </a>
             <h2 className="highlight__title">
-              <a href={highlight.uri} className="highlight__title_link">{title}</a>
+              <a href={highlight.uri} className="highlight__title_link">{highlight.title}</a>
             </h2>
             {highlight.description && <p className="highlight__description">{highlight.description}</p>}
           </div>
