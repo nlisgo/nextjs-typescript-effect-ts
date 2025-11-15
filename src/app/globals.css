@@ -2,5 +2,5 @@
 @import "tailwindcss";
 
 h2 {
-  @apply drop-shadow-gray-400 drop-shadow-xl font-family-handwriting;
+  @apply drop-shadow-gray-400 2xl:animate-wiggle;
 }
