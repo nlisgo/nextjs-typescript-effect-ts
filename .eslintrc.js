@@ -107,7 +107,17 @@ module.exports = {
     'node/prefer-global/url-search-params': ['error', 'never'],
     'prefer-destructuring': 'off',
     'unused-imports/no-unused-imports-ts': 'error',
-    'import/no-extraneous-dependencies': ['error', { devDependencies: ['feature-test/**/*.ts', 'test/**/*.ts', 'src/stories/**/*.ts', 'src/stories/**/*.tsx'] }],
+    'import/no-extraneous-dependencies': ['error', {
+      devDependencies: [
+        'feature-test/**/*.ts',
+        'test/**/*.ts',
+        'src/stories/**/*.ts',
+        'src/stories/**/*.tsx',
+        '**/*.stories.ts',
+        '**/*.stories.tsx',
+        '**/*.stories.mdx',
+      ],
+    }],
     'import/no-restricted-paths': ['error', {
       zones: [
         {

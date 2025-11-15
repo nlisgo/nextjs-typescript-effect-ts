@@ -1,5 +1,5 @@
 import { JSX } from 'react';
-import { Page } from '@/stories/Page';
+import { Page } from '@/components/Page/Page';
 
 export default function Home(): JSX.Element {
   return (
