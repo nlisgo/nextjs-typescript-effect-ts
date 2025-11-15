@@ -15,7 +15,7 @@ export default async function Home(): Promise<JSX.Element> {
       ),
   );
   const categories = await Effect.runPromise(
-    getCategories({ imageWidth: 50, imageHeight: 50 })
+    getCategories({ imageWidth: 80, imageHeight: 80 })
       .pipe(
         Effect.provide(FetchHttpClient.layer),
       ),

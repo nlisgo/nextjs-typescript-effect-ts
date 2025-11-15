@@ -1,2 +1,46 @@
 @import "../../styles/theme.css";
 @import "tailwindcss";
+
+.categories {
+  @apply w-full px-4 sm:px-6 lg:px-8 py-6 bg-white;
+}
+
+.categories__title {
+  @apply text-2xl font-semibold tracking-tight text-gray-900 mb-4;
+}
+
+.categories__list {
+  @apply grid gap-3 sm:gap-4 list-none p-0 m-0 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+.categories__list_item {
+  @apply m-0;
+}
+
+.category {
+  @apply flex items-start gap-3 h-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-within:-translate-y-0.5 focus-within:shadow-md;
+}
+
+.category__content {
+  @apply flex-1 min-w-0;
+}
+
+.category__image-link {
+  @apply block relative flex-shrink-0;
+}
+
+.category__image {
+  @apply w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md bg-gray-200;
+}
+
+.category__title {
+  @apply text-base font-semibold text-gray-900 leading-snug mb-1;
+}
+
+.category__title_link {
+  @apply text-inherit no-underline transition hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50;
+}
+
+.category__description {
+  @apply text-sm text-gray-700 leading-snug line-clamp-2;
+}
