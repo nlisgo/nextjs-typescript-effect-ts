@@ -1,0 +1,25 @@
+@theme {
+  /* Custom colors */
+  --color-brand: #abc123;
+
+  /* Custom font families */
+  --font-family-handwriting: Caveat, cursive;
+  --font-family-display: Montserrat, sans-serif;
+
+  /* Custom spacing */
+  --spacing-72: 18rem;
+
+  /* Custom border radius */
+  --radius-4xl: 2rem;
+
+  /* Custom animations */
+  --animate-spin-slow: spin 3s linear infinite;
+  --animate-bounce-slow: bounce 2s infinite;
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+}
+
+/* Custom keyframes */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
