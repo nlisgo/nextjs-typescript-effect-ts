@@ -23,8 +23,8 @@ export const Default: Story = {
       image: {
         uri: `https://picsum.photos/250/150?i=${i}`,
         alt: 'Alt text',
-        width: 50,
-        height: 50,
+        width: 80,
+        height: 80,
       },
       description: 'This is the description',
     })),

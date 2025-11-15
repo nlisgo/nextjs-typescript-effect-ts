@@ -20,46 +20,12 @@ export const Default: Story = {
       title: `Highlight ${i}`,
       uri: '#',
       image: {
-        uri: `https://picsum.photos/250/150?i=${i}`,
+        uri: `https://picsum.photos/463/260?i=${i}`,
         alt: 'Alt text',
-        width: 50,
-        height: 50,
+        width: 463,
+        height: 260,
       },
       description: 'This is the description',
     })),
-    // highlights: [
-    //   {
-    //     title: 'Highlight 1',
-    //     uri: '#',
-    //     image: {
-    //       uri: 'https://picsum.photos/250/150',
-    //       alt: 'Alt text',
-    //       width: 250,
-    //       height: 150,
-    //     },
-    //     description: 'This is the description',
-    //   },
-    //   {
-    //     title: 'Highlight 2',
-    //     uri: '#',
-    //     image: {
-    //       uri: 'https://picsum.photos/250/150',
-    //       alt: 'Alt text',
-    //       width: 250,
-    //       height: 150,
-    //     },
-    //   },
-    //   {
-    //     title: 'Highlight 3',
-    //     uri: '#',
-    //     image: {
-    //       uri: 'https://picsum.photos/250/150',
-    //       alt: 'Alt text',
-    //       width: 250,
-    //       height: 150,
-    //     },
-    //     description: 'This is the description',
-    //   },
-    // ],
   },
 };
