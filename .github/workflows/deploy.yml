@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NEXT_TELEMETRY_DISABLED: 1
+      NEXT_USE_TURBOPACK: 0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,9 +36,6 @@ jobs:
 
       - name: Build Next.js app
         run: npm run build
-
-      - name: Export static site
-        run: npx next export
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
