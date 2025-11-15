@@ -1,13 +1,13 @@
 import { FetchHttpClient } from '@effect/platform';
 import { Effect } from 'effect';
 import { JSX } from 'react';
-import { CoverList } from '@/components/Cover/CoverList';
+import { Highlights } from '@/components/Highlights/Highlights';
 import { Page } from '@/components/Page/Page';
-import { getCovers } from '@/queries/covers';
+import { getHighlights } from '@/queries/highlights';
 
 export default async function Home(): Promise<JSX.Element> {
-  const covers = await Effect.runPromise(
-    getCovers({ limit: 3, imageWidth: 250, imageHeight: 100 })
+  const highlights = await Effect.runPromise(
+    getHighlights({ limit: 3, imageWidth: 250, imageHeight: 100 })
       .pipe(
         Effect.provide(FetchHttpClient.layer),
       ),
@@ -15,8 +15,8 @@ export default async function Home(): Promise<JSX.Element> {
 
   return (
     <Page>
-      {covers.length > 0 && <section>
-        <CoverList title="Highlights" covers={[...covers]} />
+      {highlights.length > 0 && <section>
+        <Highlights title="Highlights" highlights={[...highlights]} />
       </section>}
     </Page>
   );

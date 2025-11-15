@@ -1,24 +1,24 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { CoverList } from '@/components/Cover/CoverList';
+import { Highlights } from '@/components/Highlights/Highlights';
 
 const meta = {
-  title: 'Example/CoverList',
-  component: CoverList,
+  title: 'Example/Highlights',
+  component: Highlights,
   parameters: {},
   tags: ['autodocs'],
   argTypes: {},
   args: {},
-} satisfies Meta<typeof CoverList>;
+} satisfies Meta<typeof Highlights>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    title: 'Cover list',
-    covers: [
+    title: 'Highlights',
+    highlights: [
       {
-        title: 'Cover title 1',
+        title: 'Highlight 1',
         uri: '#',
         image: {
           uri: 'https://picsum.photos/250/150',
@@ -29,7 +29,7 @@ export const Default: Story = {
         description: 'This is the description',
       },
       {
-        title: 'Cover title 2',
+        title: 'Highlight 2',
         uri: '#',
         image: {
           uri: 'https://picsum.photos/250/150',
@@ -37,10 +37,9 @@ export const Default: Story = {
           width: 250,
           height: 150,
         },
-        description: 'This is the description',
       },
       {
-        title: 'Cover title 3',
+        title: 'Highlight 3',
         uri: '#',
         image: {
           uri: 'https://picsum.photos/250/150',
