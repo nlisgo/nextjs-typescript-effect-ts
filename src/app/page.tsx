@@ -1,7 +1,17 @@
+import { FetchHttpClient } from '@effect/platform';
+import { Effect } from 'effect';
 import { JSX } from 'react';
 import { Page } from '@/components/Page/Page';
+import { getCovers } from '@/queries/covers';
 
-export default function Home(): JSX.Element {
+export default async function Home(): Promise<JSX.Element> {
+  const covers = await Effect.runPromise(
+    getCovers()
+      .pipe(
+        Effect.provide(FetchHttpClient.layer),
+      ),
+  );
+
   return (
     <Page>
       <h2>Pages in Storybook</h2>
@@ -27,6 +37,18 @@ export default function Home(): JSX.Element {
           using Storybook.
         </li>
       </ul>
+      <section>
+        <h3>Current covers</h3>
+        {covers.length === 0 ? (
+          <p>No covers available.</p>
+        ) : (
+          <ul>
+            {covers.map((cover) => (
+              <li key={cover.title}>{cover.title}</li>
+            ))}
+          </ul>
+        )}
+      </section>
       <p>
         Get a guided tutorial on component-driven development at{' '}
         <a href="https://storybook.js.org/tutorials/" target="_blank" rel="noopener noreferrer">
