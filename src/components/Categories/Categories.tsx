@@ -12,7 +12,7 @@ export type CategorySnippetProps = {
     alt: string,
     width: number,
     height: number,
-    attribution?: Array<string>,
+    credit?: string,
   },
 };
 

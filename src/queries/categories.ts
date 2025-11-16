@@ -29,6 +29,7 @@ const prepareCategorySnippet = (
     alt: image.alt,
     width: imageWidth ?? 100,
     height: imageHeight ?? 100,
+    ...(image.attribution !== undefined ? { credit: image.attribution.join(', ') } : {}),
   },
   ...(category.impactStatement ? {
     description: category.impactStatement,
@@ -45,11 +46,25 @@ HttpClient.HttpClient
   `https://api.prod.elifesciences.org/subjects/${id}`,
   httpGetAndValidate(categoryCodec),
   Effect.map(
-    (category) => prepareCategorySnippet(
-      category.image.banner,
-      imageWidth,
-      imageHeight,
-    )(category),
+    (category) => {
+      const { image, ...other } = {
+        ...prepareCategorySnippet(
+          category.image.banner,
+          imageWidth,
+          imageHeight,
+        )(category),
+      };
+
+      return {
+        image: {
+          ...image,
+          ...(image.credit ? {
+            credit: image.credit,
+          } : {}),
+        },
+        ...other,
+      };
+    },
   ),
 );
 

@@ -1,13 +1,14 @@
 import { FetchHttpClient } from '@effect/platform';
 import { Array, Effect, pipe } from 'effect';
-import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
+import { Banner } from '@/components/Banner/Banner';
+import { Page } from '@/components/Page/Page';
 import { getCategories, getCategory } from '@/queries/categories';
 
 type PageProps = {
-  params: Promise<{
+  params: {
     category: string,
-  }>,
+  },
 };
 
 // Static params required for `output: "export"`. Update this list with real category IDs.
@@ -22,42 +23,27 @@ export const generateStaticParams = async (): Promise<Array<{ category: string }
   ),
 );
 
-// Basic dynamic route placeholder: /categories/[category]
-export default async function CategoryPage({ params }: PageProps): Promise<JSX.Element> {
-  const { category: categoryId } = await params;
-
-  if (!categoryId) {
-    notFound();
-  }
-
-  const category = await Effect.runPromise(getCategory({ id: categoryId }).pipe(
-    Effect.provide(FetchHttpClient.layer),
-    Effect.catchAll(() => Effect.succeed(undefined)),
-  ));
-
-  if (!category) {
-    notFound();
-  }
-
+const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => {
+  const { category } = await params;
   return (
-    <main className="p-6 space-y-4">
-      <h1 className="text-2xl font-semibold">{category.title}</h1>
-      {category.description && (
-        <p
-          className="category__description"
-          dangerouslySetInnerHTML={{
-            __html: category.description,
-          }}
-        />
-      )}
-      <div className="text-sm text-gray-600">
-        <p>
-          ID: {category.id}
-        </p>
-        <p>
-          Public page: <a className="text-blue-600 underline" href={category.uri}>{category.uri}</a>
-        </p>
-      </div>
-    </main>
+    <Page>
+      {
+        Effect.runPromise(
+          pipe(
+            getCategory({ id: category, imageWidth: 1114, imageHeight: 336 }),
+            Effect.map(
+              (cat) => <Banner
+                image={cat.image}
+                title={cat.title}
+                description={cat.description} />,
+            ),
+          ).pipe(
+            Effect.provide(FetchHttpClient.layer),
+          ),
+        )
+      }
+    </Page>
   );
-}
+};
+
+export default CategoryPage;

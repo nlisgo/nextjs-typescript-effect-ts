@@ -4,10 +4,7 @@ import { Highlights } from '@/components/Highlights/Highlights';
 const meta = {
   title: 'Example/Highlights',
   component: Highlights,
-  parameters: {},
   tags: ['autodocs'],
-  argTypes: {},
-  args: {},
 } satisfies Meta<typeof Highlights>;
 
 export default meta;

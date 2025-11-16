@@ -4,10 +4,7 @@ import { Categories } from '@/components/Categories/Categories';
 const meta = {
   title: 'Example/Categories',
   component: Categories,
-  parameters: {},
   tags: ['autodocs'],
-  argTypes: {},
-  args: {},
 } satisfies Meta<typeof Categories>;
 
 export default meta;
@@ -21,7 +18,7 @@ export const Default: Story = {
       title: `Category ${i}`,
       uri: '#',
       image: {
-        uri: `https://picsum.photos/250/150?i=${i}`,
+        uri: `https://picsum.photos/80/80?i=${i}`,
         alt: 'Alt text',
         width: 80,
         height: 80,
