@@ -7,9 +7,33 @@ import { categoriesCodec, categoryCodec, categorySnippetCodec } from '@/codecs/c
 import { CategoryProps } from '@/components/Categories/Categories';
 import { httpGetAndValidate } from '@/queries/http';
 import { iiifUri } from '@/tools/iiif-uri';
+import { CategorySnippet } from '@/types/category';
+import { Image } from '@/types/image';
 
-const defaultThumbnailImageWidth = 80;
-const defaultThumbnailImageHeight = 80;
+const prepareCategorySnippet = (
+  image: Image,
+  imageWidth?: number,
+  imageHeight?: number,
+) => (
+  category: Omit<CategorySnippet, 'image'>,
+): CategoryProps => ({
+  id: category.id,
+  title: category.name,
+  uri: `categories/${category.id}`,
+  image: {
+    uri: iiifUri(
+      image,
+      imageWidth ?? 100,
+      imageHeight ?? 100,
+    ),
+    alt: image.alt,
+    width: imageWidth ?? 100,
+    height: imageHeight ?? 100,
+  },
+  ...(category.impactStatement ? {
+    description: category.impactStatement,
+  } : {}),
+});
 
 export const getCategory = (
   { id, imageWidth, imageHeight }: { id: string, imageWidth?: number, imageHeight?: number },
@@ -20,24 +44,13 @@ HttpClient.HttpClient
 > => pipe(
   `https://api.prod.elifesciences.org/subjects/${id}`,
   httpGetAndValidate(categoryCodec),
-  Effect.map((category) => ({
-    id: category.id,
-    title: category.name,
-    uri: `categories/${category.id}`,
-    image: {
-      uri: iiifUri(
-        category.image.banner,
-        imageWidth ?? defaultThumbnailImageWidth,
-        imageHeight ?? defaultThumbnailImageHeight,
-      ),
-      alt: category.image.banner.alt,
-      width: imageWidth ?? defaultThumbnailImageWidth,
-      height: imageHeight ?? defaultThumbnailImageHeight,
-    },
-    ...(category.impactStatement ? {
-      description: category.impactStatement,
-    } : {}),
-  })),
+  Effect.map(
+    (category) => prepareCategorySnippet(
+      category.image.banner,
+      imageWidth,
+      imageHeight,
+    )(category),
+  ),
 );
 
 export const getCategories = (
@@ -51,22 +64,11 @@ HttpClient.HttpClient
   httpGetAndValidate(categoriesCodec),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(categorySnippetCodec))),
-  Effect.map(Array.map((category) => ({
-    id: category.id,
-    title: category.name,
-    uri: `categories/${category.id}`,
-    image: {
-      uri: iiifUri(
-        category.image.thumbnail,
-        imageWidth ?? defaultThumbnailImageWidth,
-        imageHeight ?? defaultThumbnailImageHeight,
-      ),
-      alt: category.image.thumbnail.alt,
-      width: imageWidth ?? defaultThumbnailImageWidth,
-      height: imageHeight ?? defaultThumbnailImageHeight,
-    },
-    ...(category.impactStatement ? {
-      description: category.impactStatement,
-    } : {}),
-  }))),
+  Effect.map(
+    Array.map((category) => prepareCategorySnippet(
+      category.image.thumbnail,
+      imageWidth,
+      imageHeight,
+    )(category)),
+  ),
 );
