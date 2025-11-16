@@ -16,7 +16,7 @@ const Home = (): JSX.Element => <Page>
       ),
       getCategories({ imageWidth: 80, imageHeight: 80 }).pipe(
         Effect.map(Either.fromNullable(() => new Error('no categories found'))),
-        Effect.flatMap(Either.map((cats) => <section key="categories"><Categories title="Categories" categories={[...cats]} /></section>)),
+        Effect.flatMap(Either.map((cats) => <section key="categories"><Categories uri="categories" title="Categories" categories={[...cats]} /></section>)),
       ),
     ]).pipe(
       Effect.provide(FetchHttpClient.layer),

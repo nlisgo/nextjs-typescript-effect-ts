@@ -20,16 +20,18 @@ export type CategoryProps = CategorySnippetProps;
 
 export type CategoriesProps = {
   title: string,
+  uri?: string,
   categories: Array<CategorySnippetProps>,
 };
 
 export const Categories = ({
   title,
+  uri,
   categories,
 }: CategoriesProps): JSX.Element => (
   <>
     {categories.length > 0 && <section className="categories">
-      <h2 className="categories__title">{title}</h2>
+      <h2 className="categories__title">{uri ? <a href={uri} className="categories__title_link">{title}</a> : title}</h2>
       <ul className="categories__list">
         {categories.map((category, i) => <li key={i} className="categories__list_item">
           <div className="category">

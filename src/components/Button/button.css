@@ -1,4 +1,4 @@
-@import "../../styles/theme.css";
+@import "../../app/styles/theme.css";
 @import "tailwindcss";
 
 .storybook-button {
