@@ -10,24 +10,15 @@ type PageProps = {
   }>,
 };
 
-const categoryParams = pipe(
-  getCategories(),
-  Effect.map(Array.map((category) => ({ category: category.id }))),
-);
-
 // Static params required for `output: "export"`. Update this list with real category IDs.
 export const dynamicParams = false;
 
 export const generateStaticParams = async (): Promise<Array<{ category: string }>> => Effect.runPromise(
-  categoryParams.pipe(
+  pipe(
+    getCategories(),
+    Effect.map(Array.map((category) => ({ category: category.id }))),
+  ).pipe(
     Effect.provide(FetchHttpClient.layer),
-  ),
-);
-
-const loadCategory = async (categoryId: string) => Effect.runPromise(
-  getCategory({ id: categoryId }).pipe(
-    Effect.provide(FetchHttpClient.layer),
-    Effect.catchAll(() => Effect.succeed(undefined)),
   ),
 );
 
@@ -39,7 +30,10 @@ export default async function CategoryPage({ params }: PageProps): Promise<JSX.E
     notFound();
   }
 
-  const category = await loadCategory(categoryId);
+  const category = await Effect.runPromise(getCategory({ id: categoryId }).pipe(
+    Effect.provide(FetchHttpClient.layer),
+    Effect.catchAll(() => Effect.succeed(undefined)),
+  ));
 
   if (!category) {
     notFound();
