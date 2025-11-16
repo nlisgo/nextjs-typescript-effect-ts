@@ -30,7 +30,7 @@ const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => {
       {
         Effect.runPromise(
           pipe(
-            getCategory({ id: category, imageWidth: 1114, imageHeight: 336 }),
+            getCategory({ id: category, imageWidth: 1483, imageHeight: 447 }),
             Effect.map(
               (cat) => <Banner
                 image={cat.image}
