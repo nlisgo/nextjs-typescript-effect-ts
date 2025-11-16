@@ -6,7 +6,7 @@ export type CategorySnippetProps = {
   id: string,
   title: string,
   uri: string,
-  description?: string,
+  description: string,
   image: {
     uri: string,
     alt: string,
@@ -42,14 +42,12 @@ export const Categories = ({
               <h2 className="category__title">
                 <a href={category.uri} className="category__title_link">{category.title}</a>
               </h2>
-              {category.description && (
-                <p
-                  className="category__description"
-                  dangerouslySetInnerHTML={{
-                    __html: category.description,
-                  }}
-                />
-              )}
+              <p
+                className="category__description"
+                dangerouslySetInnerHTML={{
+                  __html: category.description,
+                }}
+              />
             </div>
           </div>
         </li>)}

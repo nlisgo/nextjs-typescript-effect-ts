@@ -4,7 +4,7 @@ import { imageCodec } from '@/codecs/image';
 export const categoryCodec = Schema.Struct({
   name: Schema.String,
   id: Schema.String,
-  impactStatement: Schema.optional(Schema.String),
+  impactStatement: Schema.String,
   image: Schema.Struct({
     banner: imageCodec,
   }),
@@ -13,7 +13,7 @@ export const categoryCodec = Schema.Struct({
 export const categorySnippetCodec = Schema.Struct({
   name: Schema.String,
   id: Schema.String,
-  impactStatement: Schema.optional(Schema.String),
+  impactStatement: Schema.String,
   image: Schema.Struct({
     thumbnail: imageCodec,
   }),
