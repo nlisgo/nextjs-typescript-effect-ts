@@ -1,9 +1,14 @@
 import { FetchHttpClient } from '@effect/platform';
 import { Effect, Either } from 'effect';
+import { Metadata } from 'next';
 import type { JSX } from 'react';
 import { Categories } from '@/components/Categories/Categories';
 import { Page } from '@/components/Page/Page';
 import { getCategories } from '@/queries/categories';
+
+export const metadata: Metadata = {
+  title: 'Categories',
+};
 
 const CategoriesPage = async (): Promise<JSX.Element> => <Page>
   {

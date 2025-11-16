@@ -1,5 +1,6 @@
 import { FetchHttpClient } from '@effect/platform';
 import { Array, Effect, pipe } from 'effect';
+import { Metadata } from 'next';
 import type { JSX } from 'react';
 import { Banner } from '@/components/Banner/Banner';
 import { Page } from '@/components/Page/Page';
@@ -9,6 +10,20 @@ type PageProps = {
   params: {
     category: string,
   },
+};
+
+export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
+  const { category } = await params;
+  return Effect.runPromise(
+    pipe(
+      getCategory({ id: category }),
+      Effect.map((cat) => ({
+        title: cat.title,
+      })),
+    ).pipe(
+      Effect.provide(FetchHttpClient.layer),
+    ),
+  );
 };
 
 // Static params required for `output: "export"`. Update this list with real category IDs.

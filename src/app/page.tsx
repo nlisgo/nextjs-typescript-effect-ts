@@ -1,11 +1,16 @@
 import { FetchHttpClient } from '@effect/platform';
 import { Effect, Either } from 'effect';
+import { Metadata } from 'next';
 import { JSX } from 'react';
 import { Categories } from '@/components/Categories/Categories';
 import { Highlights } from '@/components/Highlights/Highlights';
 import { Page } from '@/components/Page/Page';
 import { getCategories } from '@/queries/categories';
 import { getHighlights } from '@/queries/highlights';
+
+export const generateMetadata = async (): Promise<Metadata> => ({
+  title: 'Home | Acme',
+});
 
 const Home = (): JSX.Element => <Page>
   {
