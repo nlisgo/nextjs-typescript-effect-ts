@@ -1,4 +1,5 @@
 import type { JSX } from 'react';
+import { withBaseUrl } from '@/tools/base-url';
 import { Button } from '../Button/Button';
 import './header.css';
 
@@ -35,7 +36,7 @@ export const Header = ({
             />
           </g>
         </svg>
-        <h1><a href="/">Acme</a></h1>
+        <h1><a href={withBaseUrl('/')}>Acme</a></h1>
       </div>
       <div>
         {user ? (

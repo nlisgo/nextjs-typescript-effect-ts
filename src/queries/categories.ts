@@ -6,6 +6,7 @@ import { ParseError } from 'effect/ParseResult';
 import { categoriesCodec, categoryCodec, categorySnippetCodec } from '@/codecs/categories';
 import { CategoryProps } from '@/components/Categories/Categories';
 import { httpGetAndValidate } from '@/queries/http';
+import { withBaseUrl } from '@/tools/base-url';
 import { iiifUri } from '@/tools/iiif-uri';
 import { CategorySnippet } from '@/types/category';
 import { Image } from '@/types/image';
@@ -19,7 +20,7 @@ const prepareCategorySnippet = (
 ): CategoryProps => ({
   id: category.id,
   title: category.name,
-  uri: `categories/${category.id}`,
+  uri: withBaseUrl(`/categories/${category.id}`),
   image: {
     uri: iiifUri(
       image,

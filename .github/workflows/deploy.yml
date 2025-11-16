@@ -21,6 +21,8 @@ jobs:
     env:
       NEXT_TELEMETRY_DISABLED: 1
       NEXT_USE_TURBOPACK: 0
+      # Used to build absolute internal links (e.g. categories) during static export
+      NEXT_PUBLIC_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
