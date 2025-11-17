@@ -5,6 +5,7 @@ import {
 import { ParseError } from 'effect/ParseResult';
 import { highlightCodec, highlightsCodec } from '@/codecs/highlights';
 import { HighlightProps } from '@/components/Highlights/Highlights';
+import { highlightsPath } from '@/queries/api-paths';
 import { httpGetAndValidate } from '@/queries/http';
 import { iiifUri } from '@/tools/iiif-uri';
 
@@ -15,7 +16,7 @@ ReadonlyArray<HighlightProps>,
 HttpClientError.HttpClientError | ParseError,
 HttpClient.HttpClient
 > => pipe(
-  `https://api.prod.elifesciences.org/covers?per-page=${Math.min((limit ?? 3) * 2, 100)}&page=1`,
+  highlightsPath({ limit }),
   httpGetAndValidate(highlightsCodec),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(highlightCodec))),

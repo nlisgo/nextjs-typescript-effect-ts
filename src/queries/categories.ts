@@ -5,6 +5,7 @@ import {
 import { ParseError } from 'effect/ParseResult';
 import { categoriesCodec, categoryCodec, categorySnippetCodec } from '@/codecs/categories';
 import { CategoryProps } from '@/components/Categories/Categories';
+import { categoriesPath, categoryPath } from '@/queries/api-paths';
 import { httpGetAndValidate } from '@/queries/http';
 import { withBaseUrl } from '@/tools/base-url';
 import { iiifUri } from '@/tools/iiif-uri';
@@ -43,7 +44,7 @@ CategoryProps,
 HttpClientError.HttpClientError | ParseError,
 HttpClient.HttpClient
 > => pipe(
-  `https://api.prod.elifesciences.org/subjects/${id}`,
+  categoryPath(id),
   httpGetAndValidate(categoryCodec),
   Effect.map(
     (category) => ({
@@ -63,7 +64,7 @@ ReadonlyArray<CategoryProps>,
 HttpClientError.HttpClientError | ParseError,
 HttpClient.HttpClient
 > => pipe(
-  'https://api.prod.elifesciences.org/subjects?per-page=18&page=1',
+  categoriesPath(),
   httpGetAndValidate(categoriesCodec),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(categorySnippetCodec))),

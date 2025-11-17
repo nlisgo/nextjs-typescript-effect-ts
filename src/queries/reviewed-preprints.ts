@@ -5,16 +5,17 @@ import {
 import { ParseError } from 'effect/ParseResult';
 import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs/reviewed-preprints';
 import { TeaserProps } from '@/components/Teasers/Teasers';
+import { reviewedPreprintsPath } from '@/queries/api-paths';
 import { httpGetAndValidate } from '@/queries/http';
 
 export const getReviewedPreprints = (
-  { limit }: { limit?: number } = {},
+  { limit = 10 }: { limit?: number } = {},
 ): Effect.Effect<
 ReadonlyArray<TeaserProps>,
 HttpClientError.HttpClientError | ParseError,
 HttpClient.HttpClient
 > => pipe(
-  `https://api.prod.elifesciences.org/search?sort=date&order=desc&type[]=reviewed-preprint&per-page=${Math.min(limit ?? 10, 100)}&page=1`,
+  reviewedPreprintsPath({ limit }),
   httpGetAndValidate(reviewedPreprintsCodec),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(reviewedPreprintCodec))),
