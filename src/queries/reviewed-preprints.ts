@@ -3,25 +3,9 @@ import {
   Array, Effect, Option, pipe, Schema,
 } from 'effect';
 import { ParseError } from 'effect/ParseResult';
-import { categoryIdCodec } from '@/codecs/categories';
+import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs/reviewed-preprints';
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { httpGetAndValidate } from '@/queries/http';
-
-const reviewedPreprintsCodec = Schema.Struct({
-  total: Schema.Int,
-  items: Schema.Array(
-    Schema.Unknown,
-  ),
-});
-
-const reviewedPreprintCodec = Schema.Struct({
-  id: Schema.String,
-  title: Schema.String,
-  doi: Schema.String,
-  authorLine: Schema.String,
-  subjects: Schema.Array(categoryIdCodec),
-  version: Schema.Int,
-});
 
 export const getReviewedPreprints = (
   { limit }: { limit?: number } = {},

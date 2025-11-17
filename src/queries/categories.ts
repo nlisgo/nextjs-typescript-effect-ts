@@ -1,6 +1,6 @@
 import { HttpClient, HttpClientError } from '@effect/platform';
 import {
-  Array, Effect, pipe, Schema,
+  Array, Effect, Option, pipe, Schema,
 } from 'effect';
 import { ParseError } from 'effect/ParseResult';
 import { categoriesCodec, categoryCodec, categorySnippetCodec } from '@/codecs/categories';
@@ -30,7 +30,7 @@ const prepareCategorySnippet = (
     alt: image.alt,
     width: imageWidth ?? 100,
     height: imageHeight ?? 100,
-    ...(image.attribution !== undefined ? { credit: image.attribution.join(', ') } : {}),
+    credit: (image.attribution !== undefined ? Option.some(image.attribution.join(', ')) : Option.none()),
   },
   description: category.impactStatement,
   ...(category.aimsAndScope ? { aimsAndScope: [...category.aimsAndScope] } : {}),

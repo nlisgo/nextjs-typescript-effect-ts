@@ -1,5 +1,7 @@
 import { FetchHttpClient } from '@effect/platform';
-import { Array, Effect, pipe } from 'effect';
+import {
+  Array, Effect, Option, pipe,
+} from 'effect';
 import { Metadata } from 'next';
 import type { JSX } from 'react';
 import { Banner } from '@/components/Banner/Banner';
@@ -53,7 +55,7 @@ const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => {
                   <Banner
                     image={cat.image}
                     title={cat.title}
-                    description={cat.description} />
+                    description={Option.some(cat.description)} />
                   {cat.aimsAndScope && <Content content={cat.aimsAndScope} />}
                 </>
               ),

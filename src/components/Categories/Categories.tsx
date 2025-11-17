@@ -1,3 +1,4 @@
+import { Option } from 'effect';
 import Image from 'next/image';
 import type { JSX } from 'react';
 import './categories.css';
@@ -16,7 +17,7 @@ export type CategorySnippetProps = {
     alt: string,
     width: number,
     height: number,
-    credit?: string,
+    credit: Option.Option<string>,
   },
 };
 
