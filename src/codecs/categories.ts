@@ -1,9 +1,13 @@
 import { Schema } from 'effect';
 import { imageCodec } from '@/codecs/image';
 
-const categoryBaseShape = {
+const categoryIdShape = {
   name: Schema.String,
   id: Schema.String,
+};
+
+const categoryBaseShape = {
+  ...categoryIdShape,
   impactStatement: Schema.String,
   aimsAndScope: Schema.optional(
     Schema.Array(
@@ -13,7 +17,9 @@ const categoryBaseShape = {
       }),
     ),
   ),
-} as const;
+};
+
+export const categoryIdCodec = Schema.Struct(categoryIdShape);
 
 export const categoryCodec = Schema.Struct({
   ...categoryBaseShape,

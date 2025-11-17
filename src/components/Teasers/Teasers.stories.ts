@@ -21,20 +21,24 @@ const exampleTeaserImage = (credit: boolean = true) => (i: number): TeaserImageP
 
 const exampleTeaser = ({
   title,
+  description,
   image = () => Option.none(),
 }: {
   title?: string,
+  description?: string,
   image?: (i: number) => TeaserImageProps,
 }) => (i: number) => ({
   title: title ?? `Complete Teaser ${i + 1}`,
   uri: '#',
-  description: 'This is the description',
+  description: description ?? 'This is the description',
   image: image(i + 1),
+  categories: Option.none(),
 });
 
 export const Default: Story = {
   args: {
     title: 'Teasers',
+    uri: Option.some('#'),
     teasers: [
       exampleTeaser({ title: 'Minimum' }),
       exampleTeaser({ title: 'Complete', image: exampleTeaserImage() }),

@@ -1,7 +1,9 @@
-import { Option } from 'effect';
+import { Array, Option, pipe } from 'effect';
 import Image from 'next/image';
 import type { JSX } from 'react';
 import './teasers.css';
+import { withBaseUrl } from '@/tools/base-url';
+import { CategoryId } from '@/types/category';
 
 export type TeaserImageProps = Option.Option<{
   uri: string,
@@ -16,28 +18,37 @@ export type TeaserProps = {
   uri: string,
   description: string,
   image: TeaserImageProps,
+  categories: Option.Option<ReadonlyArray<CategoryId>>,
 };
 
 export type TeasersProps = {
   title: string,
-  uri?: Option.Option<string>,
+  uri: Option.Option<string>,
   teasers: ReadonlyArray<TeaserProps>,
 };
 
 export const Teasers = ({
   title,
-  uri = Option.none<string>(),
+  uri = Option.none(),
   teasers,
 }: TeasersProps): JSX.Element => (
   <>
     {teasers.length > 0 && <section className="teasers">
-      <h2 className="teasers__title">{Option.isSome(uri) ? <a href={uri.value} className="teasers__title_link">title</a> : title}</h2>
+      <h2 className="teasers__title">{Option.isSome(uri) ? <a href={uri.value} className="teasers__title_link">{title}</a> : title}</h2>
       <ul className="teasers__list">
         {teasers.map((teaser, i) => <li key={i} className="teasers__list_item">
           <div className="teaser">
             {Option.isSome(teaser.image) && <a href={teaser.uri} className="teaser__image-link">
               <Image className="teaser__image" src={teaser.image.value.uri} alt={`${teaser.image.value.alt}${Option.isSome(teaser.image.value.credit) && ` - ${teaser.image.value.credit.value}`}`} width={teaser.image.value.width} height={teaser.image.value.height} />
             </a>}
+            {Option.isSome(teaser.categories) && teaser.categories.value.length > 0 && <ul className="teaser__categories">
+              {
+                pipe(
+                  teaser.categories.value,
+                  Array.map((category, j) => <li key={j} className="teaser__categories_item"><a href={withBaseUrl(`/categorys/${category.id}`)} className="teaser__categories_item_link">{category.name}</a></li>),
+                )
+              }
+            </ul>}
             <div className="teaser__content">
               <h2 className="teaser__title">
                 <a href={teaser.uri} className="teaser__title_link">{teaser.title}</a>
