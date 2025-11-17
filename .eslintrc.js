@@ -118,15 +118,6 @@ module.exports = {
         '**/*.stories.mdx',
       ],
     }],
-    'import/no-restricted-paths': ['error', {
-      zones: [
-        {
-          target: './src/ingest',
-          from: './src',
-          except: ['./ingest'],
-        },
-      ],
-    }],
   },
   overrides: [
     {
