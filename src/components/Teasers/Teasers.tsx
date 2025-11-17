@@ -23,7 +23,7 @@ export type TeaserProps = {
 
 export type TeasersProps = {
   title: string,
-  uri: Option.Option<string>,
+  uri?: Option.Option<string>,
   teasers: ReadonlyArray<TeaserProps>,
 };
 
@@ -51,7 +51,13 @@ export const Teasers = ({
                 }
               </ul>}
               <h2 className="teaser__title">
-                <a href={teaser.uri} className="teaser__title_link">{teaser.title}</a>
+                <a
+                  href={teaser.uri}
+                  className="teaser__title_link"
+                  dangerouslySetInnerHTML={{
+                    __html: teaser.title,
+                  }}
+                />
               </h2>
               <p
                 className="teaser__description"
