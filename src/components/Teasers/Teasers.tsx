@@ -1,42 +1,42 @@
+import { Option } from 'effect';
 import Image from 'next/image';
 import type { JSX } from 'react';
 import './teasers.css';
 
-export type TeaserImageProps = {
-  image?: {
-    uri: string,
-    alt: string,
-    width: number,
-    height: number,
-    credit?: string,
-  },
-};
+export type TeaserImageProps = Option.Option<{
+  uri: string,
+  alt: string,
+  width: number,
+  height: number,
+  credit: Option.Option<string>,
+}>;
 
-type TeaserProps = {
+export type TeaserProps = {
   title: string,
   uri: string,
   description: string,
-} & TeaserImageProps;
+  image: TeaserImageProps,
+};
 
 export type TeasersProps = {
   title: string,
-  uri?: string,
-  teasers: Array<TeaserProps>,
+  uri?: Option.Option<string>,
+  teasers: ReadonlyArray<TeaserProps>,
 };
 
 export const Teasers = ({
   title,
-  uri,
+  uri = Option.none<string>(),
   teasers,
 }: TeasersProps): JSX.Element => (
   <>
     {teasers.length > 0 && <section className="teasers">
-      <h2 className="teasers__title">{uri ? <a href={uri} className="teasers__title_link">{title}</a> : title}</h2>
+      <h2 className="teasers__title">{Option.isSome(uri) ? <a href={uri.value} className="teasers__title_link">title</a> : title}</h2>
       <ul className="teasers__list">
         {teasers.map((teaser, i) => <li key={i} className="teasers__list_item">
           <div className="teaser">
-            {teaser.image && <a href={teaser.uri} className="teaser__image-link">
-              <Image className="teaser__image" src={teaser.image.uri} alt={`${teaser.image.alt}${teaser.image.credit ? ` - ${teaser.image.credit}` : ''}`} width={teaser.image.width} height={teaser.image.height} />
+            {Option.isSome(teaser.image) && <a href={teaser.uri} className="teaser__image-link">
+              <Image className="teaser__image" src={teaser.image.value.uri} alt={`${teaser.image.value.alt}${Option.isSome(teaser.image.value.credit) && ` - ${teaser.image.value.credit.value}`}`} width={teaser.image.value.width} height={teaser.image.value.height} />
             </a>}
             <div className="teaser__content">
               <h2 className="teaser__title">
