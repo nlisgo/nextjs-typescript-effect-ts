@@ -33,6 +33,7 @@ const prepareCategorySnippet = (
     ...(image.attribution !== undefined ? { credit: image.attribution.join(', ') } : {}),
   },
   description: category.impactStatement,
+  ...(category.aimsAndScope ? { aimsAndScope: [...category.aimsAndScope] } : {}),
 });
 
 export const getCategory = (

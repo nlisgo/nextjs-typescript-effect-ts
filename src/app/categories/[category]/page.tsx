@@ -3,6 +3,7 @@ import { Array, Effect, pipe } from 'effect';
 import { Metadata } from 'next';
 import type { JSX } from 'react';
 import { Banner } from '@/components/Banner/Banner';
+import { Content } from '@/components/Content/Content';
 import { Page } from '@/components/Page/Page';
 import { getCategories, getCategory } from '@/queries/categories';
 
@@ -47,10 +48,15 @@ const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => {
           pipe(
             getCategory({ id: category, imageWidth: 1483, imageHeight: 447 }),
             Effect.map(
-              (cat) => <Banner
-                image={cat.image}
-                title={cat.title}
-                description={cat.description} />,
+              (cat) => (
+                <>
+                  <Banner
+                    image={cat.image}
+                    title={cat.title}
+                    description={cat.description} />
+                  {cat.aimsAndScope && <Content content={cat.aimsAndScope} />}
+                </>
+              ),
             ),
           ).pipe(
             Effect.provide(FetchHttpClient.layer),

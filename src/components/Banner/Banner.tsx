@@ -19,7 +19,7 @@ export const Banner = ({
 }: BannerProps): JSX.Element => (
   <>
     <div className="banner">
-      <Image className="banner__image" src={image.uri} alt={image.alt} width={image.width} height={image.height} />
+      <Image className="banner__image" src={image.uri} alt={image.alt} width={image.width} height={image.height} loading="eager" />
       <div className="banner__content">
         <h2>{title}</h2>
         {description && <div
