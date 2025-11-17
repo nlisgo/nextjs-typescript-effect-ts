@@ -20,27 +20,26 @@ const exampleTeaserImage = (credit: boolean = true) => (i: number): TeaserImageP
   },
 });
 
-const exampleTeaser = (
+const exampleTeaser = ({
+  title,
+  image = () => ({}),
+}: {
   title?: string,
-  withImage: (i: number) => TeaserImageProps = () => ({}),
-) => (i: number) => {
-  const image = withImage(i);
-
-  return {
-    title: title ?? `Complete Teaser ${i}`,
-    uri: '#',
-    description: 'This is the description',
-    ...image,
-  };
-};
+  image?: (i: number) => TeaserImageProps,
+}) => (i: number) => ({
+  title: title ?? `Complete Teaser ${i}`,
+  uri: '#',
+  description: 'This is the description',
+  ...image(i),
+});
 
 export const Default: Story = {
   args: {
     title: 'Teasers',
     teasers: [
-      exampleTeaser('Minimum')(1),
-      exampleTeaser('Complete', exampleTeaserImage())(2),
-      exampleTeaser('Image without credit', exampleTeaserImage(false))(3),
-    ],
+      exampleTeaser({ title: 'Minimum' }),
+      exampleTeaser({ title: 'Complete', image: exampleTeaserImage() }),
+      exampleTeaser({ title: 'Image without credit', image: exampleTeaserImage(false) }),
+    ].map((teaser, i) => teaser(i + 1)),
   },
 };
