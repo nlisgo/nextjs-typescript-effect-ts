@@ -36,7 +36,7 @@ HttpClient.HttpClient
   Effect.map(Array.filter(Schema.is(reviewedPreprintCodec))),
   Effect.map(Array.map((reviewedPreprint) => ({
     title: reviewedPreprint.title,
-    uri: `https://dx.doi.org/${reviewedPreprint.doi}`,
+    uri: `https://elifesciences.org/reviewed-preprints/${reviewedPreprint.id}`,
     description: reviewedPreprint.authorLine,
     image: Option.none(),
     categories: Option.some(reviewedPreprint.subjects),
