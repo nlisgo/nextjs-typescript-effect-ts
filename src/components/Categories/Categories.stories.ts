@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Categories } from '@/components/Categories/Categories';
+import { dummyImage } from '@/tools/dummy-image';
 
 const meta = {
   title: 'Example/Categories',
@@ -18,7 +19,7 @@ export const Default: Story = {
       title: `Category ${i}`,
       uri: '#',
       image: {
-        uri: `https://picsum.photos/80/80?i=${i}`,
+        uri: dummyImage(80, 80, `category-${i}`),
         alt: 'Alt text',
         width: 80,
         height: 80,

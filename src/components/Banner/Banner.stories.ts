@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Banner } from '@/components/Banner/Banner';
+import { dummyImage } from '@/tools/dummy-image';
 
 const meta = {
   title: 'Example/Banner',
@@ -14,7 +15,7 @@ export const Default: Story = {
   args: {
     title: 'Biochemistry and Chemical Biology',
     image: {
-      uri: 'https://picsum.photos/1114/336',
+      uri: dummyImage(1114, 336),
       alt: 'Alt text',
       width: 1114,
       height: 336,

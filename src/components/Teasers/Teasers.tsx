@@ -41,15 +41,15 @@ export const Teasers = ({
             {Option.isSome(teaser.image) && <a href={teaser.uri} className="teaser__image-link">
               <Image className="teaser__image" src={teaser.image.value.uri} alt={`${teaser.image.value.alt}${Option.isSome(teaser.image.value.credit) && ` - ${teaser.image.value.credit.value}`}`} width={teaser.image.value.width} height={teaser.image.value.height} />
             </a>}
-            {Option.isSome(teaser.categories) && teaser.categories.value.length > 0 && <ul className="teaser__categories">
-              {
-                pipe(
-                  teaser.categories.value,
-                  Array.map((category, j) => <li key={j} className="teaser__categories_item"><a href={withBaseUrl(`/categorys/${category.id}`)} className="teaser__categories_item_link">{category.name}</a></li>),
-                )
-              }
-            </ul>}
             <div className="teaser__content">
+              {Option.isSome(teaser.categories) && teaser.categories.value.length > 0 && <ul className="teaser__categories">
+                {
+                  pipe(
+                    teaser.categories.value,
+                    Array.map((category, j) => <li key={j} className="teaser__categories_item"><a href={withBaseUrl(`/categories/${category.id}`)} className="teaser__categories_item_link">{category.name}</a></li>),
+                  )
+                }
+              </ul>}
               <h2 className="teaser__title">
                 <a href={teaser.uri} className="teaser__title_link">{teaser.title}</a>
               </h2>

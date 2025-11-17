@@ -25,6 +25,18 @@
   @apply flex items-start gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-sm transition;
 }
 
+.teaser__categories {
+  @apply flex flex-wrap gap-2 list-none p-0 m-0 mb-2;
+}
+
+.teaser__categories_item {
+  @apply m-0;
+}
+
+.teaser__categories_item_link {
+  @apply inline-flex items-center gap-[2px] rounded-full border border-blue-200 bg-blue-50 px-2 py-[3px] text-[11px] font-medium text-blue-800 no-underline transition hover:bg-blue-100 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-50;
+}
+
 .teaser__image-link {
   @apply block relative flex-shrink-0 rounded-lg overflow-hidden border border-gray-200;
 }

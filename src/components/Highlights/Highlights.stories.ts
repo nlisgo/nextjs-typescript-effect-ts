@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Highlights } from '@/components/Highlights/Highlights';
+import { dummyImage } from '@/tools/dummy-image';
 
 const meta = {
   title: 'Example/Highlights',
@@ -17,7 +18,7 @@ export const Default: Story = {
       title: `Highlight ${i}`,
       uri: '#',
       image: {
-        uri: `https://picsum.photos/463/260?i=${i}`,
+        uri: dummyImage(463, 260, `highlight-${i}`),
         alt: 'Alt text',
         width: 463,
         height: 260,
