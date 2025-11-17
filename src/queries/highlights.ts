@@ -1,6 +1,6 @@
 import { HttpClient, HttpClientError } from '@effect/platform';
 import {
-  Array, Effect, pipe, Schema,
+  Array, Effect, Option, pipe, Schema,
 } from 'effect';
 import { ParseError } from 'effect/ParseResult';
 import { highlightCodec, highlightsCodec } from '@/codecs/highlights';
@@ -29,8 +29,6 @@ HttpClient.HttpClient
       width: imageWidth ?? 100,
       height: imageHeight ?? 100,
     },
-    ...(highlight.impactStatement ? {
-      description: highlight.impactStatement,
-    } : {}),
+    description: highlight.impactStatement ? Option.some(highlight.impactStatement) : Option.none(),
   }))),
 );

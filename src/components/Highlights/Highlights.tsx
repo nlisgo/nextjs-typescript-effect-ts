@@ -1,3 +1,4 @@
+import { Option } from 'effect';
 import Image from 'next/image';
 import type { JSX } from 'react';
 import './highlights.css';
@@ -5,7 +6,7 @@ import './highlights.css';
 export type HighlightProps = {
   title: string,
   uri: string,
-  description?: string,
+  description: Option.Option<string>,
   image: {
     uri: string,
     alt: string,
@@ -35,11 +36,11 @@ export const Highlights = ({
             <h2 className="highlight__title">
               <a href={highlight.uri} className="highlight__title_link">{highlight.title}</a>
             </h2>
-            {highlight.description && (
+            {Option.isSome(highlight.description) && (
               <p
                 className="highlight__description"
                 dangerouslySetInnerHTML={{
-                  __html: highlight.description,
+                  __html: highlight.description.value,
                 }}
               />
             )}
