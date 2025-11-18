@@ -1,4 +1,3 @@
-import { Option } from 'effect';
 import Image from 'next/image';
 import type { JSX } from 'react';
 import './categories.css';
@@ -8,16 +7,16 @@ export type CategorySnippetProps = {
   title: string,
   uri: string,
   description: string,
-  aimsAndScope: Option.Option<ReadonlyArray<{
+  aimsAndScope?: ReadonlyArray<{
     type: 'paragraph',
     text: string,
-  }>>,
+  }>,
   image: {
     uri: string,
     alt: string,
     width: number,
     height: number,
-    credit: Option.Option<string>,
+    credit?: string,
   },
 };
 

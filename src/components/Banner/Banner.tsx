@@ -1,4 +1,3 @@
-import { Option } from 'effect';
 import Image from 'next/image';
 import type { JSX } from 'react';
 import './banner.css';
@@ -9,10 +8,10 @@ export type BannerProps = {
     alt: string,
     width: number,
     height: number,
-    credit: Option.Option<string>,
+    credit?: string,
   },
   title: string,
-  description: Option.Option<string>,
+  description?: string,
 };
 
 export const Banner = ({
@@ -23,19 +22,16 @@ export const Banner = ({
       <Image className="banner__image" src={image.uri} alt={image.alt} width={image.width} height={image.height} loading="eager" />
       <div className="banner__content">
         <h2>{title}</h2>
-        {Option.match(description, {
-          onNone: () => null,
-          onSome: (desc) => <div
-            className="banner__description"
-            dangerouslySetInnerHTML={{ __html: desc }}
-          />,
-        })}
+        {description && <div
+          className="banner__description"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />}
       </div>
     </div>
-    {Option.isSome(image.credit) && <div
+    {image.credit && <div
       className="banner-credit"
       dangerouslySetInnerHTML={{
-        __html: image.credit.value,
+        __html: image.credit,
       }}
     />}
   </>
