@@ -3,9 +3,10 @@ import {
   Array, Effect, pipe, Schema,
 } from 'effect';
 import { ParseError } from 'effect/ParseResult';
+import { continuumCategoriesPath, continuumCategoryPath } from '@/api-paths';
 import { categoriesCodec, categoryCodec, categorySnippetCodec } from '@/codecs';
 import { CategoryProps } from '@/components/Categories/Categories';
-import { categoriesPath, categoryPath, httpGetAndValidate } from '@/queries';
+import { httpGetAndValidate } from '@/queries';
 import { withBaseUrl, iiifUri } from '@/tools';
 import { CategorySnippet, Image } from '@/types';
 
@@ -45,7 +46,7 @@ CategoryProps,
 HttpClientError.HttpClientError | ParseError,
 HttpClient.HttpClient
 > => pipe(
-  categoryPath(id),
+  continuumCategoryPath(id),
   httpGetAndValidate(categoryCodec),
   Effect.map(
     (category) => ({
@@ -65,7 +66,7 @@ ReadonlyArray<CategoryProps>,
 HttpClientError.HttpClientError | ParseError,
 HttpClient.HttpClient
 > => pipe(
-  categoriesPath(),
+  continuumCategoriesPath(),
   httpGetAndValidate(categoriesCodec),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(categorySnippetCodec))),

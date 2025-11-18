@@ -3,10 +3,10 @@ import {
   Array, Effect, pipe, Schema,
 } from 'effect';
 import { ParseError } from 'effect/ParseResult';
+import { continuumReviewedPreprintPath, continuumReviewedPreprintsPath } from '@/api-paths';
 import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs';
 import { TeaserProps } from '@/components/Teasers/Teasers';
-import { reviewedPreprintsPath, httpGetAndValidate } from '@/queries';
-import { reviewedPreprintPath } from '@/queries/api-paths';
+import { httpGetAndValidate } from '@/queries';
 import { withBaseUrl } from '@/tools';
 
 export const getReviewedPreprint = (
@@ -16,7 +16,7 @@ TeaserProps,
 HttpClientError.HttpClientError | ParseError,
 HttpClient.HttpClient
 > => pipe(
-  reviewedPreprintPath(id),
+  continuumReviewedPreprintPath(id),
   httpGetAndValidate(reviewedPreprintCodec),
   Effect.map((reviewedPreprint) => ({
     id: reviewedPreprint.id,
@@ -35,7 +35,7 @@ ReadonlyArray<TeaserProps>,
 HttpClientError.HttpClientError | ParseError,
 HttpClient.HttpClient
 > => pipe(
-  reviewedPreprintsPath({ limit }),
+  continuumReviewedPreprintsPath({ limit }),
   httpGetAndValidate(reviewedPreprintsCodec),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(reviewedPreprintCodec))),

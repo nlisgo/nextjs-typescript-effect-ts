@@ -3,9 +3,10 @@ import {
   Array, Effect, pipe, Schema,
 } from 'effect';
 import { ParseError } from 'effect/ParseResult';
+import { continuumHighlightsPath } from '@/api-paths';
 import { highlightCodec, highlightsCodec } from '@/codecs';
 import { HighlightProps } from '@/components/Highlights/Highlights';
-import { highlightsPath, httpGetAndValidate } from '@/queries';
+import { httpGetAndValidate } from '@/queries';
 import { iiifUri } from '@/tools';
 
 export const getHighlights = (
@@ -15,7 +16,7 @@ ReadonlyArray<HighlightProps>,
 HttpClientError.HttpClientError | ParseError,
 HttpClient.HttpClient
 > => pipe(
-  highlightsPath({ limit }),
+  continuumHighlightsPath({ limit }),
   httpGetAndValidate(highlightsCodec),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(highlightCodec))),
