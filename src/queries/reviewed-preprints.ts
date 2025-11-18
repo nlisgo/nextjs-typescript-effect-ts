@@ -28,7 +28,7 @@ HttpClient.HttpClient
   })),
 );
 
-export const getReviewedPreprints = (
+const getContinuumReviewedPreprints = (
   { limit = 10 }: { limit?: number } = {},
 ): Effect.Effect<
 ReadonlyArray<TeaserProps>,
@@ -48,3 +48,5 @@ HttpClient.HttpClient
     categories: reviewedPreprint.subjects,
   }))),
 );
+
+export const getReviewedPreprints = getContinuumReviewedPreprints;

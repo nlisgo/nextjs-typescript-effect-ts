@@ -1,14 +1,16 @@
 import { Schema } from 'effect';
 import { categoryIdCodec } from '@/codecs';
 
-export const reviewedPreprintsCodec = Schema.Struct({
+const continuumReviewedPreprintsCodec = Schema.Struct({
   total: Schema.Int,
   items: Schema.Array(
     Schema.Unknown,
   ),
 });
 
-export const reviewedPreprintCodec = Schema.Struct({
+export const reviewedPreprintsCodec = continuumReviewedPreprintsCodec;
+
+const continuumReviewedPreprintCodec = Schema.Struct({
   id: Schema.String,
   published: Schema.optional(
     Schema.String,
@@ -22,3 +24,5 @@ export const reviewedPreprintCodec = Schema.Struct({
   subjects: Schema.Array(categoryIdCodec),
   version: Schema.Int,
 });
+
+export const reviewedPreprintCodec = continuumReviewedPreprintCodec;
