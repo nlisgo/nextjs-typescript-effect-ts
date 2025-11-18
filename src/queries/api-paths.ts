@@ -6,3 +6,4 @@ export const categoryPath = (id: string): string => `${apiBasePath}/subjects/${i
 export const highlightsPath = ({ limit = 3 }: { limit?: number } = {}): string => `${apiBasePath}/covers?per-page=${Math.min(limit * 2, 100)}&page=1`;
 
 export const reviewedPreprintsPath = ({ limit = 10 }: { limit?: number } = {}): string => `${apiBasePath}/search?sort=date&order=desc&type[]=reviewed-preprint&per-page=${Math.min(limit, 100)}&page=1`;
+export const reviewedPreprintPath = (id: string): string => `${apiBasePath}/reviewed-preprints/${id}`;

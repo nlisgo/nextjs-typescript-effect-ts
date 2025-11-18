@@ -14,6 +14,7 @@ export type TeaserImageProps = Option.Option<{
 }>;
 
 export type TeaserProps = {
+  id: string,
   title: string,
   uri: string,
   published: Option.Option<Date>,

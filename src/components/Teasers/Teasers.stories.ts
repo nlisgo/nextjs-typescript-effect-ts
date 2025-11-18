@@ -34,6 +34,7 @@ const exampleTeaser = ({
   image?: (i: number) => TeaserImageProps,
   categories?: Option.Option<ReadonlyArray<CategoryId>>,
 }) => (i: number) => ({
+  id: `${i}`,
   title: title ?? `Complete Teaser ${i + 1}`,
   uri: '#',
   published,
