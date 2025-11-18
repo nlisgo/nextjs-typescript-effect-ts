@@ -9,7 +9,7 @@ type User = {
 };
 
 export type HeaderProps = {
-  user: Option.Option<User>,
+  user?: User,
   onLogin?: () => void,
   onLogout?: () => void,
   onCreateAccount?: () => void,
@@ -40,10 +40,10 @@ export const Header = ({
         <h1><a href={withBaseUrl('/')}>Acme</a></h1>
       </div>
       <div>
-        {Option.isSome(user) ? (
+        {user ? (
           <>
             <span className="welcome">
-              Welcome, <b>{user.value.name}</b>!
+              Welcome, <b>{user.name}</b>!
             </span>
             <Button primary={Option.none()} backgroundColor={Option.none()} size={Option.some('small')} onClick={onLogout} label="Log out" />
           </>

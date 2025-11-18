@@ -9,7 +9,9 @@
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --fix --ext .ts,.tsx",
     "storybook": "storybook dev --port 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "check-typescript": "npx tsc --noEmit",
+    "watch-typescript": "npx tsc --noEmit --watch"
   },
   "dependencies": {
     "@effect/platform": "^0.93.2",
