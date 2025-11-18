@@ -9,11 +9,15 @@ import { categoriesPath, categoryPath, httpGetAndValidate } from '@/queries';
 import { withBaseUrl, iiifUri } from '@/tools';
 import { CategorySnippet, Image } from '@/types';
 
-const prepareCategorySnippet = (
+const prepareCategorySnippet = ({
+  image,
+  imageWidth = Option.none(),
+  imageHeight = Option.none(),
+}: {
   image: Image,
-  imageWidth?: number,
-  imageHeight?: number,
-) => (
+  imageWidth?: Option.Option<number>,
+  imageHeight?: Option.Option<number>,
+}) => (
   category: Omit<CategorySnippet, 'image'>,
 ): CategoryProps => ({
   id: category.id,
@@ -22,12 +26,12 @@ const prepareCategorySnippet = (
   image: {
     uri: iiifUri(
       image,
-      imageWidth ?? 100,
-      imageHeight ?? 100,
+      Option.getOrElse(() => 100)(imageWidth),
+      Option.getOrElse(() => 100)(imageHeight),
     ),
     alt: image.alt,
-    width: imageWidth ?? 100,
-    height: imageHeight ?? 100,
+    width: Option.getOrElse(() => 100)(imageWidth),
+    height: Option.getOrElse(() => 100)(imageHeight),
     credit: (image.attribution !== undefined ? Option.some(image.attribution.join(', ')) : Option.none()),
   },
   description: category.impactStatement,
@@ -45,11 +49,11 @@ HttpClient.HttpClient
   httpGetAndValidate(categoryCodec),
   Effect.map(
     (category) => ({
-      ...prepareCategorySnippet(
-        category.image.banner,
-        imageWidth,
-        imageHeight,
-      )(category),
+      ...prepareCategorySnippet({
+        image: category.image.banner,
+        imageWidth: imageWidth ? Option.some(imageWidth) : Option.none(),
+        imageHeight: imageHeight ? Option.some(imageHeight) : Option.none(),
+      })(category),
     }),
   ),
 );
@@ -66,10 +70,10 @@ HttpClient.HttpClient
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(categorySnippetCodec))),
   Effect.map(
-    Array.map((category) => prepareCategorySnippet(
-      category.image.thumbnail,
-      imageWidth,
-      imageHeight,
-    )(category)),
+    Array.map((category) => prepareCategorySnippet({
+      image: category.image.thumbnail,
+      imageWidth: imageWidth ? Option.some(imageWidth) : Option.none(),
+      imageHeight: imageHeight ? Option.some(imageHeight) : Option.none(),
+    })(category)),
   ),
 );
