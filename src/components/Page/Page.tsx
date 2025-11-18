@@ -1,12 +1,13 @@
 'use client';
 
+import { Option } from 'effect';
 import { JSX, PropsWithChildren, useState } from 'react';
 import { Header } from '../Header/Header';
 import './page.css';
 
-type User = {
+type User = Option.Option<{
   name: string,
-};
+}>;
 
 export const Page = ({ children }: PropsWithChildren): JSX.Element => {
   const [user, setUser] = useState<User>();
@@ -14,10 +15,10 @@ export const Page = ({ children }: PropsWithChildren): JSX.Element => {
   return (
     <>
       <Header
-        user={user}
-        onLogin={() => setUser({ name: 'Jane Doe' })}
-        onLogout={() => setUser(undefined)}
-        onCreateAccount={() => setUser({ name: 'Jane Doe' })}
+        user={user ?? Option.none()}
+        onLogin={() => setUser(Option.some({ name: 'Jane Doe' }))}
+        onLogout={() => setUser(Option.none())}
+        onCreateAccount={() => setUser(Option.some({ name: 'Jane Doe' }))}
       />
 
       <section className="content-wrapper">

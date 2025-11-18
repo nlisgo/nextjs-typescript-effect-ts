@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-
+import { Option } from 'effect';
 import { fn } from 'storybook/test';
-
 import { Header } from './Header';
 
 const meta = {
@@ -25,10 +24,14 @@ type Story = StoryObj<typeof meta>;
 
 export const LoggedIn: Story = {
   args: {
-    user: {
+    user: Option.some({
       name: 'Jane Doe',
-    },
+    }),
   },
 };
 
-export const LoggedOut: Story = {};
+export const LoggedOut: Story = {
+  args: {
+    user: Option.none(),
+  },
+};

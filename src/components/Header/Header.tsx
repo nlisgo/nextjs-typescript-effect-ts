@@ -1,3 +1,4 @@
+import { Option } from 'effect';
 import type { JSX } from 'react';
 import { withBaseUrl } from '@/tools/base-url';
 import { Button } from '../Button/Button';
@@ -8,7 +9,7 @@ type User = {
 };
 
 export type HeaderProps = {
-  user?: User,
+  user: Option.Option<User>,
   onLogin?: () => void,
   onLogout?: () => void,
   onCreateAccount?: () => void,
@@ -39,17 +40,17 @@ export const Header = ({
         <h1><a href={withBaseUrl('/')}>Acme</a></h1>
       </div>
       <div>
-        {user ? (
+        {Option.isSome(user) ? (
           <>
             <span className="welcome">
-              Welcome, <b>{user.name}</b>!
+              Welcome, <b>{user.value.name}</b>!
             </span>
-            <Button size="small" onClick={onLogout} label="Log out" />
+            <Button primary={Option.none()} backgroundColor={Option.none()} size={Option.some('small')} onClick={onLogout} label="Log out" />
           </>
         ) : (
           <>
-            <Button size="small" onClick={onLogin} label="Log in" />
-            <Button primary size="small" onClick={onCreateAccount} label="Sign up" />
+            <Button primary={Option.none()} backgroundColor={Option.none()} size={Option.some('small')} onClick={onLogin} label="Log in" />
+            <Button primary={Option.some(true)} backgroundColor={Option.none()} size={Option.some('small')} onClick={onCreateAccount} label="Sign up" />
           </>
         )}
       </div>

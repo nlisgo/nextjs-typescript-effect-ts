@@ -1,13 +1,14 @@
+import { Option } from 'effect';
 import type { JSX } from 'react';
 import './button.css';
 
 export type ButtonProps = {
   /** Is this the principal call to action on the page? */
-  primary?: boolean,
+  primary: Option.Option<true>,
   /** What background color to use */
-  backgroundColor?: string,
+  backgroundColor: Option.Option<string>,
   /** How large should the button be? */
-  size?: 'small' | 'medium' | 'large',
+  size: Option.Option<'small' | 'medium' | 'large'>,
   /** Button contents */
   label: string,
   /** Optional click handler */
@@ -16,18 +17,18 @@ export type ButtonProps = {
 
 /** Primary UI component for user interaction */
 export const Button = ({
-  primary = false,
-  size = 'medium',
+  primary = Option.none(),
+  size = Option.some('medium'),
   backgroundColor,
   label,
   ...props
 }: ButtonProps): JSX.Element => {
-  const mode = primary ? 'storybook-button--primary' : 'storybook-button--secondary';
+  const mode = Option.isSome(primary) ? 'storybook-button--primary' : 'storybook-button--secondary';
   return (
     <button
       type="button"
-      className={['storybook-button', `storybook-button--${size}`, mode].join(' ')}
-      style={backgroundColor ? { backgroundColor } : undefined}
+      className={['storybook-button', ...(Option.isSome(size) ? [`storybook-button--${size.value}`] : []), mode].join(' ')}
+      {...(Option.isSome(backgroundColor) ? { style: { backgroundColor: backgroundColor.value } } : {})}
       {...props}
     >
       {label}
