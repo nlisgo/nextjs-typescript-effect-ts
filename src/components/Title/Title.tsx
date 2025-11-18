@@ -1,4 +1,4 @@
-import type { JSX } from 'react';
+import { Fragment, type JSX } from 'react';
 import './title.css';
 import { TitleContent } from '@/types/title';
 
@@ -13,7 +13,7 @@ const prepareContent = (content: TitleContent) => {
 
   return content.map((item, i) => {
     if (typeof item === 'string') {
-      return <span key={i}>{item}</span>;
+      return <Fragment key={i}>{item}</Fragment>;
     }
 
     if (item.type === 'Emphasis') {
