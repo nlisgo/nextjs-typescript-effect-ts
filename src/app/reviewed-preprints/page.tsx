@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const ReviewedPreprintsPage = async (): Promise<JSX.Element> => Effect.runPromise(
-  getReviewedPreprints({ limit: 20 }).pipe(
+  getReviewedPreprints().pipe(
     Effect.map(Either.fromNullable(() => new Error('no reviewed preprints found'))),
     Effect.flatMap(Either.map((rps) => <Page><section key="reviewed-preprints"><Teasers title="Reviewed Preprints" teasers={[...rps]} /></section></Page>)),
   ).pipe(

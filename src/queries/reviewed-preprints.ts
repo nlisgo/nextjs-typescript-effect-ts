@@ -43,7 +43,7 @@ HttpClient.HttpClient
   httpGetAndValidate(eppReviewedPreprintCodec),
   Effect.map((reviewedPreprint) => ({
     id: reviewedPreprint.article.msid,
-    title: reviewedPreprint.article.article.title,
+    title: typeof reviewedPreprint.article.article.title === 'string' ? reviewedPreprint.article.article.title : `Unsupported: ${JSON.stringify(reviewedPreprint.article.article.title)}`,
     uri: withBaseUrl(`/reviewed-preprints/${reviewedPreprint.article.msid}`),
     description: 'Authors et al.',
     published: new Date(reviewedPreprint.article.published),
@@ -51,7 +51,7 @@ HttpClient.HttpClient
 );
 
 const getContinuumReviewedPreprints = (
-  { limit = 10 }: { limit?: number } = {},
+  { limit = 20 }: { limit?: number } = {},
 ): Effect.Effect<
 ReadonlyArray<TeaserProps>,
 HttpClientError.HttpClientError | ParseError,
