@@ -10,6 +10,12 @@ export const reviewedPreprintsCodec = Schema.Struct({
 
 export const reviewedPreprintCodec = Schema.Struct({
   id: Schema.String,
+  published: Schema.optional(
+    Schema.String,
+  ),
+  statusDate: Schema.optional(
+    Schema.String,
+  ),
   title: Schema.String,
   doi: Schema.String,
   authorLine: Schema.String,

@@ -61,6 +61,6 @@
   @apply text-sm text-gray-700 leading-relaxed;
 }
 
-.teaser__published {
+.teaser__status_date {
   @apply block text-xs text-gray-500 mt-2;
 }
