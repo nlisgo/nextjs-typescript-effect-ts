@@ -23,6 +23,7 @@ HttpClient.HttpClient
     uri: `https://elifesciences.org/reviewed-preprints/${reviewedPreprint.id}`,
     description: reviewedPreprint.authorLine,
     image: Option.none(),
+    published: Option.none(),
     categories: Option.some(reviewedPreprint.subjects),
   }))),
 );

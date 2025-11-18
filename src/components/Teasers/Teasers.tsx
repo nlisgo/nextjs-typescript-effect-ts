@@ -16,6 +16,7 @@ export type TeaserImageProps = Option.Option<{
 export type TeaserProps = {
   title: string,
   uri: string,
+  published: Option.Option<Date>,
   description: string,
   image: TeaserImageProps,
   categories: Option.Option<ReadonlyArray<CategoryId>>,

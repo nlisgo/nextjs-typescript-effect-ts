@@ -34,6 +34,7 @@ const exampleTeaser = ({
 }) => (i: number) => ({
   title: title ?? `Complete Teaser ${i + 1}`,
   uri: '#',
+  published: Option.none(),
   description: description ?? 'This is the description',
   image: image(i + 1),
   categories,
