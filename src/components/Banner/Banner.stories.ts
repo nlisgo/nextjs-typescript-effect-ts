@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Option } from 'effect';
 import { Banner } from '@/components/Banner/Banner';
-import { dummyImage } from '@/tools/dummy-image';
+import { dummyImage } from '@/tools';
 
 const meta = {
   title: 'Example/Banner',

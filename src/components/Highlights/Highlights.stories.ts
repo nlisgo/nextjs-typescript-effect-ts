@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Option } from 'effect';
 import { Highlights } from '@/components/Highlights/Highlights';
-import { dummyImage } from '@/tools/dummy-image';
+import { dummyImage } from '@/tools';
 
 const meta = {
   title: 'Example/Highlights',

@@ -2,7 +2,7 @@ import { Array, Option, pipe } from 'effect';
 import Image from 'next/image';
 import type { JSX } from 'react';
 import './teasers.css';
-import { withBaseUrl } from '@/tools/base-url';
+import { withBaseUrl } from '@/tools';
 import { CategoryId } from '@/types/category';
 
 export type TeaserImageProps = Option.Option<{

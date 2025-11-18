@@ -1,6 +1,6 @@
 import { Option } from 'effect';
 import type { JSX } from 'react';
-import { withBaseUrl } from '@/tools/base-url';
+import { withBaseUrl } from '@/tools';
 import { Button } from '../Button/Button';
 import './header.css';
 

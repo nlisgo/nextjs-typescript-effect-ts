@@ -7,8 +7,7 @@ import { categoriesCodec, categoryCodec, categorySnippetCodec } from '@/codecs/c
 import { CategoryProps } from '@/components/Categories/Categories';
 import { categoriesPath, categoryPath } from '@/queries/api-paths';
 import { httpGetAndValidate } from '@/queries/http';
-import { withBaseUrl } from '@/tools/base-url';
-import { iiifUri } from '@/tools/iiif-uri';
+import { withBaseUrl, iiifUri } from '@/tools';
 import { CategorySnippet } from '@/types/category';
 import { Image } from '@/types/image';
 

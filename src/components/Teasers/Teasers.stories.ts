@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Option } from 'effect';
 import { TeaserImageProps, Teasers } from '@/components/Teasers/Teasers';
-import { dummyImage } from '@/tools/dummy-image';
+import { dummyImage } from '@/tools';
 import { CategoryId } from '@/types/category';
 
 const meta = {

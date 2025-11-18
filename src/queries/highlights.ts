@@ -7,7 +7,7 @@ import { highlightCodec, highlightsCodec } from '@/codecs/highlights';
 import { HighlightProps } from '@/components/Highlights/Highlights';
 import { highlightsPath } from '@/queries/api-paths';
 import { httpGetAndValidate } from '@/queries/http';
-import { iiifUri } from '@/tools/iiif-uri';
+import { iiifUri } from '@/tools';
 
 export const getHighlights = (
   { imageWidth, imageHeight, limit }: { imageWidth?: number, imageHeight?: number, limit?: number } = {},

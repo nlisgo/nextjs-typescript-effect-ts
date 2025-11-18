@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Option } from 'effect';
 import { Categories } from '@/components/Categories/Categories';
-import { dummyImage } from '@/tools/dummy-image';
+import { dummyImage } from '@/tools';
 
 const meta = {
   title: 'Example/Categories',
