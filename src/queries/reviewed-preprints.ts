@@ -43,7 +43,7 @@ HttpClient.HttpClient
   httpGetAndValidate(eppReviewedPreprintCodec),
   Effect.map((reviewedPreprint) => ({
     id: reviewedPreprint.article.msid,
-    title: typeof reviewedPreprint.article.article.title === 'string' ? reviewedPreprint.article.article.title : `Unsupported: ${JSON.stringify(reviewedPreprint.article.article.title)}`,
+    title: reviewedPreprint.article.article.title,
     uri: withBaseUrl(`/reviewed-preprints/${reviewedPreprint.article.msid}`),
     description: 'Authors et al.',
     published: new Date(reviewedPreprint.article.published),

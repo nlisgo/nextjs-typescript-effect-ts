@@ -1,5 +1,6 @@
 import { Schema } from 'effect';
 import { categoryIdCodec } from '@/codecs';
+import { titleCodec } from '@/codecs/title';
 
 const continuumReviewedPreprintsCodec = Schema.Struct({
   total: Schema.Int,
@@ -10,24 +11,6 @@ const continuumReviewedPreprintsCodec = Schema.Struct({
 
 export const reviewedPreprintsCodec = continuumReviewedPreprintsCodec;
 
-const eppReviewedPreprintTitleCodec = Schema.Union(
-  Schema.String,
-  Schema.Array(
-    Schema.Union(
-      Schema.String,
-      Schema.Struct({
-        type: Schema.Union(
-          Schema.Literal('Emphasis'),
-          Schema.Literal('Subscript'),
-        ),
-        content: Schema.Array(
-          Schema.String,
-        ),
-      }),
-    ),
-  ),
-);
-
 export const eppReviewedPreprintCodec = Schema.Struct({
   article: Schema.Struct({
     msid: Schema.String,
@@ -36,7 +19,7 @@ export const eppReviewedPreprintCodec = Schema.Struct({
     versionIdentifier: Schema.String,
     subjects: Schema.Array(Schema.String),
     article: Schema.Struct({
-      title: eppReviewedPreprintTitleCodec,
+      title: titleCodec,
     }),
   }),
 });

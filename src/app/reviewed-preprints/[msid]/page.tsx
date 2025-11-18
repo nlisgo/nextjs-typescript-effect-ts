@@ -3,9 +3,11 @@ import {
   Array, Effect, pipe,
 } from 'effect';
 import { Metadata } from 'next';
-import type { JSX } from 'react';
+import React, { type JSX } from 'react';
 import { Page } from '@/components/Page/Page';
+import { Title } from '@/components/Title/Title';
 import { getReviewedPreprint, getReviewedPreprints } from '@/queries';
+import { jsxToText } from '@/tools';
 
 type PageProps = {
   params: {
@@ -18,7 +20,7 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
     Effect.promise(async () => params),
     Effect.flatMap(({ msid: id }) => getReviewedPreprint({ id })),
     Effect.map((rp) => ({
-      title: rp.title,
+      title: jsxToText(React.createElement(Title, { content: rp.title })),
     })),
   ).pipe(
     Effect.provide(FetchHttpClient.layer),
@@ -44,9 +46,7 @@ const ReviewedPreprintPage = async ({ params }: PageProps): Promise<JSX.Element>
     Effect.map(
       (rp) => (
         <Page>
-          <h1 dangerouslySetInnerHTML={{
-            __html: rp.title,
-          }} />
+          <h1><Title content={rp.title} /></h1>
         </Page>
       ),
     ),

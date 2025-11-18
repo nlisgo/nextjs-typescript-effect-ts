@@ -3,7 +3,7 @@ import Image from 'next/image';
 import type { JSX } from 'react';
 import './teasers.css';
 import { withBaseUrl } from '@/tools';
-import { CategoryId } from '@/types';
+import { CategoryId, TitleContent } from '@/types';
 
 export type TeaserImageProps = {
   uri: string,
@@ -15,7 +15,7 @@ export type TeaserImageProps = {
 
 export type TeaserProps = {
   id: string,
-  title: string,
+  title: TitleContent,
   uri: string,
   published?: Date,
   description: string,
