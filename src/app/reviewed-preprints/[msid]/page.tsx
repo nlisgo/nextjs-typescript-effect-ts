@@ -3,13 +3,13 @@ import {
   Array, Effect, pipe,
 } from 'effect';
 import { Metadata } from 'next';
-import React, { type JSX } from 'react';
+import { type JSX } from 'react';
 import { Content } from '@/components/Content/Content';
 import { Page } from '@/components/Page/Page';
 import { Title } from '@/components/Title/Title';
 import { getReviewedPreprint, getReviewedPreprints } from '@/queries';
 import { getContinuumReviewedPreprint } from '@/queries/reviewed-preprints';
-import { jsxToText } from '@/tools';
+import { titleContentToText } from '@/tools';
 
 type PageProps = {
   params: {
@@ -22,7 +22,7 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
     Effect.promise(async () => params),
     Effect.flatMap(({ msid: id }) => getReviewedPreprint({ id })),
     Effect.map((rp) => ({
-      title: jsxToText(React.createElement(Title, { content: rp.title })),
+      title: titleContentToText(rp.title),
     })),
   ).pipe(
     Effect.provide(FetchHttpClient.layer),

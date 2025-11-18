@@ -9,9 +9,9 @@ import { Teasers } from '@/components/Teasers/Teasers';
 import { getCategories, getHighlights, getReviewedPreprints } from '@/queries';
 import { withBaseUrl } from '@/tools';
 
-export const generateMetadata = async (): Promise<Metadata> => ({
+export const metadata: Metadata = {
   title: 'Home | Acme',
-});
+};
 
 const Home = async (): Promise<JSX.Element> => Effect.runPromise(pipe(
   Effect.all([
