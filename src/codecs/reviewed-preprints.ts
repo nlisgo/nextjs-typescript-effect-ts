@@ -37,6 +37,14 @@ const continuumReviewedPreprintCodec = Schema.Struct({
   authorLine: Schema.String,
   subjects: Schema.Array(categoryIdCodec),
   version: Schema.Int,
+  elifeAssessment: Schema.Struct({
+    content: Schema.Array(Schema.Struct({
+      type: Schema.Literal('paragraph'),
+      text: Schema.String,
+    })),
+    significance: Schema.Array(Schema.String),
+    strength: Schema.Array(Schema.String),
+  }),
 });
 
 export const reviewedPreprintCodec = continuumReviewedPreprintCodec;
