@@ -7,6 +7,7 @@ import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs';
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { reviewedPreprintsPath, httpGetAndValidate } from '@/queries';
 import { reviewedPreprintPath } from '@/queries/api-paths';
+import { withBaseUrl } from '@/tools';
 
 export const getReviewedPreprint = (
   { id }: { id: string },
@@ -41,7 +42,7 @@ HttpClient.HttpClient
   Effect.map(Array.map((reviewedPreprint) => ({
     id: reviewedPreprint.id,
     title: reviewedPreprint.title,
-    uri: `https://elifesciences.org/reviewed-preprints/${reviewedPreprint.id}`,
+    uri: withBaseUrl(`/reviewed-preprints/${reviewedPreprint.id}`),
     description: reviewedPreprint.authorLine,
     published: reviewedPreprint.statusDate ? new Date(reviewedPreprint.statusDate) : undefined,
     categories: reviewedPreprint.subjects,
