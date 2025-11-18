@@ -6,7 +6,7 @@
 }
 
 .storybook-button--primary {
-  @apply bg-[#555ab9] text-white;
+  @apply bg-brand text-white;
 }
 
 .storybook-button--secondary {
