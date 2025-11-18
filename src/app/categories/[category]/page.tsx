@@ -15,19 +15,16 @@ type PageProps = {
   },
 };
 
-export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
-  const { category } = await params;
-  return Effect.runPromise(
-    pipe(
-      getCategory({ id: category }),
-      Effect.map((cat) => ({
-        title: cat.title,
-      })),
-    ).pipe(
-      Effect.provide(FetchHttpClient.layer),
-    ),
-  );
-};
+export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => Effect.runPromise(
+  pipe(
+    Effect.promise(async () => params),
+    Effect.flatMap(({ category: id }) => getCategory({ id })),
+    Effect.map((cat) => ({
+      title: cat.title,
+    })),
+    Effect.provide(FetchHttpClient.layer),
+  ),
+);
 
 // Static params required for `output: "export"`. Update this list with real category IDs.
 export const dynamicParams = false;
@@ -35,38 +32,30 @@ export const dynamicParams = false;
 export const generateStaticParams = async (): Promise<Array<{ category: string }>> => Effect.runPromise(
   pipe(
     getCategories(),
-    Effect.map(Array.map((category) => ({ category: category.id }))),
+    Effect.map(Array.map(({ id: category }) => ({ category }))),
   ).pipe(
     Effect.provide(FetchHttpClient.layer),
   ),
 );
 
-const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => {
-  const { category } = await params;
-  return (
-    <Page>
-      {
-        Effect.runPromise(
-          pipe(
-            getCategory({ id: category, imageWidth: 1483, imageHeight: 447 }),
-            Effect.map(
-              (cat) => (
-                <>
-                  <Banner
-                    image={cat.image}
-                    title={cat.title}
-                    description={cat.description} />
-                  {cat.aimsAndScope && <Content content={cat.aimsAndScope} />}
-                </>
-              ),
-            ),
-          ).pipe(
-            Effect.provide(FetchHttpClient.layer),
-          ),
-        )
-      }
-    </Page>
-  );
-};
+const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => Effect.runPromise(
+  pipe(
+    Effect.promise(async () => params),
+    Effect.flatMap(({ category: id }) => getCategory({ id, imageWidth: 1483, imageHeight: 447 })),
+    Effect.map(
+      (cat) => (
+        <Page>
+          <Banner
+            image={cat.image}
+            title={cat.title}
+            description={cat.description} />
+          {cat.aimsAndScope && <Content content={cat.aimsAndScope} />}
+        </Page>
+      ),
+    ),
+  ).pipe(
+    Effect.provide(FetchHttpClient.layer),
+  ),
+);
 
 export default CategoryPage;
