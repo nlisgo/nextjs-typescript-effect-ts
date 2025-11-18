@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Option } from 'effect';
 import { Highlights } from '@/components/Highlights/Highlights';
 import { dummyImage } from '@/tools';
 
@@ -24,7 +23,7 @@ export const Default: Story = {
         width: 463,
         height: 260,
       },
-      description: Option.some('This is the description'),
+      description: 'This is the description',
     })),
   },
 };
