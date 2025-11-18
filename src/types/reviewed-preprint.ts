@@ -7,4 +7,5 @@ export type ReviewedPreprint = {
   published?: Date,
   description: string,
   categories?: ReadonlyArray<CategoryId>,
+  evaluationSummary: ReadonlyArray<{ type: 'paragraph', text: string }>,
 };

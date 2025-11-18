@@ -38,7 +38,7 @@ const continuumReviewedPreprintCodec = Schema.Struct({
   subjects: Schema.Array(categoryIdCodec),
   version: Schema.Int,
   elifeAssessment: Schema.Struct({
-    content: Schema.Array(Schema.Struct({
+    content: Schema.NonEmptyArray(Schema.Struct({
       type: Schema.Literal('paragraph'),
       text: Schema.String,
     })),

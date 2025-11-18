@@ -10,8 +10,7 @@ import { httpGetAndValidate } from '@/queries';
 import { withBaseUrl } from '@/tools';
 import { ReviewedPreprint } from '@/types';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getContinuumReviewedPreprint = (
+export const getContinuumReviewedPreprint = (
   { id }: { id: string },
 ): Effect.Effect<
 ReviewedPreprint,
@@ -28,13 +27,14 @@ HttpClient.HttpClient
     description: reviewedPreprint.authorLine,
     published: reviewedPreprint.statusDate ? new Date(reviewedPreprint.statusDate) : undefined,
     categories: reviewedPreprint.subjects,
+    evaluationSummary: reviewedPreprint.elifeAssessment.content,
   })),
 );
 
 const getEppReviewedPreprint = (
   { id }: { id: string },
 ): Effect.Effect<
-ReviewedPreprint,
+TeaserProps,
 HttpClientError.HttpClientError | ParseResult.ParseError,
 HttpClient.HttpClient
 > => pipe(
