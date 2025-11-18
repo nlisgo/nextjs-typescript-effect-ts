@@ -9,7 +9,7 @@ import { TeaserProps } from '@/components/Teasers/Teasers';
 import { httpGetAndValidate } from '@/queries';
 import { withBaseUrl } from '@/tools';
 
-export const getReviewedPreprint = (
+const getContinuumReviewedPreprint = (
   { id }: { id: string },
 ): Effect.Effect<
 TeaserProps,
@@ -48,5 +48,7 @@ HttpClient.HttpClient
     categories: reviewedPreprint.subjects,
   }))),
 );
+
+export const getReviewedPreprint = getContinuumReviewedPreprint;
 
 export const getReviewedPreprints = getContinuumReviewedPreprints;
