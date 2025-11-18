@@ -1,5 +1,5 @@
 import { FetchHttpClient } from '@effect/platform';
-import { Effect, Either, Option } from 'effect';
+import { Effect, Either } from 'effect';
 import { Metadata } from 'next';
 import { JSX } from 'react';
 import { Categories } from '@/components/Categories/Categories';
@@ -26,7 +26,7 @@ const Home = (): JSX.Element => <Page>
       ),
       getReviewedPreprints().pipe(
         Effect.map(Either.fromNullable(() => new Error('no categories found'))),
-        Effect.flatMap(Either.map((rps) => <section key="reviewed-preprints"><Teasers uri={Option.some(withBaseUrl('/reviewed-preprints'))} title="Recent Reviewed Preprints" teasers={[...rps]} /></section>)),
+        Effect.flatMap(Either.map((rps) => <section key="reviewed-preprints"><Teasers uri={withBaseUrl('/reviewed-preprints')} title="Recent Reviewed Preprints" teasers={[...rps]} /></section>)),
       ),
     ]).pipe(
       Effect.provide(FetchHttpClient.layer),
