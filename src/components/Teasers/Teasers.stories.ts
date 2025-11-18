@@ -24,17 +24,19 @@ const exampleTeaserImage = (credit: boolean = true) => (i: number): TeaserImageP
 const exampleTeaser = ({
   title,
   description,
+  published = Option.none(),
   image = () => Option.none(),
   categories = Option.none(),
 }: {
   title?: string,
+  published?: Option.Option<Date>,
   description?: string,
   image?: (i: number) => TeaserImageProps,
   categories?: Option.Option<ReadonlyArray<CategoryId>>,
 }) => (i: number) => ({
   title: title ?? `Complete Teaser ${i + 1}`,
   uri: '#',
-  published: Option.none(),
+  published,
   description: description ?? 'This is the description',
   image: image(i + 1),
   categories,
@@ -49,6 +51,7 @@ export const Default: Story = {
       exampleTeaser({
         title: 'Complete',
         image: exampleTeaserImage(),
+        published: Option.some(new Date()),
         categories: Option.some([
           { id: 'category-one', name: 'Category One' },
           { id: 'category-two', name: 'Category Two' },

@@ -60,3 +60,7 @@
 .teaser__description {
   @apply text-sm text-gray-700 leading-relaxed;
 }
+
+.teaser__published {
+  @apply block text-xs text-gray-500 mt-2;
+}

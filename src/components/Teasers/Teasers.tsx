@@ -66,6 +66,8 @@ export const Teasers = ({
                   __html: teaser.description,
                 }}
               />
+              {Option.isSome(teaser.published)
+                && <time className="teaser__published" dateTime={teaser.published.value.toISOString()}>{teaser.published.value.toDateString()}</time>}
             </div>
           </div>
         </li>)}
