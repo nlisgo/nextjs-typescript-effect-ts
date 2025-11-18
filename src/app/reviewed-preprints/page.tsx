@@ -10,15 +10,13 @@ export const metadata: Metadata = {
   title: 'Reviewed Preprints',
 };
 
-const ReviewedPreprintsPage = async (): Promise<JSX.Element> => <Page>
-  {
-    Effect.runPromise(getReviewedPreprints({ limit: 20 }).pipe(
-      Effect.map(Either.fromNullable(() => new Error('no reviewed preprints found'))),
-      Effect.flatMap(Either.map((rps) => <section key="reviewed-preprints"><Teasers title="Reviewed Preprints" teasers={[...rps]} /></section>)),
-    ).pipe(
-      Effect.provide(FetchHttpClient.layer),
-    ))
-  }
-</Page>;
+const ReviewedPreprintsPage = async (): Promise<JSX.Element> => Effect.runPromise(
+  getReviewedPreprints({ limit: 20 }).pipe(
+    Effect.map(Either.fromNullable(() => new Error('no reviewed preprints found'))),
+    Effect.flatMap(Either.map((rps) => <Page><section key="reviewed-preprints"><Teasers title="Reviewed Preprints" teasers={[...rps]} /></section></Page>)),
+  ).pipe(
+    Effect.provide(FetchHttpClient.layer),
+  ),
+);
 
 export default ReviewedPreprintsPage;

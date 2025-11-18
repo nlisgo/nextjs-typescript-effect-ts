@@ -13,19 +13,17 @@ type PageProps = {
   },
 };
 
-export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
-  const { msid } = await params;
-  return Effect.runPromise(
-    pipe(
-      getReviewedPreprint({ id: msid }),
-      Effect.map((rp) => ({
-        title: rp.title,
-      })),
-    ).pipe(
-      Effect.provide(FetchHttpClient.layer),
-    ),
-  );
-};
+export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => Effect.runPromise(
+  pipe(
+    Effect.promise(async () => params),
+    Effect.flatMap(({ msid: id }) => getReviewedPreprint({ id })),
+    Effect.map((rp) => ({
+      title: rp.title,
+    })),
+  ).pipe(
+    Effect.provide(FetchHttpClient.layer),
+  ),
+);
 
 // Static params required for `output: "export"`. Update this list with real reviewedPreprint IDs.
 export const dynamicParams = false;
@@ -33,36 +31,28 @@ export const dynamicParams = false;
 export const generateStaticParams = async (): Promise<Array<{ msid: string }>> => Effect.runPromise(
   pipe(
     getReviewedPreprints(),
-    Effect.map(Array.map((reviewedPreprint) => ({ msid: reviewedPreprint.id }))),
+    Effect.map(Array.map(({ id: msid }) => ({ msid }))),
   ).pipe(
     Effect.provide(FetchHttpClient.layer),
   ),
 );
 
-const ReviewedPreprintPage = async ({ params }: PageProps): Promise<JSX.Element> => {
-  const { msid } = await params;
-  return (
-    <Page>
-      {
-        Effect.runPromise(
-          pipe(
-            getReviewedPreprint({ id: msid }),
-            Effect.map(
-              (rp) => (
-                <>
-                  <h1 dangerouslySetInnerHTML={{
-                    __html: rp.title,
-                  }} />
-                </>
-              ),
-            ),
-          ).pipe(
-            Effect.provide(FetchHttpClient.layer),
-          ),
-        )
-      }
-    </Page>
-  );
-};
+const ReviewedPreprintPage = async ({ params }: PageProps): Promise<JSX.Element> => Effect.runPromise(
+  pipe(
+    Effect.promise(async () => params),
+    Effect.flatMap(({ msid: id }) => getReviewedPreprint({ id })),
+    Effect.map(
+      (rp) => (
+        <Page>
+          <h1 dangerouslySetInnerHTML={{
+            __html: rp.title,
+          }} />
+        </Page>
+      ),
+    ),
+  ).pipe(
+    Effect.provide(FetchHttpClient.layer),
+  ),
+);
 
 export default ReviewedPreprintPage;
