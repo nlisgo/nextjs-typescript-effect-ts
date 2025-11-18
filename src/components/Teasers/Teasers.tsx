@@ -16,7 +16,7 @@ export type TeaserImageProps = Option.Option<{
 export type TeaserProps = {
   title: string,
   uri: string,
-  statusDate: Option.Option<Date>,
+  published: Option.Option<Date>,
   description: string,
   image: TeaserImageProps,
   categories: Option.Option<ReadonlyArray<CategoryId>>,
@@ -66,8 +66,8 @@ export const Teasers = ({
                   __html: teaser.description,
                 }}
               />
-              {Option.isSome(teaser.statusDate)
-                && <time className="teaser__status_date" dateTime={teaser.statusDate.value.toISOString()}>{teaser.statusDate.value.toDateString()}</time>}
+              {Option.isSome(teaser.published)
+                && <time className="teaser__published" dateTime={teaser.published.value.toISOString()}>{teaser.published.value.toDateString()}</time>}
             </div>
           </div>
         </li>)}

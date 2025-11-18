@@ -23,7 +23,7 @@ HttpClient.HttpClient
     uri: `https://elifesciences.org/reviewed-preprints/${reviewedPreprint.id}`,
     description: reviewedPreprint.authorLine,
     image: Option.none(),
-    statusDate: reviewedPreprint.statusDate ? Option.some(new Date(reviewedPreprint.statusDate)) : Option.none(),
+    published: reviewedPreprint.statusDate ? Option.some(new Date(reviewedPreprint.statusDate)) : Option.none(),
     categories: Option.some(reviewedPreprint.subjects),
   }))),
 );
