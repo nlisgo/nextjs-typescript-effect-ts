@@ -3,7 +3,7 @@ import Image from 'next/image';
 import type { JSX } from 'react';
 import './teasers.css';
 import { withBaseUrl } from '@/tools';
-import { CategoryId } from '@/types/category';
+import { CategoryId } from '@/types';
 
 export type TeaserImageProps = Option.Option<{
   uri: string,

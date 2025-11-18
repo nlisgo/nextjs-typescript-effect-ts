@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Option } from 'effect';
 import { TeaserImageProps, Teasers } from '@/components/Teasers/Teasers';
 import { dummyImage } from '@/tools';
-import { CategoryId } from '@/types/category';
+import { CategoryId } from '@/types';
 
 const meta = {
   title: 'Example/Teasers',

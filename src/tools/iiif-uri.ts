@@ -1,4 +1,4 @@
-import { Image } from '@/types/image';
+import { Image } from '@/types';
 
 const calculateCrop = (sourceSize: number, requestedSize: number, ratio: number) => {
   const cropSize = Math.ceil(ratio * requestedSize);

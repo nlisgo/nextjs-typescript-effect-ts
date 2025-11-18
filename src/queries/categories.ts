@@ -7,8 +7,7 @@ import { categoriesCodec, categoryCodec, categorySnippetCodec } from '@/codecs';
 import { CategoryProps } from '@/components/Categories/Categories';
 import { categoriesPath, categoryPath, httpGetAndValidate } from '@/queries';
 import { withBaseUrl, iiifUri } from '@/tools';
-import { CategorySnippet } from '@/types/category';
-import { Image } from '@/types/image';
+import { CategorySnippet, Image } from '@/types';
 
 const prepareCategorySnippet = (
   image: Image,
