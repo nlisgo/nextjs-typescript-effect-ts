@@ -56,7 +56,7 @@ const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => {
                     image={cat.image}
                     title={cat.title}
                     description={Option.some(cat.description)} />
-                  {cat.aimsAndScope && <Content content={cat.aimsAndScope} />}
+                  {Option.isSome(cat.aimsAndScope) && <Content content={cat.aimsAndScope.value} />}
                 </>
               ),
             ),

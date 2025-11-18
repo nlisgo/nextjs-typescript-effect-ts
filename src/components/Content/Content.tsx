@@ -7,7 +7,7 @@ type Paragraph = {
 };
 
 type ContentProps = {
-  content: Array<Paragraph>,
+  content: ReadonlyArray<Paragraph>,
 };
 
 export const Content = ({

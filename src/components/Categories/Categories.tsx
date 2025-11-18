@@ -8,10 +8,10 @@ export type CategorySnippetProps = {
   title: string,
   uri: string,
   description: string,
-  aimsAndScope?: Array<{
+  aimsAndScope: Option.Option<ReadonlyArray<{
     type: 'paragraph',
     text: string,
-  }>,
+  }>>,
   image: {
     uri: string,
     alt: string,

@@ -27,6 +27,7 @@ export const Default: Story = {
         credit: Option.none(),
       },
       description: 'This is the description',
+      aimsAndScope: Option.none(),
     })),
   },
 };

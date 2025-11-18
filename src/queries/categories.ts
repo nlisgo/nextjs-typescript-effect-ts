@@ -34,7 +34,7 @@ const prepareCategorySnippet = (
     credit: (image.attribution !== undefined ? Option.some(image.attribution.join(', ')) : Option.none()),
   },
   description: category.impactStatement,
-  ...(category.aimsAndScope ? { aimsAndScope: [...category.aimsAndScope] } : {}),
+  aimsAndScope: (category.aimsAndScope ? Option.some(category.aimsAndScope) : Option.none()),
 });
 
 export const getCategory = (
