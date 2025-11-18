@@ -3,10 +3,9 @@ import {
   Array, Effect, Option, pipe, Schema,
 } from 'effect';
 import { ParseError } from 'effect/ParseResult';
-import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs/reviewed-preprints';
+import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs';
 import { TeaserProps } from '@/components/Teasers/Teasers';
-import { reviewedPreprintsPath } from '@/queries/api-paths';
-import { httpGetAndValidate } from '@/queries/http';
+import { reviewedPreprintsPath, httpGetAndValidate } from '@/queries';
 
 export const getReviewedPreprints = (
   { limit = 10 }: { limit?: number } = {},

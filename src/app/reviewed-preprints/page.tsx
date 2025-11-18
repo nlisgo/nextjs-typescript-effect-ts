@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import type { JSX } from 'react';
 import { Page } from '@/components/Page/Page';
 import { Teasers } from '@/components/Teasers/Teasers';
-import { getReviewedPreprints } from '@/queries/reviewed-preprints';
+import { getReviewedPreprints } from '@/queries';
 
 export const metadata: Metadata = {
   title: 'Reviewed Preprints',

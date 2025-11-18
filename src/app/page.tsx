@@ -6,9 +6,7 @@ import { Categories } from '@/components/Categories/Categories';
 import { Highlights } from '@/components/Highlights/Highlights';
 import { Page } from '@/components/Page/Page';
 import { Teasers } from '@/components/Teasers/Teasers';
-import { getCategories } from '@/queries/categories';
-import { getHighlights } from '@/queries/highlights';
-import { getReviewedPreprints } from '@/queries/reviewed-preprints';
+import { getCategories, getHighlights, getReviewedPreprints } from '@/queries';
 import { withBaseUrl } from '@/tools';
 
 export const generateMetadata = async (): Promise<Metadata> => ({

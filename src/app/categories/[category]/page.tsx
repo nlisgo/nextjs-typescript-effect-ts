@@ -7,7 +7,7 @@ import type { JSX } from 'react';
 import { Banner } from '@/components/Banner/Banner';
 import { Content } from '@/components/Content/Content';
 import { Page } from '@/components/Page/Page';
-import { getCategories, getCategory } from '@/queries/categories';
+import { getCategories, getCategory } from '@/queries';
 
 type PageProps = {
   params: {

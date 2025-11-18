@@ -1,5 +1,5 @@
 import { Schema } from 'effect';
-import { imageCodec } from '@/codecs/image';
+import { imageCodec } from '@/codecs';
 
 export const highlightCodec = Schema.Struct({
   title: Schema.String,

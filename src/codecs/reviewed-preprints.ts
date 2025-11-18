@@ -1,5 +1,5 @@
 import { Schema } from 'effect';
-import { categoryIdCodec } from '@/codecs/categories';
+import { categoryIdCodec } from '@/codecs';
 
 export const reviewedPreprintsCodec = Schema.Struct({
   total: Schema.Int,

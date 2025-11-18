@@ -3,10 +3,9 @@ import {
   Array, Effect, Option, pipe, Schema,
 } from 'effect';
 import { ParseError } from 'effect/ParseResult';
-import { categoriesCodec, categoryCodec, categorySnippetCodec } from '@/codecs/categories';
+import { categoriesCodec, categoryCodec, categorySnippetCodec } from '@/codecs';
 import { CategoryProps } from '@/components/Categories/Categories';
-import { categoriesPath, categoryPath } from '@/queries/api-paths';
-import { httpGetAndValidate } from '@/queries/http';
+import { categoriesPath, categoryPath, httpGetAndValidate } from '@/queries';
 import { withBaseUrl, iiifUri } from '@/tools';
 import { CategorySnippet } from '@/types/category';
 import { Image } from '@/types/image';

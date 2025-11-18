@@ -3,10 +3,9 @@ import {
   Array, Effect, Option, pipe, Schema,
 } from 'effect';
 import { ParseError } from 'effect/ParseResult';
-import { highlightCodec, highlightsCodec } from '@/codecs/highlights';
+import { highlightCodec, highlightsCodec } from '@/codecs';
 import { HighlightProps } from '@/components/Highlights/Highlights';
-import { highlightsPath } from '@/queries/api-paths';
-import { httpGetAndValidate } from '@/queries/http';
+import { highlightsPath, httpGetAndValidate } from '@/queries';
 import { iiifUri } from '@/tools';
 
 export const getHighlights = (

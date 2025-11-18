@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import type { JSX } from 'react';
 import { Categories } from '@/components/Categories/Categories';
 import { Page } from '@/components/Page/Page';
-import { getCategories } from '@/queries/categories';
+import { getCategories } from '@/queries';
 
 export const metadata: Metadata = {
   title: 'Categories',

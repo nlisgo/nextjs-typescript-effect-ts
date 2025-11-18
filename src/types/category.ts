@@ -1,5 +1,5 @@
 import { Schema } from 'effect';
-import { categoryCodec, categoryIdCodec, categorySnippetCodec } from '@/codecs/categories';
+import { categoryCodec, categoryIdCodec, categorySnippetCodec } from '@/codecs';
 
 export type CategoryId = Schema.Schema.Type<typeof categoryIdCodec>;
 export type Category = Schema.Schema.Type<typeof categoryCodec>;
