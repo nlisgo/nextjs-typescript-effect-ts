@@ -1,8 +1,7 @@
 import { HttpClient, HttpClientError } from '@effect/platform';
 import {
-  Array, Effect, pipe, Schema,
+  Array, Effect, ParseResult, pipe, Schema,
 } from 'effect';
-import { ParseError } from 'effect/ParseResult';
 import { continuumHighlightsPath } from '@/api-paths';
 import { highlightCodec, highlightsCodec } from '@/codecs';
 import { HighlightProps } from '@/components/Highlights/Highlights';
@@ -13,7 +12,7 @@ export const getHighlights = (
   { imageWidth, imageHeight, limit }: { imageWidth?: number, imageHeight?: number, limit?: number } = {},
 ): Effect.Effect<
 ReadonlyArray<HighlightProps>,
-HttpClientError.HttpClientError | ParseError,
+HttpClientError.HttpClientError | ParseResult.ParseError,
 HttpClient.HttpClient
 > => pipe(
   continuumHighlightsPath({ limit }),

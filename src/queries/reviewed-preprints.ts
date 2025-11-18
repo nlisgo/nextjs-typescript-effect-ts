@@ -1,21 +1,21 @@
 import { HttpClient, HttpClientError } from '@effect/platform';
 import {
-  Array, Effect, pipe, Schema,
+  Array, Effect, ParseResult, pipe, Schema,
 } from 'effect';
-import { ParseError } from 'effect/ParseResult';
 import { continuumReviewedPreprintPath, continuumReviewedPreprintsPath, eppReviewedPreprintPath } from '@/api-paths';
 import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs';
 import { eppReviewedPreprintCodec } from '@/codecs/reviewed-preprints';
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { httpGetAndValidate } from '@/queries';
 import { withBaseUrl } from '@/tools';
+import { ReviewedPreprint } from '@/types';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getContinuumReviewedPreprint = (
   { id }: { id: string },
 ): Effect.Effect<
-TeaserProps,
-HttpClientError.HttpClientError | ParseError,
+ReviewedPreprint,
+HttpClientError.HttpClientError | ParseResult.ParseError,
 HttpClient.HttpClient
 > => pipe(
   id,
@@ -34,8 +34,8 @@ HttpClient.HttpClient
 const getEppReviewedPreprint = (
   { id }: { id: string },
 ): Effect.Effect<
-TeaserProps,
-HttpClientError.HttpClientError | ParseError,
+ReviewedPreprint,
+HttpClientError.HttpClientError | ParseResult.ParseError,
 HttpClient.HttpClient
 > => pipe(
   id,
@@ -54,7 +54,7 @@ const getContinuumReviewedPreprints = (
   { limit = 20 }: { limit?: number } = {},
 ): Effect.Effect<
 ReadonlyArray<TeaserProps>,
-HttpClientError.HttpClientError | ParseError,
+HttpClientError.HttpClientError | ParseResult.ParseError,
 HttpClient.HttpClient
 > => pipe(
   { limit },

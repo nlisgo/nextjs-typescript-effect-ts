@@ -1,8 +1,7 @@
 import { HttpClient, HttpClientError } from '@effect/platform';
 import {
-  Array, Effect, pipe, Schema,
+  Array, Effect, ParseResult, pipe, Schema,
 } from 'effect';
-import { ParseError } from 'effect/ParseResult';
 import { continuumCategoriesPath, continuumCategoryPath } from '@/api-paths';
 import { categoriesCodec, categoryCodec, categorySnippetCodec } from '@/codecs';
 import { CategoryProps } from '@/components/Categories/Categories';
@@ -43,7 +42,7 @@ export const getCategory = (
   { id, imageWidth, imageHeight }: { id: string, imageWidth?: number, imageHeight?: number },
 ): Effect.Effect<
 CategoryProps,
-HttpClientError.HttpClientError | ParseError,
+HttpClientError.HttpClientError | ParseResult.ParseError,
 HttpClient.HttpClient
 > => pipe(
   continuumCategoryPath(id),
@@ -63,7 +62,7 @@ export const getCategories = (
   { imageWidth, imageHeight }: { imageWidth?: number, imageHeight?: number } = {},
 ): Effect.Effect<
 ReadonlyArray<CategoryProps>,
-HttpClientError.HttpClientError | ParseError,
+HttpClientError.HttpClientError | ParseResult.ParseError,
 HttpClient.HttpClient
 > => pipe(
   continuumCategoriesPath(),
