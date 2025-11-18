@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Option } from 'effect';
 import { fn } from 'storybook/test';
 import { Button } from './Button';
 
@@ -27,36 +26,27 @@ type Story = StoryObj<typeof meta>;
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Primary: Story = {
   args: {
-    primary: Option.some(true),
+    primary: true,
     label: 'Button',
-    backgroundColor: Option.none(),
-    size: Option.none(),
   },
 };
 
 export const Secondary: Story = {
   args: {
-    primary: Option.none(),
     label: 'Button',
-    backgroundColor: Option.none(),
-    size: Option.none(),
   },
 };
 
 export const Large: Story = {
   args: {
-    size: Option.some('large'),
+    size: 'large',
     label: 'Button',
-    primary: Option.none(),
-    backgroundColor: Option.none(),
   },
 };
 
 export const Small: Story = {
   args: {
-    size: Option.some('small'),
+    size: 'small',
     label: 'Button',
-    primary: Option.none(),
-    backgroundColor: Option.none(),
   },
 };
