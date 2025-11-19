@@ -1,4 +1,3 @@
-import { FetchHttpClient } from '@effect/platform';
 import {
   Array, Effect, pipe,
 } from 'effect';
@@ -10,6 +9,7 @@ import { Page } from '@/components/Page/Page';
 import { Title } from '@/components/Title/Title';
 import { getReviewedPreprint, getReviewedPreprints } from '@/queries';
 import { getContinuumReviewedPreprint } from '@/queries/reviewed-preprints';
+import { MainLayer } from '@/services/AppRuntime';
 import { titleContentToText } from '@/tools';
 
 type PageProps = {
@@ -26,7 +26,7 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
       title: titleContentToText(rp.title),
     })),
   ).pipe(
-    Effect.provide(FetchHttpClient.layer),
+    Effect.provide(MainLayer),
   ),
 );
 
@@ -38,7 +38,7 @@ export const generateStaticParams = async (): Promise<Array<{ msid: string }>> =
     getReviewedPreprints(),
     Effect.map(Array.map(({ id: msid }) => ({ msid }))),
   ).pipe(
-    Effect.provide(FetchHttpClient.layer),
+    Effect.provide(MainLayer),
   ),
 );
 
@@ -64,7 +64,7 @@ const ReviewedPreprintPage = async ({ params }: PageProps): Promise<JSX.Element>
       ),
     ),
   ).pipe(
-    Effect.provide(FetchHttpClient.layer),
+    Effect.provide(MainLayer),
   ),
 );
 

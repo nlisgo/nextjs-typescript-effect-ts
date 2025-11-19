@@ -1,4 +1,3 @@
-import { FetchHttpClient } from '@effect/platform';
 import {
   Array, Effect, pipe,
 } from 'effect';
@@ -8,6 +7,7 @@ import { Banner } from '@/components/Banner/Banner';
 import { Content } from '@/components/Content/Content';
 import { Page } from '@/components/Page/Page';
 import { getCategories, getCategory } from '@/queries';
+import { MainLayer } from '@/services/AppRuntime';
 
 type PageProps = {
   params: {
@@ -22,7 +22,7 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
     Effect.map((cat) => ({
       title: cat.name,
     })),
-    Effect.provide(FetchHttpClient.layer),
+    Effect.provide(MainLayer),
   ),
 );
 
@@ -34,7 +34,7 @@ export const generateStaticParams = async (): Promise<Array<{ category: string }
     getCategories(),
     Effect.map(Array.map(({ id: category }) => ({ category }))),
   ).pipe(
-    Effect.provide(FetchHttpClient.layer),
+    Effect.provide(MainLayer),
   ),
 );
 
@@ -54,7 +54,7 @@ const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => Effe
       ),
     ),
   ).pipe(
-    Effect.provide(FetchHttpClient.layer),
+    Effect.provide(MainLayer),
   ),
 );
 

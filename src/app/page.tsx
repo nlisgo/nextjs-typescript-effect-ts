@@ -1,4 +1,3 @@
-import { FetchHttpClient } from '@effect/platform';
 import { Effect, Either, pipe } from 'effect';
 import { Metadata } from 'next';
 import { JSX } from 'react';
@@ -7,6 +6,7 @@ import { Highlights } from '@/components/Highlights/Highlights';
 import { Page } from '@/components/Page/Page';
 import { Teasers } from '@/components/Teasers/Teasers';
 import { getCategories, getHighlights, getReviewedPreprints } from '@/queries';
+import { MainLayer } from '@/services/AppRuntime';
 import { withBaseUrl } from '@/tools';
 
 export const metadata: Metadata = {
@@ -30,7 +30,7 @@ const Home = async (): Promise<JSX.Element> => Effect.runPromise(pipe(
   ]),
   Effect.map((sections) => <Page>{sections}</Page>),
 ).pipe(
-  Effect.provide(FetchHttpClient.layer),
+  Effect.provide(MainLayer),
 ));
 
 export default Home;
