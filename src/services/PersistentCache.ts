@@ -23,6 +23,7 @@ const getCacheFilePath = (url: string): string => path.join(CACHE_DIR, `${hashUr
 
 // Persistent cache implementation
 const makePersistentCache = (): CacheService => ({
+  // eslint-disable-next-line func-names
   get: <A, E, R>(uri: string, fetchFn: () => Effect.Effect<A, E, R>) => Effect.gen(function* () {
     const cacheFilePath = getCacheFilePath(uri);
 
@@ -30,15 +31,18 @@ const makePersistentCache = (): CacheService => ({
     try {
       if (fs.existsSync(cacheFilePath)) {
         const cached = JSON.parse(fs.readFileSync(cacheFilePath, 'utf-8'));
+        // eslint-disable-next-line no-console
         console.log(`[Cache HIT] ${uri}`);
         return cached.data as A;
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn(`[Cache READ ERROR] ${uri}:`, error);
       // Fall through to fetch
     }
 
     // Cache miss - fetch from API
+    // eslint-disable-next-line no-console
     console.log(`[Cache MISS] ${uri}`);
     const data = yield* fetchFn();
 
@@ -53,8 +57,10 @@ const makePersistentCache = (): CacheService => ({
           data,
         }, null, 2),
       );
+      // eslint-disable-next-line no-console
       console.log(`[Cache WRITE] ${uri}`);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn(`[Cache WRITE ERROR] ${uri}:`, error);
       // Continue even if write fails
     }
@@ -68,6 +74,7 @@ const makeInMemoryCache = (): CacheService => {
   const cache = new Map<string, unknown>();
 
   return {
+    // eslint-disable-next-line func-names
     get: <A, E, R>(uri: string, fetchFn: () => Effect.Effect<A, E, R>) => Effect.gen(function* () {
       if (cache.has(uri)) {
         return cache.get(uri) as A;
