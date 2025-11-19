@@ -51,13 +51,13 @@ HttpClient.HttpClient
 );
 
 const getContinuumReviewedPreprints = (
-  { limit = 20 }: { limit?: number } = {},
+  { limit = 20, page = 1 }: { limit?: number, page?: number } = {},
 ): Effect.Effect<
 ReadonlyArray<TeaserProps>,
 HttpClientError.HttpClientError | ParseResult.ParseError,
 HttpClient.HttpClient
 > => pipe(
-  { limit },
+  { limit, page },
   continuumReviewedPreprintsPath,
   httpGetAndValidate(reviewedPreprintsCodec),
   Effect.map(({ items }) => items),

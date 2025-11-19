@@ -59,13 +59,17 @@ HttpClient.HttpClient
 );
 
 export const getCategories = (
-  { imageWidth, imageHeight }: { imageWidth?: number, imageHeight?: number } = {},
+  {
+    imageWidth,
+    imageHeight,
+    queryOptions,
+  }: { imageWidth?: number, imageHeight?: number, queryOptions?: { limit?: number, page?: number } } = {},
 ): Effect.Effect<
 ReadonlyArray<CategoryProps>,
 HttpClientError.HttpClientError | ParseResult.ParseError,
 HttpClient.HttpClient
 > => pipe(
-  continuumCategoriesPath(),
+  continuumCategoriesPath(queryOptions),
   httpGetAndValidate(categoriesCodec),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(categorySnippetCodec))),
