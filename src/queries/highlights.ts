@@ -6,24 +6,24 @@ import { continuumHighlightsPath } from '@/api-paths';
 import { highlightCodec, highlightsCodec } from '@/codecs';
 import { HighlightProps } from '@/components/Highlights/Highlights';
 import { httpGetAndValidate } from '@/queries';
+import { CacheServiceTag } from '@/services/PersistentCache';
 import { iiifUri } from '@/tools';
 
 export const getHighlights = (
   {
     imageWidth,
     imageHeight,
-    queryOptions = {},
-  }: { imageWidth?: number, imageHeight?: number, queryOptions?: { limit?: number, page?: number } } = {},
+  }: { imageWidth?: number, imageHeight?: number } = {},
 ): Effect.Effect<
 ReadonlyArray<HighlightProps>,
 HttpClientError.HttpClientError | ParseResult.ParseError,
-HttpClient.HttpClient
+HttpClient.HttpClient | CacheServiceTag
 > => pipe(
-  continuumHighlightsPath(queryOptions),
+  continuumHighlightsPath(),
   httpGetAndValidate(highlightsCodec),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(highlightCodec))),
-  Effect.map((highlights) => (queryOptions.limit !== undefined ? highlights.slice(0, queryOptions.limit) : highlights)),
+  Effect.map((highlights) => highlights.slice(0, 3)),
   Effect.map(Array.map((highlight) => ({
     title: highlight.title,
     uri: `https://dx.doi.org/${highlight.item.doi}`,

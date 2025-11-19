@@ -6,6 +6,7 @@ import { continuumCategoriesPath, continuumCategoryPath } from '@/api-paths';
 import { categoriesCodec, categoryCodec, categorySnippetCodec } from '@/codecs';
 import { CategoryProps } from '@/components/Categories/Categories';
 import { httpGetAndValidate } from '@/queries';
+import { CacheServiceTag } from '@/services/PersistentCache';
 import { withBaseUrl, iiifUri } from '@/tools';
 import { CategorySnippet, Image } from '@/types';
 
@@ -43,7 +44,7 @@ export const getCategory = (
 ): Effect.Effect<
 CategoryProps,
 HttpClientError.HttpClientError | ParseResult.ParseError,
-HttpClient.HttpClient
+HttpClient.HttpClient | CacheServiceTag
 > => pipe(
   continuumCategoryPath(id),
   httpGetAndValidate(categoryCodec),
@@ -67,7 +68,7 @@ export const getCategories = (
 ): Effect.Effect<
 ReadonlyArray<CategoryProps>,
 HttpClientError.HttpClientError | ParseResult.ParseError,
-HttpClient.HttpClient
+HttpClient.HttpClient | CacheServiceTag
 > => pipe(
   continuumCategoriesPath(queryOptions),
   httpGetAndValidate(categoriesCodec),

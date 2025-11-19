@@ -7,6 +7,7 @@ import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs';
 import { eppReviewedPreprintCodec } from '@/codecs/reviewed-preprints';
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { httpGetAndValidate } from '@/queries';
+import { CacheServiceTag } from '@/services/PersistentCache';
 import { withBaseUrl } from '@/tools';
 import { ReviewedPreprint } from '@/types';
 
@@ -15,7 +16,7 @@ export const getContinuumReviewedPreprint = (
 ): Effect.Effect<
 ReviewedPreprint,
 HttpClientError.HttpClientError | ParseResult.ParseError,
-HttpClient.HttpClient
+HttpClient.HttpClient | CacheServiceTag
 > => pipe(
   id,
   continuumReviewedPreprintPath,
@@ -36,7 +37,7 @@ const getEppReviewedPreprint = (
 ): Effect.Effect<
 TeaserProps,
 HttpClientError.HttpClientError | ParseResult.ParseError,
-HttpClient.HttpClient
+HttpClient.HttpClient | CacheServiceTag
 > => pipe(
   id,
   eppReviewedPreprintPath,
@@ -55,7 +56,7 @@ const getContinuumReviewedPreprints = (
 ): Effect.Effect<
 ReadonlyArray<TeaserProps>,
 HttpClientError.HttpClientError | ParseResult.ParseError,
-HttpClient.HttpClient
+HttpClient.HttpClient | CacheServiceTag
 > => pipe(
   { limit, page },
   continuumReviewedPreprintsPath,
