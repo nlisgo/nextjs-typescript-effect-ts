@@ -21,7 +21,7 @@ const prepareCategorySnippet = ({
   category: Omit<CategorySnippet, 'image'>,
 ): CategoryProps => ({
   id: category.id,
-  title: category.name,
+  name: category.name,
   uri: withBaseUrl(`/categories/${category.id}`),
   image: {
     uri: iiifUri(

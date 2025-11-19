@@ -44,7 +44,7 @@ export const Teasers = ({
             </a>}
             <div className="teaser__content">
               {teaser.categories
-                && <CategoryTags categories={teaser.categories.map(({ id, name }) => ({ name, id }))} />}
+                && <CategoryTags categories={teaser.categories} />}
               <h2 className="teaser__title">
                 <a
                   href={teaser.uri}

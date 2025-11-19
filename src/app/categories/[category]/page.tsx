@@ -20,7 +20,7 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
     Effect.promise(async () => params),
     Effect.flatMap(({ category: id }) => getCategory({ id })),
     Effect.map((cat) => ({
-      title: cat.title,
+      title: cat.name,
     })),
     Effect.provide(FetchHttpClient.layer),
   ),
@@ -47,7 +47,7 @@ const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => Effe
         <Page>
           <Banner
             image={cat.image}
-            title={cat.title}
+            title={cat.name}
             description={cat.description} />
           {cat.aimsAndScope && <Content content={cat.aimsAndScope} />}
         </Page>

@@ -6,7 +6,7 @@ import { withBaseUrl } from '@/tools';
 
 export type CategorySnippetProps = {
   id: string,
-  title: string,
+  name: string,
   uri: string,
   description: string,
   aimsAndScope?: ReadonlyArray<{
@@ -32,7 +32,7 @@ export type CategoriesProps = {
 
 export const CategoryTags = ({
   categories,
-}: { categories: Array<{ id: string, name: string }> }): JSX.Element => (
+}: { categories: ReadonlyArray<{ id: string, name: string }> }): JSX.Element => (
   <>
     {categories && categories.length > 0 && <ul className="category-tags">
       {
@@ -61,7 +61,7 @@ export const Categories = ({
             </a>
             <div className="category__content">
               <h2 className="category__title">
-                <a href={category.uri} className="category__title_link">{category.title}</a>
+                <a href={category.uri} className="category__title_link">{category.name}</a>
               </h2>
               <p
                 className="category__description"
