@@ -55,6 +55,9 @@ const ReviewedPreprintPage = async ({ params }: PageProps): Promise<JSX.Element>
           {rpContinuum.categories
             && <CategoryTags categories={rpContinuum.categories} />}
           <h1><Title content={rpEpp.title} /></h1>
+          <p>{rpContinuum.description}</p>
+          {rpContinuum.published
+            && <time dateTime={rpContinuum.published.toISOString()}>{rpContinuum.published.toDateString()}</time>}
           <h2>Evaluation Summary</h2>
           <Content content={rpContinuum.evaluationSummary} />
         </Page>
