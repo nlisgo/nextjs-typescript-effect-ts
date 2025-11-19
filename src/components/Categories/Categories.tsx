@@ -1,6 +1,8 @@
+import { Array, pipe } from 'effect';
 import Image from 'next/image';
 import type { JSX } from 'react';
 import './categories.css';
+import { withBaseUrl } from '@/tools';
 
 export type CategorySnippetProps = {
   id: string,
@@ -27,6 +29,21 @@ export type CategoriesProps = {
   uri?: string,
   categories: Array<CategorySnippetProps>,
 };
+
+export const CategoryTags = ({
+  categories,
+}: { categories: Array<{ id: string, name: string }> }): JSX.Element => (
+  <>
+    {categories && categories.length > 0 && <ul className="category-tags">
+      {
+        pipe(
+          categories,
+          Array.map((category, i) => <li key={i} className="category-tags_item"><a href={withBaseUrl(`/categories/${category.id}`)} className="category-tags_item_link">{category.name}</a></li>),
+        )
+      }
+    </ul>}
+  </>
+);
 
 export const Categories = ({
   title,

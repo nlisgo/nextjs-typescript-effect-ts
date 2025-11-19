@@ -1,8 +1,7 @@
-import { Array, pipe } from 'effect';
 import Image from 'next/image';
 import type { JSX } from 'react';
 import './teasers.css';
-import { withBaseUrl } from '@/tools';
+import { CategoryTags } from '@/components/Categories/Categories';
 import { CategoryId, TitleContent } from '@/types';
 
 export type TeaserImageProps = {
@@ -44,14 +43,8 @@ export const Teasers = ({
               <Image className="teaser__image" src={teaser.image.uri} alt={`${teaser.image.alt}${teaser.image.credit && ` - ${teaser.image.credit}`}`} width={teaser.image.width} height={teaser.image.height} />
             </a>}
             <div className="teaser__content">
-              {teaser.categories && teaser.categories.length > 0 && <ul className="teaser__categories">
-                {
-                  pipe(
-                    teaser.categories,
-                    Array.map((category, j) => <li key={j} className="teaser__categories_item"><a href={withBaseUrl(`/categories/${category.id}`)} className="teaser__categories_item_link">{category.name}</a></li>),
-                  )
-                }
-              </ul>}
+              {teaser.categories
+                && <CategoryTags categories={teaser.categories.map(({ id, name }) => ({ name, id }))} />}
               <h2 className="teaser__title">
                 <a
                   href={teaser.uri}

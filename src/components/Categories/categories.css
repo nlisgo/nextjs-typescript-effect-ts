@@ -44,3 +44,15 @@
 .category__description {
   @apply text-sm text-gray-700 leading-snug line-clamp-2;
 }
+
+.category-tags {
+  @apply flex flex-wrap gap-2 list-none p-0 m-0 mb-2;
+}
+
+.category-tags_item {
+  @apply m-0;
+}
+
+.category-tags_item_link {
+  @apply inline-flex items-center gap-[2px] rounded-full border border-blue-200 bg-blue-50 px-2 py-[3px] text-[11px] font-medium text-blue-800 no-underline transition hover:bg-blue-100 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-50;
+}
