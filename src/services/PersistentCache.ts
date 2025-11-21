@@ -6,7 +6,14 @@ import { CACHE_DIR } from '@/config/cache-config';
 
 // Cache service interface
 export type CacheService = {
-  get<A, E, R>(uri: string, fetchFn: () => Effect.Effect<A, E, R>): Effect.Effect<A, E, R>,
+  get<A, E, R>(
+    uri: string,
+    fetchFn: () => Effect.Effect<A, E, R>,
+    options?: {
+      forceFetch?: boolean,
+      merge?: (oldData: A, newData: A) => A,
+    }
+  ): Effect.Effect<A, E, R>,
 };
 
 // Service tag for dependency injection
@@ -23,17 +30,30 @@ const getCacheFilePath = (url: string): string => path.join(CACHE_DIR, `${hashUr
 
 // Persistent cache implementation
 const makePersistentCache = (): CacheService => ({
-  // eslint-disable-next-line func-names
-  get: <A, E, R>(uri: string, fetchFn: () => Effect.Effect<A, E, R>) => Effect.gen(function* () {
+
+  get: <A, E, R>(
+    uri: string,
+    fetchFn: () => Effect.Effect<A, E, R>,
+    options?: {
+      forceFetch?: boolean,
+      merge?: (oldData: A, newData: A) => A,
+    },
+    // eslint-disable-next-line func-names
+  ) => Effect.gen(function* () {
     const cacheFilePath = getCacheFilePath(uri);
+    let cachedData: A | undefined;
 
     // Try to read from cache
     try {
       if (fs.existsSync(cacheFilePath)) {
         const cached = JSON.parse(fs.readFileSync(cacheFilePath, 'utf-8'));
-        // eslint-disable-next-line no-console
-        console.log(`[Cache HIT] ${uri}`);
-        return cached.data as A;
+        cachedData = cached.data as A;
+
+        if (!options?.forceFetch && !options?.merge) {
+          // eslint-disable-next-line no-console
+          console.log(`[Cache HIT] ${uri}`);
+          return cachedData;
+        }
       }
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -41,10 +61,22 @@ const makePersistentCache = (): CacheService => ({
       // Fall through to fetch
     }
 
-    // Cache miss - fetch from API
+    // Cache miss or forced fetch
     // eslint-disable-next-line no-console
-    console.log(`[Cache MISS] ${uri}`);
-    const data = yield* fetchFn();
+    console.log(`[Cache ${options?.forceFetch ? 'REFRESH' : 'MISS'}] ${uri}`);
+    let data = yield* fetchFn();
+
+    // Merge if requested and we have old data
+    if (options?.merge && cachedData) {
+      try {
+        data = options.merge(cachedData, data);
+        // eslint-disable-next-line no-console
+        console.log(`[Cache MERGE] ${uri}`);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn(`[Cache MERGE ERROR] ${uri}:`, error);
+      }
+    }
 
     // Write to cache
     try {
@@ -74,13 +106,27 @@ const makeInMemoryCache = (): CacheService => {
   const cache = new Map<string, unknown>();
 
   return {
-    // eslint-disable-next-line func-names
-    get: <A, E, R>(uri: string, fetchFn: () => Effect.Effect<A, E, R>) => Effect.gen(function* () {
-      if (cache.has(uri)) {
+
+    get: <A, E, R>(
+      uri: string,
+      fetchFn: () => Effect.Effect<A, E, R>,
+      options?: {
+        forceFetch?: boolean,
+        merge?: (oldData: A, newData: A) => A,
+      },
+      // eslint-disable-next-line func-names
+    ) => Effect.gen(function* () {
+      if (cache.has(uri) && !options?.forceFetch) {
         return cache.get(uri) as A;
       }
 
-      const data = yield* fetchFn();
+      let data = yield* fetchFn();
+
+      if (options?.merge && cache.has(uri)) {
+        const cachedData = cache.get(uri) as A;
+        data = options.merge(cachedData, data);
+      }
+
       cache.set(uri, data);
       return data;
     }),

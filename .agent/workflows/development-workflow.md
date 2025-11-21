@@ -11,11 +11,11 @@ This document outlines the development workflow and best practices for this Next
 Always run the following commands before committing and pushing:
 
 ```bash
-npm run lint && npm run check-typescript && npm run build
+npm run lint:fix && npm run lint && npm run check-typescript && npm run build
 ```
 
 This ensures:
-- ✅ Code passes linting rules
+- ✅ Code passes linting rules (auto-fixed where possible)
 - ✅ TypeScript type checking passes
 - ✅ Next.js build completes successfully
 

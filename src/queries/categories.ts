@@ -71,7 +71,18 @@ HttpClientError.HttpClientError | ParseResult.ParseError,
 HttpClient.HttpClient | CacheServiceTag
 > => pipe(
   continuumCategoriesPath(queryOptions),
-  httpGetAndValidate(categoriesCodec),
+  httpGetAndValidate(categoriesCodec, {
+    useCache: true,
+    merge: (oldData, newData) => ({
+      ...newData,
+      items: [
+        ...newData.items,
+        ...oldData.items.filter((oldItem) => !newData.items.some(
+          (newItem) => newItem.id === oldItem.id,
+        )),
+      ],
+    }),
+  }),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(categorySnippetCodec))),
   Effect.map(

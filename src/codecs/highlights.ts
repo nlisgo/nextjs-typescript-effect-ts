@@ -14,6 +14,9 @@ export const highlightCodec = Schema.Struct({
 export const highlightsCodec = Schema.Struct({
   total: Schema.Int,
   items: Schema.Array(
-    Schema.Unknown,
+    Schema.Union(
+      highlightCodec,
+      Schema.Unknown,
+    ),
   ),
 });

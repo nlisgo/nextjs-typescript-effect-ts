@@ -60,7 +60,18 @@ HttpClient.HttpClient | CacheServiceTag
 > => pipe(
   { limit, page },
   continuumReviewedPreprintsPath,
-  httpGetAndValidate(reviewedPreprintsCodec),
+  httpGetAndValidate(reviewedPreprintsCodec, {
+    useCache: true,
+    merge: (oldData, newData) => ({
+      ...newData,
+      items: [
+        ...newData.items,
+        ...oldData.items.filter((oldItem) => !newData.items.some(
+          (newItem) => newItem.id === oldItem.id,
+        )),
+      ],
+    }),
+  }),
   Effect.map(({ items }) => items),
   Effect.map(Array.filter(Schema.is(reviewedPreprintCodec))),
   Effect.map(Array.map((reviewedPreprint) => ({

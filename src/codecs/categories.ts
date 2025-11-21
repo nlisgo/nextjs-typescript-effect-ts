@@ -39,6 +39,6 @@ export const categorySnippetCodec = Schema.Struct({
 export const categoriesCodec = Schema.Struct({
   total: Schema.Int,
   items: Schema.Array(
-    Schema.Unknown,
+    categorySnippetCodec,
   ),
 });
