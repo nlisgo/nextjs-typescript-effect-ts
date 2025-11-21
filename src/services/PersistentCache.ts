@@ -38,7 +38,6 @@ const makePersistentCache = (): CacheService => ({
       forceFetch?: boolean,
       merge?: (oldData: A, newData: A) => A,
     },
-    // eslint-disable-next-line func-names
   ) => Effect.gen(function* () {
     const cacheFilePath = getCacheFilePath(uri);
     let cachedData: A | undefined;
@@ -114,7 +113,6 @@ const makeInMemoryCache = (): CacheService => {
         forceFetch?: boolean,
         merge?: (oldData: A, newData: A) => A,
       },
-      // eslint-disable-next-line func-names
     ) => Effect.gen(function* () {
       if (cache.has(uri) && !options?.forceFetch) {
         return cache.get(uri) as A;

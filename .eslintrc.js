@@ -95,6 +95,7 @@ module.exports = {
       'LabeledStatement',
       'WithStatement',
     ]],
+    'func-names': 'off',
     'no-underscore-dangle': 'off',
     'no-unreachable': 'error',
     'no-void': ['error', {

@@ -19,7 +19,7 @@ export const httpRequestAndValidate = <Resp, E1, R1, Body, E2, R2>(
     },
   ) => (
       uri: string,
-      // eslint-disable-next-line func-names
+
     ): Effect.Effect<A, E1 | E2 | ParseResult.ParseError, R1 | R2 | Req | CacheServiceTag> => Effect.gen(function* () {
       const cache = yield* CacheServiceTag;
 

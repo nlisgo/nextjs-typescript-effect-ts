@@ -22,7 +22,6 @@ describe('persistentCache', () => {
   it('merges data when merge option is provided', async () => {
     const testUrl = `http://example.com/test-merge-${Date.now()}`;
 
-    // eslint-disable-next-line func-names
     const program = Effect.gen(function* () {
       const cache = yield* CacheServiceTag;
 
