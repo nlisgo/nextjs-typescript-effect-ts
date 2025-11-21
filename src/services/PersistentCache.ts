@@ -14,6 +14,7 @@ export type CacheService = {
       merge?: (oldData: A, newData: A) => A,
     }
   ): Effect.Effect<A, E, R>,
+  has(uri: string): Effect.Effect<boolean>,
 };
 
 // Service tag for dependency injection
@@ -98,6 +99,8 @@ const makePersistentCache = (): CacheService => ({
 
     return data;
   }),
+
+  has: (uri: string) => Effect.sync(() => fs.existsSync(getCacheFilePath(uri))),
 });
 
 // In-memory cache implementation (fallback)
@@ -128,6 +131,8 @@ const makeInMemoryCache = (): CacheService => {
       cache.set(uri, data);
       return data;
     }),
+
+    has: (uri: string) => Effect.sync(() => cache.has(uri)),
   };
 };
 

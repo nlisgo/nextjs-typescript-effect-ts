@@ -62,4 +62,28 @@ describe('persistentCache', () => {
 
     await Effect.runPromise(Effect.provide(program, PersistentCacheLayer));
   });
+
+  /* eslint-disable-next-line jest/prefer-ending-with-an-expect */
+  it('checks if cache exists using has', async () => {
+    const testUrl = `http://example.com/test-has-${Date.now()}`;
+
+    const program = Effect.gen(function* () {
+      const cache = yield* CacheServiceTag;
+
+      // Check before caching
+      const existsBefore = yield* cache.has(testUrl);
+
+      expect(existsBefore).toBe(false);
+
+      // Cache something
+      yield* cache.get(testUrl, () => Effect.succeed({ data: 'test' }));
+
+      // Check after caching
+      const existsAfter = yield* cache.has(testUrl);
+
+      expect(existsAfter).toBe(true);
+    });
+
+    await Effect.runPromise(Effect.provide(program, PersistentCacheLayer));
+  });
 });

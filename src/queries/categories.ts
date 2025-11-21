@@ -47,7 +47,7 @@ HttpClientError.HttpClientError | ParseResult.ParseError,
 HttpClient.HttpClient | CacheServiceTag
 > => pipe(
   continuumCategoryPath(id),
-  httpGetAndValidate(categoryCodec),
+  httpGetAndValidate(categoryCodec, { useCache: true }),
   Effect.map(
     (category) => ({
       ...prepareCategorySnippet({

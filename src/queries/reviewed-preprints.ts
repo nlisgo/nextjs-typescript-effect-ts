@@ -20,7 +20,7 @@ HttpClient.HttpClient | CacheServiceTag
 > => pipe(
   id,
   continuumReviewedPreprintPath,
-  httpGetAndValidate(reviewedPreprintCodec),
+  httpGetAndValidate(reviewedPreprintCodec, { useCache: true }),
   Effect.map((reviewedPreprint) => ({
     id: reviewedPreprint.id,
     title: reviewedPreprint.title,
@@ -41,7 +41,7 @@ HttpClient.HttpClient | CacheServiceTag
 > => pipe(
   id,
   eppReviewedPreprintPath,
-  httpGetAndValidate(eppReviewedPreprintCodec),
+  httpGetAndValidate(eppReviewedPreprintCodec, { useCache: true }),
   Effect.map((reviewedPreprint) => ({
     id: reviewedPreprint.article.msid,
     title: reviewedPreprint.article.article.title,
