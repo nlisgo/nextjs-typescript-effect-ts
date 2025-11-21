@@ -21,7 +21,7 @@ const continuumReviewedPreprintCodec = Schema.Struct({
       text: Schema.String,
     })),
     significance: Schema.Array(Schema.String),
-    strength: Schema.Array(Schema.String),
+    strength: Schema.optional(Schema.Array(Schema.String)),
   }),
 });
 

@@ -9,6 +9,7 @@ export const titleCodec = Schema.Union(
         type: Schema.Union(
           Schema.Literal('Emphasis'),
           Schema.Literal('Subscript'),
+          Schema.Literal('Superscript'),
         ),
         content: Schema.Array(
           Schema.String,

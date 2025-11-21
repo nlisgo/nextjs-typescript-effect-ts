@@ -4,7 +4,7 @@ import {
 } from 'effect';
 import { CacheServiceTag } from '@/services/PersistentCache';
 
-const httpRequestAndValidate = <Resp, E1, R1, Body, E2, R2>(
+export const httpRequestAndValidate = <Resp, E1, R1, Body, E2, R2>(
   request: (uri: string) => Effect.Effect<Resp, E1, R1>,
   extract: (resp: Resp) => Effect.Effect<Body, E2, R2>,
 ) => <A, I = unknown, Req = never>(
@@ -24,25 +24,40 @@ const httpRequestAndValidate = <Resp, E1, R1, Body, E2, R2>(
       const cache = yield* CacheServiceTag;
 
       if (options?.useCache) {
-        return yield* cache.get<A, E1 | E2 | ParseResult.ParseError, R1 | R2 | Req>(
+        // Fetch and cache full data (without limit applied)
+        const cachedData = yield* cache.get<A, E1 | E2 | ParseResult.ParseError, R1 | R2 | Req>(
           uri,
           () => pipe(
             uri,
             request,
             Effect.flatMap(extract),
             Effect.flatMap(Schema.decodeUnknown(schema)),
-            Effect.map((data) => {
-              if (options?.queryParams?.limit && options.queryParams.limit > 0 && Array.isArray(data)) {
-                return (data as unknown as Array<unknown>).slice(0, options.queryParams.limit) as A;
-              }
-              return data;
-            }),
           ),
           options.merge ? {
             forceFetch: true,
             merge: options.merge,
           } : undefined,
         );
+
+        // Apply limit after caching (so full data is preserved in cache)
+        if (options?.queryParams?.limit && options.queryParams.limit > 0) {
+          // Handle nested structures like { items: [...] }
+          if (typeof cachedData === 'object' && cachedData !== null && 'items' in cachedData) {
+            const dataWithItems = cachedData as { items: unknown };
+            if (Array.isArray(dataWithItems.items)) {
+              return {
+                ...cachedData,
+                items: dataWithItems.items.slice(0, options.queryParams.limit),
+              } as A;
+            }
+          }
+          // Handle top-level arrays
+          if (Array.isArray(cachedData)) {
+            return (cachedData as unknown as Array<unknown>).slice(0, options.queryParams.limit) as A;
+          }
+        }
+
+        return cachedData;
       }
 
       return yield* pipe(
