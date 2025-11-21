@@ -10,6 +10,10 @@ const httpRequestAndValidate = <Resp, E1, R1, Body, E2, R2>(
 ) => <A, I = unknown, Req = never>(
     schema: Schema.Schema<A, I, Req>,
     options?: {
+      queryParams?: {
+        limit: number,
+        page?: number,
+      },
       useCache?: boolean,
       merge?: (oldData: A, newData: A) => A,
     },
@@ -27,6 +31,12 @@ const httpRequestAndValidate = <Resp, E1, R1, Body, E2, R2>(
             request,
             Effect.flatMap(extract),
             Effect.flatMap(Schema.decodeUnknown(schema)),
+            Effect.map((data) => {
+              if (options?.queryParams?.limit && options.queryParams.limit > 0 && Array.isArray(data)) {
+                return (data as unknown as Array<unknown>).slice(0, options.queryParams.limit) as A;
+              }
+              return data;
+            }),
           ),
           options.merge ? {
             forceFetch: true,
