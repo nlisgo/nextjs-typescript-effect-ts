@@ -67,6 +67,25 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
+      - name: Download previous build output
+        if: steps.get-run-id.outputs.result != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: .previous-out-tar
+          run-id: ${{ steps.get-run-id.outputs.result }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Extract previous build output
+        if: steps.get-run-id.outputs.result != ''
+        run: |
+          mkdir -p .previous-out
+          if [ -f .previous-out-tar/artifact.tar ]; then
+            tar -xf .previous-out-tar/artifact.tar -C .previous-out
+          fi
+        continue-on-error: true
+
       - name: Install dependencies
         run: npm ci
 
@@ -78,6 +97,13 @@ jobs:
 
       - name: Build Next.js app
         run: npm run build
+
+      - name: Merge previous build output
+        run: |
+          if [ -d .previous-out ]; then
+            rsync -av --ignore-existing .previous-out/ out/
+          fi
+        continue-on-error: true
 
       - name: Build Storybook
         run: npm run build-storybook

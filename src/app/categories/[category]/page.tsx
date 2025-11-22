@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
 import {
   Array, Effect, pipe,
 } from 'effect';
@@ -36,28 +39,24 @@ export const generateStaticParams = async (): Promise<Array<{ category: string }
   return Effect.runPromise(
     pipe(
       Effect.all([getCategories(), CacheServiceTag]),
-      Effect.flatMap(([categories, cache]) => {
-        console.log(`Found ${categories.length} categories`);
-        return Effect.forEach(categories, (category) => Effect.map(
-          cache.has(continuumCategoryPath(category.id)),
-          (exists) => ({
-            category: category.id,
-            exists,
-          }),
-        ));
-      }),
-      Effect.map((items) => {
-        const nonCached = items.filter((item) => !item.exists);
-        if (nonCached.length === 0 && items.length > 0) {
-          console.log('All categories cached. Regenerating the first one to satisfy Next.js build.');
-          return [items[0]];
+      Effect.map(([categories]) => categories),
+      Effect.map((categories) => {
+        const previousOutDir = path.join(process.cwd(), '.previous-out');
+        if (!fs.existsSync(previousOutDir)) {
+          return categories;
         }
-        if (nonCached.length < items.length) {
-          console.log(`Skipping ${items.length - nonCached.length} cached categories.`);
-        }
-        return nonCached;
+
+        return categories.filter((category) => {
+          const htmlPath = path.join(previousOutDir, 'categories', category.id, 'index.html');
+          const exists = fs.existsSync(htmlPath);
+          if (exists) {
+            // eslint-disable-next-line no-console
+            console.log(`[Incremental Build] Skipping existing page: categories/${category.id}`);
+          }
+          return !exists;
+        });
       }),
-      Effect.map(Array.map(({ category }) => ({ category }))),
+      Effect.map(Array.map((category) => ({ category: category.id }))),
     ).pipe(
       Effect.provide(MainLayer),
     ),
@@ -67,6 +66,7 @@ export const generateStaticParams = async (): Promise<Array<{ category: string }
 const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => Effect.runPromise(
   pipe(
     Effect.promise(async () => params),
+    Effect.tap(({ category }) => Effect.sync(() => console.log(`[Page Generation] Building Category: ${category}`))),
     Effect.flatMap(({ category: id }) => getCategory({ id, imageWidth: 1483, imageHeight: 447 })),
     Effect.map(
       (cat) => (

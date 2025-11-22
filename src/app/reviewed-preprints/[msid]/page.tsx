@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
 import {
   Array, Effect, pipe,
 } from 'effect';
@@ -40,28 +43,24 @@ export const generateStaticParams = async (): Promise<Array<{ msid: string }>> =
   return Effect.runPromise(
     pipe(
       Effect.all([getReviewedPreprints(), CacheServiceTag]),
-      Effect.flatMap(([preprints, cache]) => {
-        console.log(`Found ${preprints.length} preprints`);
-        return Effect.forEach(preprints, (preprint) => Effect.map(
-          cache.has(eppReviewedPreprintPath(preprint.id)),
-          (exists) => ({
-            msid: preprint.id,
-            exists,
-          }),
-        ));
-      }),
-      Effect.map((items) => {
-        const nonCached = items.filter((item) => !item.exists);
-        if (nonCached.length === 0 && items.length > 0) {
-          console.log('All items cached. Regenerating the first one to satisfy Next.js build.');
-          return [items[0]];
+      Effect.map(([preprints]) => preprints),
+      Effect.map((preprints) => {
+        const previousOutDir = path.join(process.cwd(), '.previous-out');
+        if (!fs.existsSync(previousOutDir)) {
+          return preprints;
         }
-        if (nonCached.length < items.length) {
-          console.log(`Skipping ${items.length - nonCached.length} cached preprints.`);
-        }
-        return nonCached;
+
+        return preprints.filter((preprint) => {
+          const htmlPath = path.join(previousOutDir, 'reviewed-preprints', preprint.id, 'index.html');
+          const exists = fs.existsSync(htmlPath);
+          if (exists) {
+            // eslint-disable-next-line no-console
+            console.log(`[Incremental Build] Skipping existing page: reviewed-preprints/${preprint.id}`);
+          }
+          return !exists;
+        });
       }),
-      Effect.map(Array.map(({ msid }) => ({ msid }))),
+      Effect.map(Array.map((preprint) => ({ msid: preprint.id }))),
     ).pipe(
       Effect.provide(MainLayer),
     ),
@@ -71,6 +70,7 @@ export const generateStaticParams = async (): Promise<Array<{ msid: string }>> =
 const ReviewedPreprintPage = async ({ params }: PageProps): Promise<JSX.Element> => Effect.runPromise(
   pipe(
     Effect.promise(async () => params),
+    Effect.tap(({ msid }) => Effect.sync(() => console.log(`[Page Generation] Building Reviewed Preprint: ${msid}`))),
     Effect.flatMap(({ msid: id }) => Effect.all([
       getContinuumReviewedPreprint({ id }),
       getReviewedPreprint({ id }),
