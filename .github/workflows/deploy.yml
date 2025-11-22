@@ -57,8 +57,9 @@ jobs:
           path: out
 
       - name: Upload cache
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
+          name: persistent-cache
           path: .cache
 
   deploy:
