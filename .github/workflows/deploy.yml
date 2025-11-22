@@ -48,6 +48,7 @@ jobs:
               workflow_id: 'deploy.yml',
               status: 'completed',
               conclusion: 'success',
+              branch: context.ref.replace('refs/heads/', ''),
               per_page: 1
             });
             if (runs.data.workflow_runs.length > 0) {
