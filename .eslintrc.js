@@ -107,6 +107,7 @@ module.exports = {
     'node/prefer-global/url': ['error', 'never'],
     'node/prefer-global/url-search-params': ['error', 'never'],
     'prefer-destructuring': 'off',
+    'no-console': 'off',
     'unused-imports/no-unused-imports-ts': 'error',
     'import/no-extraneous-dependencies': ['error', {
       devDependencies: [

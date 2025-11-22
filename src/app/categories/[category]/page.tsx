@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
-
 import {
   Array, Effect, pipe,
 } from 'effect';
 import { Metadata } from 'next';
+import type { JSX } from 'react';
 import { Banner } from '@/components/Banner/Banner';
 import { Content } from '@/components/Content/Content';
 import { Page } from '@/components/Page/Page';
@@ -48,7 +48,6 @@ export const generateStaticParams = async (): Promise<Array<{ category: string }
           const htmlPath = path.join(previousOutDir, 'categories', category.id, 'index.html');
           const exists = fs.existsSync(htmlPath);
           if (exists) {
-            // eslint-disable-next-line no-console
             console.log(`[Incremental Build] Skipping existing page: categories/${category.id}`);
           }
           return !exists;

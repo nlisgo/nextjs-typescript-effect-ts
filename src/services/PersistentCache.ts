@@ -50,19 +50,17 @@ const makePersistentCache = (): CacheService => ({
         cachedData = cached.data as A;
 
         if (!options?.forceFetch && !options?.merge) {
-          // eslint-disable-next-line no-console
           console.log(`[Cache HIT] ${uri}`);
           return cachedData;
         }
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.warn(`[Cache READ ERROR] ${uri}:`, error);
       // Fall through to fetch
     }
 
     // Cache miss or forced fetch
-    // eslint-disable-next-line no-console
+
     console.log(`[Cache ${options?.forceFetch ? 'REFRESH' : 'MISS'}] ${uri}`);
     let data = yield* fetchFn();
 
@@ -70,10 +68,9 @@ const makePersistentCache = (): CacheService => ({
     if (options?.merge && cachedData) {
       try {
         data = options.merge(cachedData, data);
-        // eslint-disable-next-line no-console
+
         console.log(`[Cache MERGE] ${uri}`);
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.warn(`[Cache MERGE ERROR] ${uri}:`, error);
       }
     }
@@ -89,10 +86,9 @@ const makePersistentCache = (): CacheService => ({
           data,
         }, null, 2),
       );
-      // eslint-disable-next-line no-console
+
       console.log(`[Cache WRITE] ${uri}`);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.warn(`[Cache WRITE ERROR] ${uri}:`, error);
       // Continue even if write fails
     }

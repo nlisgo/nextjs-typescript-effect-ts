@@ -53,7 +53,6 @@ export const generateStaticParams = async (): Promise<Array<{ msid: string }>> =
           const htmlPath = path.join(previousOutDir, 'reviewed-preprints', preprint.id, 'index.html');
           const exists = fs.existsSync(htmlPath);
           if (exists) {
-            // eslint-disable-next-line no-console
             console.log(`[Incremental Build] Skipping existing page: reviewed-preprints/${preprint.id}`);
           }
           return !exists;
