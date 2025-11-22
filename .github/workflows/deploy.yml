@@ -61,6 +61,7 @@ jobs:
         with:
           name: persistent-cache
           path: .cache
+          include-hidden-files: true
 
   deploy:
     needs: build
