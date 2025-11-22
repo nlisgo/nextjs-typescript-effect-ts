@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -35,6 +36,36 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: npm
+
+      - name: Get latest successful run ID
+        id: get-run-id
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'deploy.yml',
+              status: 'completed',
+              conclusion: 'success',
+              per_page: 1
+            });
+            if (runs.data.workflow_runs.length > 0) {
+              return runs.data.workflow_runs[0].id;
+            } else {
+              return '';
+            }
+          result-encoding: string
+
+      - name: Download persistent cache
+        if: steps.get-run-id.outputs.result != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: persistent-cache
+          path: .cache
+          run-id: ${{ steps.get-run-id.outputs.result }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
 
       - name: Install dependencies
         run: npm ci
