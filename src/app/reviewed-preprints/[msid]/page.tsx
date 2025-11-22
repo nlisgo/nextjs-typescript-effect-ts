@@ -6,7 +6,6 @@ import {
 } from 'effect';
 import { Metadata } from 'next';
 import { type JSX } from 'react';
-import { eppReviewedPreprintPath } from '@/api-paths';
 import { CategoryTags } from '@/components/Categories/Categories';
 import { Content } from '@/components/Content/Content';
 import { Page } from '@/components/Page/Page';

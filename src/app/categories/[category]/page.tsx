@@ -5,8 +5,6 @@ import {
   Array, Effect, pipe,
 } from 'effect';
 import { Metadata } from 'next';
-import type { JSX } from 'react';
-import { continuumCategoryPath } from '@/api-paths';
 import { Banner } from '@/components/Banner/Banner';
 import { Content } from '@/components/Content/Content';
 import { Page } from '@/components/Page/Page';
