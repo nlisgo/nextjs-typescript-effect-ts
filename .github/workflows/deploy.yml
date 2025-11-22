@@ -25,6 +25,7 @@ jobs:
       NEXT_USE_TURBOPACK: 0
       # Used to build absolute internal links (e.g. categories) during static export
       NEXT_PUBLIC_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+      USE_PERSISTENT_CACHE: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -54,6 +55,11 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: out
+
+      - name: Upload cache
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .cache
 
   deploy:
     needs: build
