@@ -58,7 +58,7 @@ jobs:
             }
           result-encoding: string
 
-      - name: Download persistent cached
+      - name: Download persistent cache
         if: steps.get-run-id.outputs.result != ''
         uses: actions/download-artifact@v4
         with:
@@ -66,35 +66,6 @@ jobs:
           path: .cached
           run-id: ${{ steps.get-run-id.outputs.result }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
-
-      - name: Download persistent cache
-        if: steps.get-run-id.outputs.result != ''
-        uses: actions/download-artifact@v4
-        with:
-          name: persistent-cache
-          path: .cache
-          run-id: ${{ steps.get-run-id.outputs.result }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
-
-      - name: Download previous build output
-        if: steps.get-run-id.outputs.result != ''
-        uses: actions/download-artifact@v4
-        with:
-          name: github-pages
-          path: .previous-out-tar
-          run-id: ${{ steps.get-run-id.outputs.result }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
-
-      - name: Extract previous build output
-        if: steps.get-run-id.outputs.result != ''
-        run: |
-          mkdir -p .previous-out
-          if [ -f .previous-out-tar/artifact.tar ]; then
-            tar -xf .previous-out-tar/artifact.tar -C .previous-out
-          fi
         continue-on-error: true
 
       - name: Install dependencies
@@ -118,13 +89,6 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
-      - name: Merge previous build output
-        run: |
-          if [ -d .previous-out ]; then
-            rsync -av --ignore-existing .previous-out/ out/
-          fi
-        continue-on-error: true
-
       - name: Build Storybook
         run: npm run build-storybook
 
@@ -133,17 +97,10 @@ jobs:
         with:
           path: out
 
-      - name: Upload cache
-        uses: actions/upload-artifact@v4
-        with:
-          name: persistent-cache
-          path: .cache
-          include-hidden-files: true
-
       - name: Upload cached
         uses: actions/upload-artifact@v4
         with:
-          name: persistent-cached
+          name: persistent-cache
           path: .cached
           include-hidden-files: true
 
