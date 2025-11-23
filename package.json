@@ -13,7 +13,7 @@
     "build-storybook": "storybook build",
     "check-typescript": "tsc --noEmit",
     "watch-typescript": "tsc --noEmit --watch",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "top-up-categories:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/top-up-categories.ts",
     "top-up-categories": "node dist/cli/top-up-categories.mjs",
