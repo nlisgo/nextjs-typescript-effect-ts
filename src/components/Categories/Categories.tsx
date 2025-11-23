@@ -13,7 +13,7 @@ export type CategorySnippetProps = {
     type: 'paragraph',
     text: string,
   }>,
-  image: {
+  image?: {
     uri: string,
     alt: string,
     width: number,
@@ -27,7 +27,7 @@ export type CategoryProps = CategorySnippetProps;
 export type CategoriesProps = {
   title: string,
   uri?: string,
-  categories: Array<CategorySnippetProps>,
+  categories: ReadonlyArray<CategorySnippetProps>,
 };
 
 export const CategoryTags = ({
@@ -57,7 +57,7 @@ export const Categories = ({
         {categories.map((category, i) => <li key={i} className="categories__list_item">
           <div className="category">
             <a href={category.uri} className="category__image-link">
-              <Image className="category__image" src={category.image.uri} alt={category.image.alt} width={category.image.width} height={category.image.height} />
+              {category.image && <Image className="category__image" src={category.image.uri} alt={category.image.alt} width={category.image.width} height={category.image.height} />}
             </a>
             <div className="category__content">
               <h2 className="category__title">

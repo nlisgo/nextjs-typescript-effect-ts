@@ -1,8 +1,10 @@
 import { createHash } from 'crypto';
-import { FileSystem, HttpClient } from '@effect/platform';
+import { Error as PlatformError, FileSystem, HttpClient } from '@effect/platform';
 import {
-  Array, Effect, Order, pipe, Schema,
+  Array, Effect, Order, ParseResult, pipe, Schema,
 } from 'effect';
+import { TeaserProps } from '@/components/Teasers/Teasers';
+import { withBaseUrl } from '@/tools';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/reviewed-preprints';
 const getCachedFilePath = '.cached/reviewed-preprints';
@@ -66,7 +68,7 @@ const getReviewedPreprintsTopUpPage = ({ limit, page = 1 }: { limit: number, pag
   Effect.map((response) => response.items),
   Effect.map(Array.map((item) => ({
     ...item,
-    hash: createHash('md5').update(JSON.stringify(item)).digest('hex'),
+    hash: createHash('md5').update(stringifyJson(item, false)).digest('hex'),
   }))),
 );
 
@@ -74,7 +76,7 @@ const getCachedReviewedPreprints = (file?: string) => pipe(
   Effect.flatMap(FileSystem.FileSystem, (fs) => fs.readFileString(file ?? getCachedListFile)),
   Effect.flatMap((input) => Effect.try({
     try: () => JSON.parse(input) as unknown,
-    catch: (error) => new Error(`Invalid JSON: ${JSON.stringify(error)}`),
+    catch: (error) => new Error(`Invalid JSON: ${stringifyJson(error, false)}`),
   })),
   Effect.catchAll(() => Effect.succeed([])),
   Effect.flatMap(Schema.decodeUnknown(reviewedPreprintsCodec)),
@@ -176,4 +178,38 @@ export const reviewedPreprintsTopUp = (
   Effect.flatMap(retrieveMissingIndividualReviewedPreprints),
   Effect.catchAllCause(Effect.logError),
   Effect.asVoid,
+);
+
+const prepareTeaser = (reviewedPreprint: ReviewedPreprint): TeaserProps => ({
+  id: reviewedPreprint.id,
+  published: reviewedPreprint.statusDate,
+  title: reviewedPreprint.title,
+  uri: withBaseUrl(`/reviewed-preprints/${reviewedPreprint.id}`),
+  description: 'Authors et al.',
+});
+
+export const getReviewedPreprint = (
+  { id }: { id: string },
+): Effect.Effect<TeaserProps, PlatformError.PlatformError | ParseResult.ParseError, FileSystem.FileSystem> => pipe(
+  Effect.flatMap(
+    FileSystem.FileSystem,
+    (fs) => fs.readFileString(getCachedFile(id)),
+  ),
+  Effect.map(JSON.parse),
+  Effect.flatMap(Schema.decodeUnknown(reviewedPreprintItemCodec)),
+  Effect.map(prepareTeaser),
+);
+
+export const getReviewedPreprints = (): Effect.Effect<
+ReadonlyArray<TeaserProps>,
+PlatformError.PlatformError | ParseResult.ParseError,
+FileSystem.FileSystem
+> => pipe(
+  Effect.flatMap(
+    FileSystem.FileSystem,
+    (fs) => fs.readFileString(getCachedListFile),
+  ),
+  Effect.map(JSON.parse),
+  Effect.flatMap(Schema.decodeUnknown(reviewedPreprintsCodec)),
+  Effect.map(Array.map(prepareTeaser)),
 );

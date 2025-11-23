@@ -3,8 +3,8 @@ import { Metadata } from 'next';
 import type { JSX } from 'react';
 import { Page } from '@/components/Page/Page';
 import { Teasers } from '@/components/Teasers/Teasers';
-import { getReviewedPreprints } from '@/queries';
 import { MainLayer } from '@/services/AppRuntime';
+import { getReviewedPreprints } from '@/top-up/reviewed-preprints';
 
 export const metadata: Metadata = {
   title: 'Reviewed Preprints',
