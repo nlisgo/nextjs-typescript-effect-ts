@@ -47,21 +47,19 @@ const ReviewedPreprintPage = async ({ params }: PageProps): Promise<JSX.Element>
   pipe(
     Effect.promise(async () => params),
     Effect.tap(({ msid }) => Effect.sync(() => console.log(`[Page Generation] Building Reviewed Preprint: ${msid}`))),
-    // Effect.flatMap(({ msid: id }) => Effect.all([
-    //   getContinuumReviewedPreprint({ id }),
-    //   getReviewedPreprint({ id }),
-    // ])),
     Effect.flatMap(({ msid: id }) => getReviewedPreprint({ id })),
     (foo) => foo,
     Effect.map(
-      (rpContinuum) => (
+      (reviewedPreprint) => (
         <Page>
-          {rpContinuum.categories
-            && <CategoryTags categories={rpContinuum.categories} />}
-          <h1><Title content={rpContinuum.title} /></h1>
-          <p>{rpContinuum.description}</p>
-          {rpContinuum.published
-            && <time dateTime={rpContinuum.published.toISOString()}>{rpContinuum.published.toDateString()}</time>}
+          {reviewedPreprint.categories
+            && <CategoryTags categories={reviewedPreprint.categories} />}
+          <h1><Title content={reviewedPreprint.title} /></h1>
+          <p>{reviewedPreprint.description}</p>
+          {reviewedPreprint.published
+            && <time dateTime={reviewedPreprint.published.toISOString()}>
+              {reviewedPreprint.published.toDateString()}
+            </time>}
         </Page>
       ),
     ),
