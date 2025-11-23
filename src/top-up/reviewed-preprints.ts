@@ -209,6 +209,7 @@ FileSystem.FileSystem
     FileSystem.FileSystem,
     (fs) => fs.readFileString(getCachedListFile),
   ),
+  Effect.catchAll(() => Effect.succeed('[]')),
   Effect.map(JSON.parse),
   Effect.flatMap(Schema.decodeUnknown(reviewedPreprintsCodec)),
   Effect.map(Array.map(prepareTeaser)),

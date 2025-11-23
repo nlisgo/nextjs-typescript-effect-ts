@@ -203,6 +203,7 @@ FileSystem.FileSystem
     FileSystem.FileSystem,
     (fs) => fs.readFileString(getCachedListFile),
   ),
+  Effect.catchAll(() => Effect.succeed('[]')),
   Effect.map(JSON.parse),
   Effect.flatMap(Schema.decodeUnknown(categoriesCodec)),
   Effect.map(Array.map((category) => ({
