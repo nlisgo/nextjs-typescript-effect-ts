@@ -4,18 +4,13 @@ import {
   Array, Effect, Order, ParseResult, pipe, Schema,
 } from 'effect';
 import { TeaserProps } from '@/components/Teasers/Teasers';
-import { withBaseUrl } from '@/tools';
+import { stringifyJson, withBaseUrl } from '@/tools';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/reviewed-preprints';
 const getCachedFilePath = '.cached/reviewed-preprints';
 const getCachedListFile = `${getCachedFilePath}.json`;
 const getCachedListFileNew = `${getCachedFilePath}-new.json`;
 const getCachedFile = (msid: string) => `${getCachedFilePath}/${msid}.json`;
-
-const stringifyJson = (
-  data: unknown,
-  formatted: boolean = true,
-) => JSON.stringify(data, undefined, formatted ? 2 : undefined);
 
 const reviewedPreprintItemCodec = Schema.Struct({
   id: Schema.String,

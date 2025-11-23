@@ -5,7 +5,8 @@ import {
 } from 'effect';
 import { categoryCodec, categoriesCodec, paginatedCategoriesCodec } from '@/codecs';
 import { CategoryProps } from '@/components/Categories/Categories';
-import { iiifUri, withBaseUrl } from '@/tools';
+import { iiifUri, stringifyJson, withBaseUrl } from '@/tools';
+import { retrieveIndividualItem } from '@/top-up/top-up';
 import { CategorySnippet, Image } from '@/types';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/subjects';
@@ -14,20 +15,7 @@ const getCachedListFile = `${getCachedFilePath}.json`;
 const getCachedListFileNew = `${getCachedFilePath}-new.json`;
 const getCachedFile = (id: string) => `${getCachedFilePath}/${id}.json`;
 
-const stringifyJson = (
-  data: unknown,
-  formatted: boolean = true,
-) => JSON.stringify(data, undefined, formatted ? 2 : undefined);
-
-const retrieveIndividualCategory = ({ id, path }: { id: string, path: string }) => pipe(
-  HttpClient.get(`${apiBasePath}/${id}`),
-  Effect.flatMap((response) => response.json),
-  Effect.flatMap(Schema.decodeUnknown(categoryCodec)),
-  Effect.tap((result) => Effect.flatMap(
-    FileSystem.FileSystem,
-    (fs) => fs.writeFileString(path, stringifyJson(result)),
-  )),
-);
+const retrieveIndividualCategory = retrieveIndividualItem(apiBasePath, categoryCodec);
 
 const retrieveIndividualCategories = (
   categories: Array<{ id: string, path: string }>,
