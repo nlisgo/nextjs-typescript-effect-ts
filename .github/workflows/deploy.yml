@@ -2,6 +2,12 @@ name: Deploy Storybook Next app to GitHub Pages
 
 on:
   workflow_dispatch:
+    inputs:
+      skip_persistent_cache:
+        type: boolean
+        description: "Start fresh: do not download the previous persistent cache"
+        required: false
+        default: false
   push:
     branches:
       - main
@@ -58,7 +64,12 @@ jobs:
           result-encoding: string
 
       - name: Download persistent cache
-        if: steps.get-run-id.outputs.result != ''
+        if: >
+          steps.get-run-id.outputs.result != '' &&
+          !(
+            github.event_name == 'workflow_dispatch' &&
+            github.event.inputs.skip_persistent_cache == 'true'
+          )
         uses: actions/download-artifact@v4
         with:
           name: persistent-cache
