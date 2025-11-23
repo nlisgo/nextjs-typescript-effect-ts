@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import {
   Array, Effect, pipe,
 } from 'effect';
@@ -9,7 +7,6 @@ import { Banner } from '@/components/Banner/Banner';
 import { Content } from '@/components/Content/Content';
 import { Page } from '@/components/Page/Page';
 import { MainLayer } from '@/services/AppRuntime';
-import { CacheServiceTag } from '@/services/PersistentCache';
 import { getCategories, getCategory } from '@/top-up/categories';
 
 type PageProps = {
@@ -36,24 +33,8 @@ export const generateStaticParams = async (): Promise<Array<{ category: string }
   console.log('Generating static params for categories...');
   return Effect.runPromise(
     pipe(
-      Effect.all([getCategories(), CacheServiceTag]),
-      Effect.map(([categories]) => categories),
-      Effect.map((categories) => {
-        const previousOutDir = path.join(process.cwd(), '.previous-out');
-        if (!fs.existsSync(previousOutDir)) {
-          return categories;
-        }
-
-        return categories.filter((category) => {
-          const htmlPath = path.join(previousOutDir, 'categories', category.id, 'index.html');
-          const exists = fs.existsSync(htmlPath);
-          if (exists) {
-            console.log(`[Incremental Build] Skipping existing page: categories/${category.id}`);
-          }
-          return !exists;
-        });
-      }),
-      Effect.map(Array.map((category) => ({ category: category.id }))),
+      getCategories(),
+      Effect.map(Array.map(({ id: category }) => ({ category }))),
     ).pipe(
       Effect.provide(MainLayer),
     ),

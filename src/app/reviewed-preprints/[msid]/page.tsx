@@ -37,24 +37,6 @@ export const generateStaticParams = async (): Promise<Array<{ msid: string }>> =
     pipe(
       getReviewedPreprints(),
       Effect.map(Array.map(({ id: msid }) => ({ msid }))),
-      // Effect.all([getReviewedPreprints(), CacheServiceTag]),
-      // Effect.map(([preprints]) => preprints),
-      // Effect.map((preprints) => {
-      //   const previousOutDir = path.join(process.cwd(), '.previous-out');
-      //   if (!fs.existsSync(previousOutDir)) {
-      //     return preprints;
-      //   }
-      //
-      //   return preprints.filter((preprint) => {
-      //     const htmlPath = path.join(previousOutDir, 'reviewed-preprints', preprint.id, 'index.html');
-      //     const exists = fs.existsSync(htmlPath);
-      //     if (exists) {
-      //       console.log(`[Incremental Build] Skipping existing page: reviewed-preprints/${preprint.id}`);
-      //     }
-      //     return !exists;
-      //   });
-      // }),
-      // Effect.map(Array.map((preprint) => ({ msid: preprint.id }))),
     ).pipe(
       Effect.provide(MainLayer),
     ),
