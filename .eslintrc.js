@@ -118,6 +118,7 @@ module.exports = {
         '**/*.stories.ts',
         '**/*.stories.tsx',
         '**/*.stories.mdx',
+        'tsup.config.ts',
       ],
     }],
   },

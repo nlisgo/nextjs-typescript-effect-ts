@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "tsup": "tsup",
     "start": "serve out -l 3000",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --fix --ext .ts,.tsx",
@@ -13,10 +14,14 @@
     "check-typescript": "tsc --noEmit",
     "watch-typescript": "tsc --noEmit --watch",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "top-up-reviewed-preprints:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/top-up-reviewed-preprints.ts",
+    "top-up-reviewed-preprints": "node dist/cli/top-up-reviewed-preprints.mjs"
   },
   "dependencies": {
+    "@effect/cli": "^0.72.1",
     "@effect/platform": "^0.93.2",
+    "@effect/platform-node": "^0.101.1",
     "effect": "^3.19.3",
     "next": "16.0.3",
     "postcss": "^8.5.6",
@@ -59,6 +64,7 @@
     "storybook": "^10.0.7",
     "tailwindcss": "^4.1.17",
     "ts-node": "^10.9.2",
+    "tsup": "^8.5.1",
     "typescript": "^5"
   }
 }

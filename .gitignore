@@ -45,3 +45,6 @@ storybook-static
 
 # cache
 .cache
+.cached
+
+dist/
