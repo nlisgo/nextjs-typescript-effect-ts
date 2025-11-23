@@ -3,8 +3,10 @@ import { Error as PlatformError, FileSystem, HttpClient } from '@effect/platform
 import {
   Array, Effect, Order, ParseResult, pipe, Schema,
 } from 'effect';
+import { categoryCodec, categoriesCodec, paginatedCategoriesCodec } from '@/codecs';
 import { CategoryProps } from '@/components/Categories/Categories';
-import { withBaseUrl } from '@/tools';
+import { iiifUri, withBaseUrl } from '@/tools';
+import { CategorySnippet, Image } from '@/types';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/subjects';
 const getCachedFilePath = '.cached/categories';
@@ -17,28 +19,10 @@ const stringifyJson = (
   formatted: boolean = true,
 ) => JSON.stringify(data, undefined, formatted ? 2 : undefined);
 
-const categoryItemCodec = Schema.Struct({
-  id: Schema.String,
-  name: Schema.String,
-  impactStatement: Schema.String,
-  hash: Schema.optional(Schema.String),
-});
-
-type Category = Schema.Schema.Type<typeof categoryItemCodec>;
-
-const categoriesCodec = Schema.Array(
-  categoryItemCodec,
-);
-
-const paginatedCategoriesCodec = Schema.Struct({
-  total: Schema.Number,
-  items: categoriesCodec,
-});
-
 const retrieveIndividualCategory = ({ id, path }: { id: string, path: string }) => pipe(
   HttpClient.get(`${apiBasePath}/${id}`),
   Effect.flatMap((response) => response.json),
-  Effect.flatMap(Schema.decodeUnknown(categoryItemCodec)),
+  Effect.flatMap(Schema.decodeUnknown(categoryCodec)),
   Effect.tap((result) => Effect.flatMap(
     FileSystem.FileSystem,
     (fs) => fs.writeFileString(path, stringifyJson(result)),
@@ -130,7 +114,7 @@ const categoriesTopUpCombine = () => pipe(
   Effect.map(Array.dedupeWith((a, b) => a.id === b.id)),
   Effect.map(
     Array.sort(
-      Order.mapInput(Order.string, (item) => item.id) as Order.Order<Category>,
+      Order.mapInput(Order.string, (item: CategorySnippet) => item.id),
     ),
   ),
   Effect.map((categories) => stringifyJson(categories)),
@@ -177,24 +161,59 @@ export const categoriesTopUp = (
   Effect.asVoid,
 );
 
+const prepareCategorySnippet = ({
+  image,
+  imageWidth,
+  imageHeight,
+}: {
+  image: Image,
+  imageWidth?: number,
+  imageHeight?: number,
+}) => (
+  category: Omit<CategorySnippet, 'image'>,
+): CategoryProps => ({
+  id: category.id,
+  name: category.name,
+  uri: withBaseUrl(`/categories/${category.id}`),
+  image: {
+    uri: iiifUri(
+      image,
+      imageWidth ?? 100,
+      imageHeight ?? 100,
+    ),
+    alt: image.alt,
+    width: imageWidth ?? 100,
+    height: imageHeight ?? 100,
+    credit: (image.attribution ? image.attribution.join(', ') : undefined),
+  },
+  description: category.impactStatement,
+  aimsAndScope: category.aimsAndScope,
+});
+
 export const getCategory = (
-  { id }: { id: string },
+  { id, imageWidth, imageHeight }: { id: string, imageWidth?: number, imageHeight?: number },
 ): Effect.Effect<CategoryProps, PlatformError.PlatformError | ParseResult.ParseError, FileSystem.FileSystem> => pipe(
   Effect.flatMap(
     FileSystem.FileSystem,
     (fs) => fs.readFileString(getCachedFile(id)),
   ),
   Effect.map(JSON.parse),
-  Effect.flatMap(Schema.decodeUnknown(categoryItemCodec)),
+  Effect.flatMap(Schema.decodeUnknown(categoryCodec)),
   Effect.map((category) => ({
-    id: category.id,
-    name: category.name,
-    uri: withBaseUrl(`/categories/${category.id}`),
-    description: 'Description',
+    ...prepareCategorySnippet({
+      image: category.image.banner,
+      imageWidth,
+      imageHeight,
+    })(category),
   })),
 );
 
-export const getCategories = (): Effect.Effect<
+export const getCategories = (
+  {
+    imageWidth,
+    imageHeight,
+  }: { imageWidth?: number, imageHeight?: number } = {},
+): Effect.Effect<
 ReadonlyArray<CategoryProps>,
 PlatformError.PlatformError | ParseResult.ParseError,
 FileSystem.FileSystem
@@ -207,9 +226,10 @@ FileSystem.FileSystem
   Effect.map(JSON.parse),
   Effect.flatMap(Schema.decodeUnknown(categoriesCodec)),
   Effect.map(Array.map((category) => ({
-    id: category.id,
-    name: category.name,
-    uri: withBaseUrl(`/categories/${category.id}`),
-    description: 'Description',
+    ...prepareCategorySnippet({
+      image: category.image.thumbnail,
+      imageWidth,
+      imageHeight,
+    })(category),
   }))),
 );

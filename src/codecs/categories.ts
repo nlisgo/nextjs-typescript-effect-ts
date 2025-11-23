@@ -1,5 +1,5 @@
 import { Schema } from 'effect';
-import { imageCodec } from '@/codecs';
+import { imageCodec } from '@/codecs/image';
 
 const categoryIdShape = {
   name: Schema.String,
@@ -27,6 +27,7 @@ export const categoryCodec = Schema.Struct({
     thumbnail: imageCodec,
     banner: imageCodec,
   }),
+  hash: Schema.optional(Schema.String),
 });
 
 export const categorySnippetCodec = Schema.Struct({
@@ -36,9 +37,11 @@ export const categorySnippetCodec = Schema.Struct({
   }),
 });
 
-export const categoriesCodec = Schema.Struct({
+export const categoriesCodec = Schema.Array(
+  categorySnippetCodec,
+);
+
+export const paginatedCategoriesCodec = Schema.Struct({
   total: Schema.Int,
-  items: Schema.Array(
-    categorySnippetCodec,
-  ),
+  items: categoriesCodec,
 });

@@ -45,7 +45,7 @@ const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => Effe
   pipe(
     Effect.promise(async () => params),
     Effect.tap(({ category }) => Effect.sync(() => console.log(`[Page Generation] Building Category: ${category}`))),
-    Effect.flatMap(({ category: id }) => getCategory({ id })),
+    Effect.flatMap(({ category: id }) => getCategory({ id, imageWidth: 1114, imageHeight: 336 })),
     Effect.map(
       (cat) => (
         <Page>
@@ -53,7 +53,6 @@ const CategoryPage = async ({ params }: PageProps): Promise<JSX.Element> => Effe
             image={cat.image}
             title={cat.name}
             description={cat.description} />}
-          <h1>{cat.name}</h1>
           {cat.aimsAndScope && <Content content={cat.aimsAndScope} />}
         </Page>
       ),

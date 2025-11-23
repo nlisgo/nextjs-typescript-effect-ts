@@ -1,7 +1,10 @@
 export {
-  categoryCodec, categorySnippetCodec, categoryIdCodec, categoriesCodec,
+  categoryCodec,
+  categorySnippetCodec,
+  categoryIdCodec,
+  categoriesCodec,
+  paginatedCategoriesCodec,
 } from './categories';
 export { highlightCodec, highlightsCodec } from './highlights';
-export { imageCodec } from './image';
 export { reviewedPreprintCodec, reviewedPreprintsCodec } from './reviewed-preprints';
 export { titleCodec } from './title';
