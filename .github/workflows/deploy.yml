@@ -26,7 +26,6 @@ jobs:
       NEXT_USE_TURBOPACK: 0
       # Used to build absolute internal links (e.g. categories) during static export
       NEXT_PUBLIC_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
-      USE_PERSISTENT_CACHE: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -62,7 +61,7 @@ jobs:
         if: steps.get-run-id.outputs.result != ''
         uses: actions/download-artifact@v4
         with:
-          name: persistent-cached
+          name: persistent-cache
           path: .cached
           run-id: ${{ steps.get-run-id.outputs.result }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
