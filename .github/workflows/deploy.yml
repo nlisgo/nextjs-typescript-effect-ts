@@ -106,6 +106,15 @@ jobs:
       - name: Run tests
         run: npm run test
 
+      - name: Tsup
+        run: npm run tsup
+
+      - name: Top Up Reviewed Preprints
+        run: npm run top-up-reviewed-preprints
+
+      - name: Top Up Categories
+        run: npm run top-up-categories
+
       - name: Build Next.js app
         run: npm run build
 
@@ -118,12 +127,6 @@ jobs:
 
       - name: Build Storybook
         run: npm run build-storybook
-
-      - name: Tsup
-        run: npm run tsup
-
-      - name: Top Up Reviewed Preprints
-        run: npm run top-up-reviewed-preprints
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
