@@ -1,12 +1,11 @@
-import { createHash } from 'crypto';
 import { Error as PlatformError, FileSystem, HttpClient } from '@effect/platform';
 import {
   Array, Effect, Order, ParseResult, pipe, Schema,
 } from 'effect';
-import { categoryCodec, categoriesCodec, paginatedCategoriesCodec } from '@/codecs';
+import { categoryCodec, categoriesCodec } from '@/codecs';
 import { CategoryProps } from '@/components/Categories/Categories';
 import { iiifUri, stringifyJson, withBaseUrl } from '@/tools';
-import { retrieveIndividualItem } from '@/top-up/top-up';
+import { getCachedItems, getItemsTopUpPage, retrieveIndividualItem } from '@/top-up/top-up';
 import { CategorySnippet, Image } from '@/types';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/subjects';
@@ -30,28 +29,14 @@ const retrieveIndividualCategories = (
 
 const categoriesTopUpPath = ({ limit = 10, page = 1 }: { limit?: number, page?: number } = {}): string => `${apiBasePath}?order=asc&page=${page}&per-page=${Math.min(limit, 100)}`;
 
-const getCategoriesTopUpPage = ({ limit, page = 1 }: { limit: number, page?: number }) => pipe(
-  Effect.succeed(categoriesTopUpPath({ limit, page })),
-  Effect.tap(Effect.log),
-  Effect.flatMap(HttpClient.get),
-  Effect.flatMap((res) => res.json),
-  Effect.flatMap(Schema.decodeUnknown(paginatedCategoriesCodec)),
-  Effect.map((response) => response.items),
-  Effect.map(Array.map((item) => ({
-    ...item,
-    hash: createHash('md5').update(stringifyJson(item, false)).digest('hex'),
-  }))),
+const getCategoriesTopUpPage = (
+  { limit, page = 1 }: { limit: number, page?: number },
+) => getItemsTopUpPage(
+  categoriesTopUpPath({ limit, page }),
+  categoryCodec,
 );
 
-const getCachedCategories = (file?: string) => pipe(
-  Effect.flatMap(FileSystem.FileSystem, (fs) => fs.readFileString(file ?? getCachedListFile)),
-  Effect.flatMap((input) => Effect.try({
-    try: () => JSON.parse(input) as unknown,
-    catch: (error) => new Error(`Invalid JSON: ${stringifyJson(error, false)}`),
-  })),
-  Effect.catchAll(() => Effect.succeed([])),
-  Effect.flatMap(Schema.decodeUnknown(categoriesCodec)),
-);
+const getCachedCategories = getCachedItems(getCachedListFile, categoriesCodec);
 
 const missingIndividualCategories = pipe(
   getCachedCategories(),
