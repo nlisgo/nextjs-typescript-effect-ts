@@ -109,6 +109,9 @@ jobs:
       - name: Build Storybook
         run: npm run build-storybook
 
+      - name: Top Up Reviewed Preprints
+        run: npm run top-up-reviewed-preprints
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -119,6 +122,13 @@ jobs:
         with:
           name: persistent-cache
           path: .cache
+          include-hidden-files: true
+
+      - name: Upload cached
+        uses: actions/upload-artifact@v4
+        with:
+          name: persistent-cached
+          path: .cached
           include-hidden-files: true
 
   deploy:
