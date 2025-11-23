@@ -58,6 +58,16 @@ jobs:
             }
           result-encoding: string
 
+      - name: Download persistent cached
+        if: steps.get-run-id.outputs.result != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: persistent-cached
+          path: .cached
+          run-id: ${{ steps.get-run-id.outputs.result }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
       - name: Download persistent cache
         if: steps.get-run-id.outputs.result != ''
         uses: actions/download-artifact@v4
