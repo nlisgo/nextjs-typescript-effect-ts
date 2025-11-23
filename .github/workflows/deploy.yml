@@ -46,8 +46,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'deploy.yml',
-              status: 'completed',
-              conclusion: 'success',
+              // Ask only for successful runs so we don't accidentally pick a failed one
+              status: 'success',
               branch: context.ref.replace('refs/heads/', ''),
               per_page: 1
             });
