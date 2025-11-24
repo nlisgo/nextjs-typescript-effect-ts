@@ -8,6 +8,11 @@ on:
         description: "Start fresh: do not download the previous persistent cache"
         required: false
         default: false
+      persistent_cache_zip_url:
+        type: string
+        description: "Optional URL to a persistent-cache zip archive to seed .cache/"
+        required: false
+        default: ""
   push:
     branches:
       - main
@@ -63,12 +68,30 @@ jobs:
             }
           result-encoding: string
 
+      - name: Download persistent cache from provided zip
+        id: download-cache-zip
+        if: >
+          github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.persistent_cache_zip_url != '' &&
+          github.event.inputs.skip_persistent_cache != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p .cache
+          rm -rf .cache/*
+          curl -fL "${{ github.event.inputs.persistent_cache_zip_url }}" -o /tmp/persistent-cache.zip
+          unzip -q /tmp/persistent-cache.zip -d .cache
+        continue-on-error: true
+
       - name: Download persistent cache
         if: >
           steps.get-run-id.outputs.result != '' &&
           !(
             github.event_name == 'workflow_dispatch' &&
             github.event.inputs.skip_persistent_cache == 'true'
+          ) &&
+          !(
+            github.event_name == 'workflow_dispatch' &&
+            steps.download-cache-zip.outcome == 'success'
           )
         uses: actions/download-artifact@v4
         with:
