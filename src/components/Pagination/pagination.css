@@ -1,0 +1,23 @@
+@import "../../app/styles/theme.css";
+@import "tailwindcss";
+
+.pagination {
+  @apply flex items-center gap-3 text-base text-gray-900;
+}
+
+.pagination__link {
+  @apply inline-flex items-center gap-1 rounded-full border border-gray-900 bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+}
+
+.pagination__link:hover,
+.pagination__link:focus-visible {
+  @apply shadow-sm;
+}
+
+.pagination__link--disabled {
+  @apply cursor-not-allowed border-gray-300 bg-gray-200 text-gray-500 hover:bg-gray-200 hover:text-gray-500;
+}
+
+.pagination__summary {
+  @apply text-sm text-gray-700;
+}
