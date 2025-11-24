@@ -1,4 +1,4 @@
-name: Deploy Storybook Next app to GitHub Pages
+name: CI and Deploy Next app to GitHub Pages
 
 on:
   workflow_dispatch:
@@ -30,6 +30,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  chromatic:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          buildScriptName: build-storybook
+          exitZeroOnChanges: true
+
   build:
     runs-on: ubuntu-latest
     env:
@@ -141,7 +165,7 @@ jobs:
           include-hidden-files: true
 
   deploy:
-    needs: build
+    needs: [chromatic, build]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
