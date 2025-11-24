@@ -117,22 +117,13 @@ jobs:
         run: npm run tsup
 
       - name: Top Up Reviewed Preprints
-        run: |
-          f=.cached/reviewed-preprints.json; [ -f "$f" ] && jq 'length' "$f" || echo 0
-          npm run top-up-reviewed-preprints
-          f=.cached/reviewed-preprints.json; [ -f "$f" ] && jq 'length' "$f"
+        run: npm run top-up-reviewed-preprints
 
       - name: Top Up Categories
-        run: |
-          f=.cached/categories.json; [ -f "$f" ] && jq 'length' "$f" || echo 0
-          npm run top-up-categories
-          f=.cached/categories.json; [ -f "$f" ] && jq 'length' "$f"
+        run: npm run top-up-categories
 
       - name: Top Up Highlights
-        run: |
-          f=.cached/highlights.json; [ -f "$f" ] && jq 'length' "$f" || echo 0
-          npm run top-up-highlights
-          f=.cached/highlights.json; [ -f "$f" ] && jq 'length' "$f"
+        run: npm run top-up-highlights
 
       - name: Build Next.js app
         run: npm run build

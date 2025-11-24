@@ -100,6 +100,8 @@ const reviewedPreprintsTopUpWrite = ({ limit, total }: { limit: number, total?: 
   Effect.flatMap((cached) => getReviewedPreprintsTopUp(
     { limit, offset: offsetFromTotalCachedAndLimit(total ?? 0, cached.length, limit) },
   )),
+  Effect.tap((reviewedPreprints) => Effect.log(`Topping up ${reviewedPreprints.length} Reviewed Preprints`)),
+  Effect.tap((reviewedPreprints) => Effect.log(reviewedPreprints.map(({ id }) => id).reverse())),
   Effect.map((reviewedPreprints) => stringifyJson(reviewedPreprints)),
   Effect.tap(
     (reviewedPreprints) => Effect.flatMap(
@@ -113,6 +115,8 @@ const reviewedPreprintsTopUpCombine = () => pipe(
     getCachedReviewedPreprints(getCachedListFileNew),
     getCachedReviewedPreprints(),
   ]),
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Effect.tap(([_, before]) => Effect.log(`Total before: ${before.length}`)),
   Effect.map((lists) => Array.appendAll(...lists)),
   Effect.map(Array.dedupeWith((a, b) => a.id === b.id)),
   Effect.map(
@@ -122,6 +126,7 @@ const reviewedPreprintsTopUpCombine = () => pipe(
       ) as Order.Order<ReviewedPreprint>,
     ),
   ),
+  Effect.tap((after) => Effect.log(`Total after: ${after.length}`)),
   Effect.map((reviewedPreprints) => stringifyJson(reviewedPreprints)),
   Effect.tap(
     (reviewedPreprints) => Effect.flatMap(

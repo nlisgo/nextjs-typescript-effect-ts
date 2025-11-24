@@ -19,6 +19,7 @@ const getHighlightsTopUpPage = () => getItemsTopUpPage(
 
 const highlightsTopUpWrite = () => pipe(
   getHighlightsTopUpPage(),
+  Effect.tap((after) => Effect.log(`Total after: ${after.length}`)),
   Effect.map(stringifyJson),
   Effect.tap(
     (highlights) => Effect.flatMap(

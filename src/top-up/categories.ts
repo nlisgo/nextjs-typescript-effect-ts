@@ -86,6 +86,8 @@ const categoriesTopUpWrite = ({ limit, total }: { limit: number, total?: number 
   Effect.flatMap((cached) => getCategoriesTopUp(
     { limit, offset: offsetFromTotalCachedAndLimit(total ?? 0, cached.length, limit) },
   )),
+  Effect.tap((categories) => Effect.log(`Topping up ${categories.length} Categories`)),
+  Effect.tap((categories) => Effect.log(categories.map(({ id }) => id).reverse())),
   Effect.map((categories) => stringifyJson(categories)),
   Effect.tap(
     (categories) => Effect.flatMap(
@@ -96,9 +98,11 @@ const categoriesTopUpWrite = ({ limit, total }: { limit: number, total?: number 
 
 const categoriesTopUpCombine = () => pipe(
   Effect.all([
-    getCachedCategories(),
     getCachedCategories(getCachedListFileNew),
+    getCachedCategories(),
   ]),
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Effect.tap(([_, before]) => Effect.log(`Total before: ${before.length}`)),
   Effect.map((lists) => Array.appendAll(...lists)),
   Effect.map(Array.dedupeWith((a, b) => a.id === b.id)),
   Effect.map(
@@ -106,6 +110,7 @@ const categoriesTopUpCombine = () => pipe(
       Order.mapInput(Order.string, (item: CategorySnippet) => item.id),
     ),
   ),
+  Effect.tap((after) => Effect.log(`Total after: ${after.length}`)),
   Effect.map((categories) => stringifyJson(categories)),
   Effect.tap(
     (categories) => Effect.flatMap(
