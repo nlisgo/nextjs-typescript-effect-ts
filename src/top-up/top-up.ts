@@ -84,3 +84,15 @@ export const getCachedItems = <A, I = unknown, Req = never>(
     Effect.map((input) => JSON.parse(input) as unknown),
     Effect.flatMap(Schema.decodeUnknown(schema)),
   );
+
+export const offsetFromTotalCachedAndLimit = (
+  total: number,
+  cached: number,
+  limit: number,
+): number => {
+  if (total > 0 && total <= cached + limit) {
+    return Math.max(0, total - limit);
+  }
+
+  return cached;
+};

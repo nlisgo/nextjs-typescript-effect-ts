@@ -5,7 +5,12 @@ import {
 import { categoryCodec, categoriesCodec } from '@/codecs';
 import { CategoryProps } from '@/components/Categories/Categories';
 import { iiifUri, stringifyJson, withBaseUrl } from '@/tools';
-import { getCachedItems, getItemsTopUpPage, retrieveIndividualItem } from '@/top-up/top-up';
+import {
+  getCachedItems,
+  getItemsTopUpPage,
+  offsetFromTotalCachedAndLimit,
+  retrieveIndividualItem,
+} from '@/top-up/top-up';
 import { CategorySnippet, Image } from '@/types';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/subjects';
@@ -28,6 +33,15 @@ const retrieveIndividualCategories = (
 );
 
 const categoriesTopUpPath = ({ limit = 10, page = 1 }: { limit?: number, page?: number } = {}): string => `${apiBasePath}?order=asc&page=${page}&per-page=${Math.min(limit, 100)}`;
+
+const getCategoriesTotal = () => pipe(
+  categoriesTopUpPath({ limit: 1 }),
+  HttpClient.get,
+  Effect.flatMap((response) => response.json),
+  Effect.flatMap(Schema.decodeUnknown(Schema.Struct({ total: Schema.Int }))),
+  Effect.map(({ total }) => total),
+  Effect.catchAll(() => Effect.succeed(-1)),
+);
 
 const getCategoriesTopUpPage = (
   { limit, page = 1 }: { limit: number, page?: number },
@@ -67,9 +81,11 @@ const getCategoriesTopUp = ({ limit, offset = 0 }: { limit: number, offset?: num
   Effect.map((results) => results.slice(offset % limit, (offset % limit) + limit)),
 );
 
-const categoriesTopUpWrite = ({ limit }: { limit: number }) => pipe(
+const categoriesTopUpWrite = ({ limit, total }: { limit: number, total?: number }) => pipe(
   getCachedCategories(),
-  Effect.flatMap((cached) => getCategoriesTopUp({ limit, offset: cached.length })),
+  Effect.flatMap((cached) => getCategoriesTopUp(
+    { limit, offset: offsetFromTotalCachedAndLimit(total ?? 0, cached.length, limit) },
+  )),
   Effect.map((categories) => stringifyJson(categories)),
   Effect.tap(
     (categories) => Effect.flatMap(
@@ -125,7 +141,8 @@ export const categoriesTopUp = (
   { limit }: { limit: number },
 ): Effect.Effect<void, never, FileSystem.FileSystem | HttpClient.HttpClient> => pipe(
   createCacheFolder(),
-  Effect.flatMap(() => categoriesTopUpWrite({ limit })),
+  Effect.flatMap(getCategoriesTotal),
+  Effect.flatMap((total) => categoriesTopUpWrite({ limit, total })),
   Effect.flatMap(categoriesTopUpInvalidate),
   Effect.flatMap(categoriesTopUpCombine),
   Effect.flatMap(categoriesTopUpTidyUp),

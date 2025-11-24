@@ -4,7 +4,12 @@ import {
 } from 'effect';
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { stringifyJson, withBaseUrl } from '@/tools';
-import { getCachedItems, getItemsTopUpPage, retrieveIndividualItem } from '@/top-up/top-up';
+import {
+  getCachedItems,
+  getItemsTopUpPage,
+  offsetFromTotalCachedAndLimit,
+  retrieveIndividualItem,
+} from '@/top-up/top-up';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/reviewed-preprints';
 const getCachedFilePath = '.cached/reviewed-preprints';
@@ -89,14 +94,6 @@ const getReviewedPreprintsTopUp = ({ limit, offset = 0 }: { limit: number, offse
   Effect.map((pages) => pages.flat()),
   Effect.map((results) => results.slice(offset % limit, (offset % limit) + limit)),
 );
-
-const offsetFromTotalCachedAndLimit = (total: number, cached: number, limit: number) => {
-  if (total > 0 && total <= cached + limit) {
-    return total - limit;
-  }
-
-  return cached;
-};
 
 const reviewedPreprintsTopUpWrite = ({ limit, total }: { limit: number, total?: number }) => pipe(
   getCachedReviewedPreprints(),
