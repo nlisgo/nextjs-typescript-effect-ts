@@ -52,7 +52,6 @@ jobs:
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           buildScriptName: build-storybook
-          exitZeroOnChanges: true
 
   build:
     runs-on: ubuntu-latest
@@ -79,7 +78,7 @@ jobs:
             const runs = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: 'deploy.yml',
+              workflow_id: 'ci.yml',
               // Ask only for successful runs so we don't accidentally pick a failed one
               status: 'success',
               branch: context.ref.replace('refs/heads/', ''),
