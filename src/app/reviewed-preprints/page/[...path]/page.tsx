@@ -85,15 +85,15 @@ const ReviewedPreprintsPagedPage = async ({ params }: PageProps): Promise<JSX.El
 
   return (
     <Page>
-      <section key={`reviewed-preprints-page-${pageNumber}`}>
-        <Teasers title="Reviewed Preprints" teasers={teasers} />
-      </section>
       <Pagination
         currentPage={pageNumber}
         pageSize={ITEMS_PER_PAGE}
         totalItems={totalItems}
         hrefBuilder={(page) => withBaseUrl(`/reviewed-preprints/page/${page}`)}
       />
+      <section key={`reviewed-preprints-page-${pageNumber}`}>
+        <Teasers title="Reviewed Preprints" teasers={teasers} />
+      </section>
     </Page>
   );
 };
