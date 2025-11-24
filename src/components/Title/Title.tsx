@@ -3,7 +3,7 @@ import './title.css';
 import { TitleContent } from '@/types/title';
 
 type TitleProps = {
-  content: TitleContent,
+  content: TitleContent;
 };
 
 const prepareContent = (content: TitleContent) => {
@@ -28,10 +28,4 @@ const prepareContent = (content: TitleContent) => {
   });
 };
 
-export const Title = ({
-  content,
-}: TitleProps): JSX.Element => (
-  <>
-    {prepareContent(content)}
-  </>
-);
+export const Title = ({ content }: TitleProps): JSX.Element => <>{prepareContent(content)}</>;

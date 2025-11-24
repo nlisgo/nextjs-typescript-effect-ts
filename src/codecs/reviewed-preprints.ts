@@ -4,22 +4,20 @@ import { titleCodec } from '@/codecs/title';
 
 const continuumReviewedPreprintCodec = Schema.Struct({
   id: Schema.String,
-  published: Schema.optional(
-    Schema.String,
-  ),
-  statusDate: Schema.optional(
-    Schema.String,
-  ),
+  published: Schema.optional(Schema.String),
+  statusDate: Schema.optional(Schema.String),
   title: Schema.String,
   doi: Schema.String,
   authorLine: Schema.String,
   subjects: Schema.Array(categoryIdCodec),
   version: Schema.Int,
   elifeAssessment: Schema.Struct({
-    content: Schema.NonEmptyArray(Schema.Struct({
-      type: Schema.Literal('paragraph'),
-      text: Schema.String,
-    })),
+    content: Schema.NonEmptyArray(
+      Schema.Struct({
+        type: Schema.Literal('paragraph'),
+        text: Schema.String,
+      }),
+    ),
     significance: Schema.Array(Schema.String),
     strength: Schema.optional(Schema.Array(Schema.String)),
   }),
@@ -27,9 +25,7 @@ const continuumReviewedPreprintCodec = Schema.Struct({
 
 const continuumReviewedPreprintsCodec = Schema.Struct({
   total: Schema.Int,
-  items: Schema.Array(
-    continuumReviewedPreprintCodec,
-  ),
+  items: Schema.Array(continuumReviewedPreprintCodec),
 });
 
 export const reviewedPreprintsCodec = continuumReviewedPreprintsCodec;

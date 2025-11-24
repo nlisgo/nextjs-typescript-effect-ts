@@ -1,7 +1,6 @@
 @theme {
   /* Custom colors */
   --color-brand: #555ab9;
-    
 
   /* Custom font families */
   --font-family-handwriting: Caveat, cursive;
@@ -21,6 +20,11 @@
 
 /* Custom keyframes */
 @keyframes wiggle {
-  0%, 100% { transform: rotate(-3deg); }
-  50% { transform: rotate(3deg); }
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
 }

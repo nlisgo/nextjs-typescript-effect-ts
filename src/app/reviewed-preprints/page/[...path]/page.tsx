@@ -13,8 +13,8 @@ const ITEMS_PER_PAGE = 20;
 
 type PageProps = {
   params: Promise<{
-    path?: Array<string> | string,
-  }>,
+    path?: Array<string> | string;
+  }>;
 };
 
 const parsePageNumber = (path?: Array<string> | string): number => {
@@ -36,13 +36,12 @@ export const generateStaticParams = async (): Promise<Array<{ path: Array<string
     pipe(
       getReviewedPreprints(),
       Effect.map((rps) => Math.ceil(rps.length / ITEMS_PER_PAGE)),
-      Effect.map((totalPages) => Array.from(
-        { length: totalPages },
-        (_, index) => ({ path: [`${index + 1}`] }),
-      )),
-    ).pipe(
-      Effect.provide(MainLayer),
-    ),
+      Effect.map((totalPages) =>
+        Array.from({ length: totalPages }, (_, index) => ({
+          path: [`${index + 1}`],
+        })),
+      ),
+    ).pipe(Effect.provide(MainLayer)),
   );
 };
 
@@ -53,9 +52,7 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
     return { title: 'Reviewed Preprints' };
   }
   return {
-    title: pageNumber > 1
-      ? `Reviewed Preprints (Page ${pageNumber})`
-      : 'Reviewed Preprints',
+    title: pageNumber > 1 ? `Reviewed Preprints (Page ${pageNumber})` : 'Reviewed Preprints',
   };
 };
 
@@ -67,13 +64,7 @@ const ReviewedPreprintsPagedPage = async ({ params }: PageProps): Promise<JSX.El
     notFound();
   }
 
-  const reviewedPreprints = await Effect.runPromise(
-    pipe(
-      getReviewedPreprints(),
-    ).pipe(
-      Effect.provide(MainLayer),
-    ),
-  );
+  const reviewedPreprints = await Effect.runPromise(pipe(getReviewedPreprints()).pipe(Effect.provide(MainLayer)));
 
   const totalItems = reviewedPreprints.length;
   const start = (pageNumber - 1) * ITEMS_PER_PAGE;

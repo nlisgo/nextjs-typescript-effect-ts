@@ -24,13 +24,11 @@ export const metadata: Metadata = {
 const RootLayout = ({
   children,
 }: Readonly<{
-  children: React.ReactNode,
-}>): JSX.Element => <html lang="en">
-  <body
-    className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-  >
-    {children}
-  </body>
-</html>;
+  children: React.ReactNode;
+}>): JSX.Element => (
+  <html lang="en">
+    <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+  </html>
+);
 
 export default RootLayout;

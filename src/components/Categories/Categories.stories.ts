@@ -14,17 +14,20 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     title: 'Categories',
-    categories: Array<number>(18).fill(1).map((_, i) => i + 1).map((i) => ({
-      id: `category-${i}`,
-      name: `Category ${i}`,
-      uri: '#',
-      image: {
-        uri: dummyImage(80, 80, `category-${i}`),
-        alt: 'Alt text',
-        width: 80,
-        height: 80,
-      },
-      description: 'This is the description',
-    })),
+    categories: new Array(18)
+      .fill(1)
+      .map((_, i) => i + 1)
+      .map((i) => ({
+        id: `category-${i}`,
+        name: `Category ${i}`,
+        uri: '#',
+        image: {
+          uri: dummyImage(80, 80, `category-${i}`),
+          alt: 'Alt text',
+          width: 80,
+          height: 80,
+        },
+        description: 'This is the description',
+      })),
   },
 };

@@ -10,13 +10,22 @@ export const metadata: Metadata = {
   title: 'Categories',
 };
 
-const CategoriesPage = async (): Promise<JSX.Element> => Effect.runPromise(
-  getCategories().pipe(
-    Effect.map(Either.fromNullable(() => new Error('no categories found'))),
-    Effect.flatMap(Either.map((cats) => <Page><section key="categories"><Categories title="Categories" categories={[...cats]} /></section></Page>)),
-  ).pipe(
-    Effect.provide(MainLayer),
-  ),
-);
+const CategoriesPage = async (): Promise<JSX.Element> =>
+  Effect.runPromise(
+    getCategories()
+      .pipe(
+        Effect.map(Either.fromNullable(() => new Error('no categories found'))),
+        Effect.flatMap(
+          Either.map((cats) => (
+            <Page>
+              <section key="categories">
+                <Categories title="Categories" categories={[...cats]} />
+              </section>
+            </Page>
+          )),
+        ),
+      )
+      .pipe(Effect.provide(MainLayer)),
+  );
 
 export default CategoriesPage;

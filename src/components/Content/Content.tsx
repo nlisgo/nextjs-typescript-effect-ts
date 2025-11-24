@@ -2,24 +2,24 @@ import type { JSX } from 'react';
 import './content.css';
 
 type Paragraph = {
-  type: 'paragraph',
-  text: string,
+  type: 'paragraph';
+  text: string;
 };
 
 type ContentProps = {
-  content: ReadonlyArray<Paragraph>,
+  content: ReadonlyArray<Paragraph>;
 };
 
-export const Content = ({
-  content,
-}: ContentProps): JSX.Element => (
+export const Content = ({ content }: ContentProps): JSX.Element => (
   <>
-    {content.map((item, i) => <p
-      key={i}
-      className="category__description"
-      dangerouslySetInnerHTML={{
-        __html: item.text,
-      }}
-    />)}
+    {content.map((item, i) => (
+      <p
+        key={i}
+        className="category__description"
+        dangerouslySetInnerHTML={{
+          __html: item.text,
+        }}
+      />
+    ))}
   </>
 );

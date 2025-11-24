@@ -1,5 +1,5 @@
-@import "../../app/styles/theme.css";
-@import "tailwindcss";
+@import '../../app/styles/theme.css';
+@import 'tailwindcss';
 
 .storybook-button {
   @apply inline-block cursor-pointer border-0 rounded-[3em] font-bold leading-none font-['Nunito_Sans','Helvetica_Neue',Helvetica,Arial,sans-serif];

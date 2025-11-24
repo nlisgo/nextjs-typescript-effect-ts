@@ -5,7 +5,7 @@ import { Header } from '../Header/Header';
 import './page.css';
 
 type User = {
-  name: string,
+  name: string;
 };
 
 export const Page = ({ children }: PropsWithChildren): JSX.Element => {
@@ -20,9 +20,7 @@ export const Page = ({ children }: PropsWithChildren): JSX.Element => {
         onCreateAccount={() => setUser({ name: 'Jane Doe' })}
       />
 
-      <section className="content-wrapper">
-        {children}
-      </section>
+      <section className="content-wrapper">{children}</section>
     </>
   );
 };

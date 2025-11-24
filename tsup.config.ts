@@ -10,10 +10,12 @@ const entries = (() => {
 
   const shouldExclude = (filePath: string) => {
     const normalized = filePath.replace(/\\/g, '/');
-    return normalized.includes('/app/')
-      || normalized.endsWith('.d.ts')
-      || normalized.endsWith('.test.ts')
-      || normalized.endsWith('.stories.ts');
+    return (
+      normalized.includes('/app/') ||
+      normalized.endsWith('.d.ts') ||
+      normalized.endsWith('.test.ts') ||
+      normalized.endsWith('.stories.ts')
+    );
   };
 
   const walk = (dir: string) => {

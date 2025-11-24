@@ -5,11 +5,7 @@ import { NodeContext, NodeFileSystem, NodeRuntime } from '@effect/platform-node'
 import { Effect } from 'effect';
 import { highlightsTopUp } from '@/top-up/highlights';
 
-const command = Command.make(
-  'top-up-categories',
-  {},
-  () => highlightsTopUp(),
-);
+const command = Command.make('top-up-categories', {}, () => highlightsTopUp());
 
 const cliApp = Command.run(command, {
   name: 'top-up-highlights',
@@ -25,10 +21,9 @@ const AppLayer = [
   FetchHttpClient.layer,
 ] as const;
 
-cliApp(process.argv)
-  .pipe(
-    Effect.provide(AppLayer),
-    NodeRuntime.runMain({
-      disableErrorReporting: true,
-    }),
-  );
+cliApp(process.argv).pipe(
+  Effect.provide(AppLayer),
+  NodeRuntime.runMain({
+    disableErrorReporting: true,
+  }),
+);

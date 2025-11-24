@@ -12,35 +12,39 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const exampleTeaserImage = (credit: boolean = true) => (i: number): TeaserImageProps => ({
-  uri: dummyImage(80, 80, `teaser-${i}`),
-  alt: `Placeholder image for teaser ${i}`,
-  width: 80,
-  height: 80,
-  credit: credit ? `Credit ${i}` : undefined,
-});
+const exampleTeaserImage =
+  (credit: boolean = true) =>
+  (i: number): TeaserImageProps => ({
+    uri: dummyImage(80, 80, `teaser-${i}`),
+    alt: `Placeholder image for teaser ${i}`,
+    width: 80,
+    height: 80,
+    credit: credit ? `Credit ${i}` : undefined,
+  });
 
-const exampleTeaser = ({
-  title,
-  description,
-  published,
-  image = undefined,
-  categories,
-}: {
-  title?: string,
-  published?: Date,
-  description?: string,
-  image?: (i: number) => TeaserImageProps,
-  categories?: ReadonlyArray<CategoryId>,
-}) => (i: number) => ({
-  id: `${i}`,
-  title: title ?? `Complete Teaser ${i + 1}`,
-  uri: '#',
-  published,
-  description: description ?? 'This is the description',
-  image: image ? image(i + 1) : image,
-  categories,
-});
+const exampleTeaser =
+  ({
+    title,
+    description,
+    published,
+    image = undefined,
+    categories,
+  }: {
+    title?: string;
+    published?: Date;
+    description?: string;
+    image?: (i: number) => TeaserImageProps;
+    categories?: ReadonlyArray<CategoryId>;
+  }) =>
+  (i: number) => ({
+    id: `${i}`,
+    title: title ?? `Complete Teaser ${i + 1}`,
+    uri: '#',
+    published,
+    description: description ?? 'This is the description',
+    image: image ? image(i + 1) : image,
+    categories,
+  });
 
 export const Default: Story = {
   args: {
@@ -65,7 +69,10 @@ export const Default: Story = {
           { id: 'category-three', name: 'Category Three' },
         ],
       }),
-      exampleTeaser({ title: 'Image without credit', image: exampleTeaserImage(false) }),
+      exampleTeaser({
+        title: 'Image without credit',
+        image: exampleTeaserImage(false),
+      }),
     ].map((teaser, i) => teaser(i + 1)),
   },
 };

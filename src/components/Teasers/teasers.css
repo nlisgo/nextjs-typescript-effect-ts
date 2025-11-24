@@ -1,5 +1,5 @@
-@import "../../app/styles/theme.css";
-@import "tailwindcss";
+@import '../../app/styles/theme.css';
+@import 'tailwindcss';
 
 .teasers {
   @apply w-full px-1 sm:px-4 lg:px-8 py-8 bg-white;

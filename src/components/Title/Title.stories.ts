@@ -22,16 +22,12 @@ export const Complex: Story = {
       'This ',
       {
         type: 'Emphasis',
-        content: [
-          'is',
-        ],
+        content: ['is'],
       },
       ' a ',
       {
         type: 'Subscript',
-        content: [
-          'more',
-        ],
+        content: ['more'],
       },
       ' of a complex title',
     ],

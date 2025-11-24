@@ -12,6 +12,4 @@ export const highlightCodec = Schema.Struct({
   hash: Schema.optional(Schema.String),
 });
 
-export const highlightsCodec = Schema.Array(
-  highlightCodec,
-);
+export const highlightsCodec = Schema.Array(highlightCodec);

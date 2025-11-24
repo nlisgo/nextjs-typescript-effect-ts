@@ -9,13 +9,5 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "exclude": [
-    "src/app/**",
-    "**/*.test.ts",
-    "**/*.stories.ts",
-    "node_modules",
-    ".next",
-    "dist",
-    "out"
-  ]
+  "exclude": ["src/app/**", "**/*.test.ts", "**/*.stories.ts", "node_modules", ".next", "dist", "out"]
 }

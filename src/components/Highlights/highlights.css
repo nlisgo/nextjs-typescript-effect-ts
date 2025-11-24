@@ -1,5 +1,5 @@
-@import "../../app/styles/theme.css";
-@import "tailwindcss";
+@import '../../app/styles/theme.css';
+@import 'tailwindcss';
 
 .highlights {
   @apply w-full px-1 lg:px-8 py-8 bg-white;

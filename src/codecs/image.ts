@@ -12,9 +12,5 @@ export const imageCodec = Schema.Struct({
     width: Schema.Int,
     height: Schema.Int,
   }),
-  attribution: Schema.optional(
-    Schema.Array(
-      Schema.String,
-    ),
-  ),
+  attribution: Schema.optional(Schema.Array(Schema.String)),
 });

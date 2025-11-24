@@ -1,8 +1,8 @@
 export {
-  categoryCodec,
-  categorySnippetCodec,
-  categoryIdCodec,
   categoriesCodec,
+  categoryCodec,
+  categoryIdCodec,
+  categorySnippetCodec,
   paginatedCategoriesCodec,
 } from './categories';
 export { highlightCodec, highlightsCodec } from './highlights';

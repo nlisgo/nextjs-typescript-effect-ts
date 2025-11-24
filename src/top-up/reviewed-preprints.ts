@@ -1,7 +1,5 @@
-import { Error as PlatformError, FileSystem, HttpClient } from '@effect/platform';
-import {
-  Array, Effect, Order, ParseResult, pipe, Schema,
-} from 'effect';
+import { FileSystem, HttpClient, Error as PlatformError } from '@effect/platform';
+import { Array, Effect, Order, ParseResult, pipe, Schema } from 'effect';
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { stringifyJson, withBaseUrl } from '@/tools';
 import {
@@ -27,150 +25,152 @@ const reviewedPreprintItemCodec = Schema.Struct({
 
 type ReviewedPreprint = Schema.Schema.Type<typeof reviewedPreprintItemCodec>;
 
-const reviewedPreprintsCodec = Schema.Array(
-  reviewedPreprintItemCodec,
-);
+const reviewedPreprintsCodec = Schema.Array(reviewedPreprintItemCodec);
 
 const retrieveIndividualReviewedPreprint = retrieveIndividualItem(apiBasePath, reviewedPreprintItemCodec);
 
-const retrieveIndividualReviewedPreprints = (
-  reviewedPreprints: Array<{ msid: string, path: string }>,
-) => pipe(
-  reviewedPreprints.map(({ msid: id, path }) => ({ id, path })),
-  Effect.forEach(
-    retrieveIndividualReviewedPreprint,
-    {
+const retrieveIndividualReviewedPreprints = (reviewedPreprints: Array<{ msid: string; path: string }>) =>
+  pipe(
+    reviewedPreprints.map(({ msid: id, path }) => ({ id, path })),
+    Effect.forEach(retrieveIndividualReviewedPreprint, {
       // this is the default, but you can be explicit:
       concurrency: 'unbounded',
-    },
-  ),
-);
+    }),
+  );
 
-const reviewedPreprintsTopUpPath = ({ limit = 10, page = 1 }: { limit?: number, page?: number } = {}): string => `${apiBasePath}?order=asc&page=${page}&per-page=${Math.min(limit, 100)}`;
+const reviewedPreprintsTopUpPath = ({
+  limit = 10,
+  page = 1,
+}: {
+  limit?: number;
+  page?: number;
+} = {}): string => `${apiBasePath}?order=asc&page=${page}&per-page=${Math.min(limit, 100)}`;
 
-const getReviewedPreprintsTotal = () => pipe(
-  reviewedPreprintsTopUpPath({ limit: 1 }),
-  HttpClient.get,
-  Effect.flatMap((response) => response.json),
-  Effect.flatMap(Schema.decodeUnknown(Schema.Struct({ total: Schema.Int }))),
-  Effect.map(({ total }) => total),
-  Effect.catchAll(() => Effect.succeed(-1)),
-);
+const getReviewedPreprintsTotal = () =>
+  pipe(
+    reviewedPreprintsTopUpPath({ limit: 1 }),
+    HttpClient.get,
+    Effect.flatMap((response) => response.json),
+    Effect.flatMap(Schema.decodeUnknown(Schema.Struct({ total: Schema.Int }))),
+    Effect.map(({ total }) => total),
+    Effect.catchAll(() => Effect.succeed(-1)),
+  );
 
-const getReviewedPreprintsTopUpPage = (
-  { limit, page = 1 }: { limit: number, page?: number },
-) => getItemsTopUpPage(
-  reviewedPreprintsTopUpPath({ limit, page }),
-  reviewedPreprintItemCodec,
-);
+const getReviewedPreprintsTopUpPage = ({ limit, page = 1 }: { limit: number; page?: number }) =>
+  getItemsTopUpPage(reviewedPreprintsTopUpPath({ limit, page }), reviewedPreprintItemCodec);
 
 const getCachedReviewedPreprints = getCachedItems(getCachedListFile, reviewedPreprintsCodec);
 
 const missingIndividualReviewedPreprints = pipe(
   getCachedReviewedPreprints(),
   Effect.map(Array.map(({ id: msid }) => msid)),
-  Effect.flatMap((paths) => Effect.flatMap(FileSystem.FileSystem, (fs) => Effect.all(
-    paths.map((msid) => fs.exists(`${getCachedFilePath}/${msid}.json`)
-      .pipe(Effect.catchAll(() => Effect.succeed(false)))
-      .pipe(Effect.map((exists) => ({ msid, path: getCachedFile(msid), exists })))),
-  ))),
-  Effect.map(
-    (results) => results
-      .filter(({ exists }) => !exists)
-      .map(({ msid, path }) => ({ msid, path })),
-  ),
-);
-
-const retrieveMissingIndividualReviewedPreprints = () => pipe(
-  missingIndividualReviewedPreprints,
-  Effect.flatMap(retrieveIndividualReviewedPreprints),
-);
-
-const getReviewedPreprintsTopUp = ({ limit, offset = 0 }: { limit: number, offset?: number }) => pipe(
-  offset > 0 ? Math.floor((offset + limit) / limit) : 1,
-  (page) => [page, ...((page > 0 && offset % limit > 0) ? [page + 1] : [])],
-  Array.map((page) => getReviewedPreprintsTopUpPage({ limit, page })),
-  Effect.all,
-  Effect.map((pages) => pages.flat()),
-  Effect.map((results) => results.slice(offset % limit, (offset % limit) + limit)),
-);
-
-const reviewedPreprintsTopUpWrite = ({ limit, total }: { limit: number, total?: number }) => pipe(
-  getCachedReviewedPreprints(),
-  Effect.flatMap((cached) => getReviewedPreprintsTopUp(
-    { limit, offset: offsetFromTotalCachedAndLimit(total ?? 0, cached.length, limit) },
-  )),
-  Effect.tap((reviewedPreprints) => Effect.log(`Topping up ${reviewedPreprints.length} Reviewed Preprints`)),
-  Effect.tap((reviewedPreprints) => Effect.log(reviewedPreprints.map(({ id }) => id).reverse())),
-  Effect.map((reviewedPreprints) => stringifyJson(reviewedPreprints)),
-  Effect.tap(
-    (reviewedPreprints) => Effect.flatMap(
-      FileSystem.FileSystem, (fs) => fs.writeFileString(getCachedListFileNew, reviewedPreprints),
+  Effect.flatMap((paths) =>
+    Effect.flatMap(FileSystem.FileSystem, (fs) =>
+      Effect.all(
+        paths.map((msid) =>
+          fs
+            .exists(`${getCachedFilePath}/${msid}.json`)
+            .pipe(Effect.catchAll(() => Effect.succeed(false)))
+            .pipe(
+              Effect.map((exists) => ({
+                msid,
+                path: getCachedFile(msid),
+                exists,
+              })),
+            ),
+        ),
+      ),
     ),
   ),
+  Effect.map((results) => results.filter(({ exists }) => !exists).map(({ msid, path }) => ({ msid, path }))),
 );
 
-const reviewedPreprintsTopUpCombine = () => pipe(
-  Effect.all([
-    getCachedReviewedPreprints(getCachedListFileNew),
+const retrieveMissingIndividualReviewedPreprints = () =>
+  pipe(missingIndividualReviewedPreprints, Effect.flatMap(retrieveIndividualReviewedPreprints));
+
+const getReviewedPreprintsTopUp = ({ limit, offset = 0 }: { limit: number; offset?: number }) =>
+  pipe(
+    offset > 0 ? Math.floor((offset + limit) / limit) : 1,
+    (page) => [page, ...(page > 0 && offset % limit > 0 ? [page + 1] : [])],
+    Array.map((page) => getReviewedPreprintsTopUpPage({ limit, page })),
+    Effect.all,
+    Effect.map((pages) => pages.flat()),
+    Effect.map((results) => results.slice(offset % limit, (offset % limit) + limit)),
+  );
+
+const reviewedPreprintsTopUpWrite = ({ limit, total }: { limit: number; total?: number }) =>
+  pipe(
     getCachedReviewedPreprints(),
-  ]),
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Effect.tap(([_, before]) => Effect.log(`Total before: ${before.length}`)),
-  Effect.map((lists) => Array.appendAll(...lists)),
-  Effect.map(Array.dedupeWith((a, b) => a.id === b.id)),
-  Effect.map(
-    Array.sort(
-      Order.reverse(
-        Order.mapInput(Order.number, (item) => item.statusDate.getTime()),
-      ) as Order.Order<ReviewedPreprint>,
+    Effect.flatMap((cached) =>
+      getReviewedPreprintsTopUp({
+        limit,
+        offset: offsetFromTotalCachedAndLimit(total ?? 0, cached.length, limit),
+      }),
     ),
-  ),
-  Effect.tap((after) => Effect.log(`Total after: ${after.length}`)),
-  Effect.map((reviewedPreprints) => stringifyJson(reviewedPreprints)),
-  Effect.tap(
-    (reviewedPreprints) => Effect.flatMap(
-      FileSystem.FileSystem, (fs) => fs.writeFileString(getCachedListFile, reviewedPreprints),
+    Effect.tap((reviewedPreprints) => Effect.log(`Topping up ${reviewedPreprints.length} Reviewed Preprints`)),
+    Effect.tap((reviewedPreprints) => Effect.log(reviewedPreprints.map(({ id }) => id).reverse())),
+    Effect.map((reviewedPreprints) => stringifyJson(reviewedPreprints)),
+    Effect.tap((reviewedPreprints) =>
+      Effect.flatMap(FileSystem.FileSystem, (fs) => fs.writeFileString(getCachedListFileNew, reviewedPreprints)),
     ),
-  ),
-);
+  );
 
-const reviewedPreprintsTopUpInvalidate = () => pipe(
-  getCachedReviewedPreprints(getCachedListFileNew),
-  Effect.map(Array.map(({ id: msid }) => getCachedFile(msid))),
-  Effect.flatMap((paths) => Effect.flatMap(
-    FileSystem.FileSystem,
-    (fs) => Effect.forEach(
-      paths,
-      (path) => fs.remove(path, { force: true }),
-      { discard: true },
+const reviewedPreprintsTopUpCombine = () =>
+  pipe(
+    Effect.all([getCachedReviewedPreprints(getCachedListFileNew), getCachedReviewedPreprints()]),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Effect.tap(([_, before]) => Effect.log(`Total before: ${before.length}`)),
+    Effect.map((lists) => Array.appendAll(...lists)),
+    Effect.map(Array.dedupeWith((a, b) => a.id === b.id)),
+    Effect.map(
+      Array.sort(
+        Order.reverse(
+          Order.mapInput(Order.number, (item) => item.statusDate.getTime()),
+        ) as Order.Order<ReviewedPreprint>,
+      ),
     ),
-  )),
-);
+    Effect.tap((after) => Effect.log(`Total after: ${after.length}`)),
+    Effect.map((reviewedPreprints) => stringifyJson(reviewedPreprints)),
+    Effect.tap((reviewedPreprints) =>
+      Effect.flatMap(FileSystem.FileSystem, (fs) => fs.writeFileString(getCachedListFile, reviewedPreprints)),
+    ),
+  );
 
-const reviewedPreprintsTopUpTidyUp = () => Effect.flatMap(
-  FileSystem.FileSystem,
-  (fs) => fs.remove(getCachedListFileNew, { force: true }),
-);
+const reviewedPreprintsTopUpInvalidate = () =>
+  pipe(
+    getCachedReviewedPreprints(getCachedListFileNew),
+    Effect.map(Array.map(({ id: msid }) => getCachedFile(msid))),
+    Effect.flatMap((paths) =>
+      Effect.flatMap(FileSystem.FileSystem, (fs) =>
+        Effect.forEach(paths, (path) => fs.remove(path, { force: true }), {
+          discard: true,
+        }),
+      ),
+    ),
+  );
 
-const createCacheFolder = () => Effect.flatMap(
-  FileSystem.FileSystem,
-  (fs) => fs.makeDirectory(getCachedFilePath, { recursive: true }),
-);
+const reviewedPreprintsTopUpTidyUp = () =>
+  Effect.flatMap(FileSystem.FileSystem, (fs) => fs.remove(getCachedListFileNew, { force: true }));
 
-export const reviewedPreprintsTopUp = (
-  { limit }: { limit: number },
-): Effect.Effect<void, never, FileSystem.FileSystem | HttpClient.HttpClient> => pipe(
-  createCacheFolder(),
-  Effect.flatMap(getReviewedPreprintsTotal),
-  Effect.flatMap((total) => reviewedPreprintsTopUpWrite({ limit, total })),
-  Effect.flatMap(reviewedPreprintsTopUpInvalidate),
-  Effect.flatMap(reviewedPreprintsTopUpCombine),
-  Effect.flatMap(reviewedPreprintsTopUpTidyUp),
-  Effect.flatMap(retrieveMissingIndividualReviewedPreprints),
-  Effect.catchAllCause(Effect.logError),
-  Effect.asVoid,
-);
+const createCacheFolder = () =>
+  Effect.flatMap(FileSystem.FileSystem, (fs) => fs.makeDirectory(getCachedFilePath, { recursive: true }));
+
+export const reviewedPreprintsTopUp = ({
+  limit,
+}: {
+  limit: number;
+}): Effect.Effect<void, never, FileSystem.FileSystem | HttpClient.HttpClient> =>
+  pipe(
+    createCacheFolder(),
+    Effect.flatMap(getReviewedPreprintsTotal),
+    Effect.flatMap((total) => reviewedPreprintsTopUpWrite({ limit, total })),
+    Effect.flatMap(reviewedPreprintsTopUpInvalidate),
+    Effect.flatMap(reviewedPreprintsTopUpCombine),
+    Effect.flatMap(reviewedPreprintsTopUpTidyUp),
+    Effect.flatMap(retrieveMissingIndividualReviewedPreprints),
+    Effect.catchAllCause(Effect.logError),
+    Effect.asVoid,
+  );
 
 const prepareTeaser = (reviewedPreprint: ReviewedPreprint): TeaserProps => ({
   id: reviewedPreprint.id,
@@ -180,29 +180,27 @@ const prepareTeaser = (reviewedPreprint: ReviewedPreprint): TeaserProps => ({
   description: 'Authors et al.',
 });
 
-export const getReviewedPreprint = (
-  { id }: { id: string },
-): Effect.Effect<TeaserProps, PlatformError.PlatformError | ParseResult.ParseError, FileSystem.FileSystem> => pipe(
-  Effect.flatMap(
-    FileSystem.FileSystem,
-    (fs) => fs.readFileString(getCachedFile(id)),
-  ),
-  Effect.map(JSON.parse),
-  Effect.flatMap(Schema.decodeUnknown(reviewedPreprintItemCodec)),
-  Effect.map(prepareTeaser),
-);
+export const getReviewedPreprint = ({
+  id,
+}: {
+  id: string;
+}): Effect.Effect<TeaserProps, PlatformError.PlatformError | ParseResult.ParseError, FileSystem.FileSystem> =>
+  pipe(
+    Effect.flatMap(FileSystem.FileSystem, (fs) => fs.readFileString(getCachedFile(id))),
+    Effect.map(JSON.parse),
+    Effect.flatMap(Schema.decodeUnknown(reviewedPreprintItemCodec)),
+    Effect.map(prepareTeaser),
+  );
 
 export const getReviewedPreprints = (): Effect.Effect<
-ReadonlyArray<TeaserProps>,
-PlatformError.PlatformError | ParseResult.ParseError,
-FileSystem.FileSystem
-> => pipe(
-  Effect.flatMap(
-    FileSystem.FileSystem,
-    (fs) => fs.readFileString(getCachedListFile),
-  ),
-  Effect.catchAll(() => Effect.succeed('[]')),
-  Effect.map(JSON.parse),
-  Effect.flatMap(Schema.decodeUnknown(reviewedPreprintsCodec)),
-  Effect.map(Array.map(prepareTeaser)),
-);
+  ReadonlyArray<TeaserProps>,
+  PlatformError.PlatformError | ParseResult.ParseError,
+  FileSystem.FileSystem
+> =>
+  pipe(
+    Effect.flatMap(FileSystem.FileSystem, (fs) => fs.readFileString(getCachedListFile)),
+    Effect.catchAll(() => Effect.succeed('[]')),
+    Effect.map(JSON.parse),
+    Effect.flatMap(Schema.decodeUnknown(reviewedPreprintsCodec)),
+    Effect.map(Array.map(prepareTeaser)),
+  );

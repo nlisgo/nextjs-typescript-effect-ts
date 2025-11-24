@@ -2,10 +2,10 @@ export {
   categoriesPath as continuumCategoriesPath,
   categoryPath as continuumCategoryPath,
   highlightsPath as continuumHighlightsPath,
-  reviewedPreprintsPath as continuumReviewedPreprintsPath,
   reviewedPreprintPath as continuumReviewedPreprintPath,
+  reviewedPreprintsPath as continuumReviewedPreprintsPath,
 } from './continuum';
 export {
-  reviewedPreprintsPath as eppReviewedPreprintsPath,
   reviewedPreprintPath as eppReviewedPreprintPath,
+  reviewedPreprintsPath as eppReviewedPreprintsPath,
 } from './epp';

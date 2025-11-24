@@ -1,12 +1,12 @@
-@import "../../app/styles/theme.css";
-@import "tailwindcss";
+@import '../../app/styles/theme.css';
+@import 'tailwindcss';
 
 .banner {
   @apply relative w-full overflow-hidden rounded-lg bg-gray-900 text-white;
 }
 
 .banner::after {
-  content: "";
+  content: '';
   @apply absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none;
 }
 

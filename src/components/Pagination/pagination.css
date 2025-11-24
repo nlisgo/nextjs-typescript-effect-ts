@@ -1,5 +1,5 @@
-@import "../../app/styles/theme.css";
-@import "tailwindcss";
+@import '../../app/styles/theme.css';
+@import 'tailwindcss';
 
 .pagination {
   @apply flex items-center gap-3 text-base text-gray-900;

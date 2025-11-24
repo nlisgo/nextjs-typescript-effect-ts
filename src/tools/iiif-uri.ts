@@ -10,7 +10,7 @@ const calculateCrop = (sourceSize: number, requestedSize: number, ratio: number)
     cropEnd -= cropStart;
     cropStart = 0;
   } else if (cropEnd > sourceSize) {
-    cropStart -= (cropEnd - sourceSize);
+    cropStart -= cropEnd - sourceSize;
     cropEnd = sourceSize;
   }
 
@@ -42,15 +42,11 @@ const calculateRegion = (image: Image, requestedW: number, requestedH: number) =
 
   const result = `${x},${y},${w},${h}`;
 
-  return (`0,0,${sourceW},${sourceH}` === result) ? 'full' : result;
+  return `0,0,${sourceW},${sourceH}` === result ? 'full' : result;
 };
 
-const dimensionNeeded = (
-  originalOne: number,
-  originalTwo: number,
-  one: number,
-  two: number,
-) => !(one === originalOne || (one === (two / (originalOne / originalTwo))));
+const dimensionNeeded = (originalOne: number, originalTwo: number, one: number, two: number) =>
+  !(one === originalOne || one === two / (originalOne / originalTwo));
 
 export const iiifUri = (image: Image, width: number, height: number): string => {
   const uri = image.uri;
@@ -59,7 +55,7 @@ export const iiifUri = (image: Image, width: number, height: number): string => 
   let newWidth: number | null = width;
   let newHeight: number | null = height;
 
-  if ((width / height) !== (image.size.width / image.size.height)) {
+  if (width / height !== image.size.width / image.size.height) {
     region = calculateRegion(image, width, height);
 
     if (!dimensionNeeded(image.size.height, image.size.width, height, width)) {
@@ -74,7 +70,7 @@ export const iiifUri = (image: Image, width: number, height: number): string => 
   }
 
   const [mediaType] = image.source.mediaType.split(';');
-  const extension = (mediaType === 'image/png') ? 'png' : 'jpg';
+  const extension = mediaType === 'image/png' ? 'png' : 'jpg';
 
   return `${uri}/${region}/${size}/0/default.${extension}`;
 };

@@ -5,17 +5,14 @@ import { NodeContext, NodeFileSystem, NodeRuntime } from '@effect/platform-node'
 import { Effect, Schema } from 'effect';
 import { reviewedPreprintsTopUp } from '@/top-up/reviewed-preprints';
 
-const optionLimit = Options.integer('limit')
-  .pipe(
-    Options.withAlias('l'),
-    Options.withSchema(Schema.Int.pipe(Schema.between(1, 100))),
-    Options.withDefault(50),
-  );
+const optionLimit = Options.integer('limit').pipe(
+  Options.withAlias('l'),
+  Options.withSchema(Schema.Int.pipe(Schema.between(1, 100))),
+  Options.withDefault(50),
+);
 
-const command = Command.make(
-  'top-up-reviewed-preprints',
-  { limit: optionLimit },
-  ({ limit }) => reviewedPreprintsTopUp({ limit }),
+const command = Command.make('top-up-reviewed-preprints', { limit: optionLimit }, ({ limit }) =>
+  reviewedPreprintsTopUp({ limit }),
 );
 
 const cliApp = Command.run(command, {
@@ -32,10 +29,9 @@ const AppLayer = [
   FetchHttpClient.layer,
 ] as const;
 
-cliApp(process.argv)
-  .pipe(
-    Effect.provide(AppLayer),
-    NodeRuntime.runMain({
-      disableErrorReporting: true,
-    }),
-  );
+cliApp(process.argv).pipe(
+  Effect.provide(AppLayer),
+  NodeRuntime.runMain({
+    disableErrorReporting: true,
+  }),
+);

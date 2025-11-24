@@ -37,9 +37,7 @@ export const categorySnippetCodec = Schema.Struct({
   }),
 });
 
-export const categoriesCodec = Schema.Array(
-  categorySnippetCodec,
-);
+export const categoriesCodec = Schema.Array(categorySnippetCodec);
 
 export const paginatedCategoriesCodec = Schema.Struct({
   total: Schema.Int,

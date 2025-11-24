@@ -1,5 +1,5 @@
-@import "../../app/styles/theme.css";
-@import "tailwindcss";
+@import '../../app/styles/theme.css';
+@import 'tailwindcss';
 
 .content-wrapper {
   @apply grid grid-cols-1 p-2;
