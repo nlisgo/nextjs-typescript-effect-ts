@@ -80,6 +80,7 @@ jobs:
           rm -rf .cache/*
           curl -fL "${{ github.event.inputs.persistent_cache_zip_url }}" -o /tmp/persistent-cache.zip
           unzip -q /tmp/persistent-cache.zip -d .cache
+          ls -alF .cache/
         continue-on-error: true
 
       - name: Download persistent cache
