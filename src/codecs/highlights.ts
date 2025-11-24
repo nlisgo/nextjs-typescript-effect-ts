@@ -13,8 +13,5 @@ export const highlightCodec = Schema.Struct({
 });
 
 export const highlightsCodec = Schema.Array(
-  Schema.Union(
-    highlightCodec,
-    Schema.Unknown,
-  ),
+  highlightCodec,
 );

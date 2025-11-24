@@ -16,7 +16,7 @@ export type HighlightProps = {
 
 export type HighlightsProps = {
   title: string,
-  highlights: Array<HighlightProps>,
+  highlights: ReadonlyArray<HighlightProps>,
 };
 
 export const Highlights = ({

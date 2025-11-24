@@ -1,7 +1,10 @@
-import { FileSystem, HttpClient } from '@effect/platform';
-import { Effect, pipe } from 'effect';
-import { highlightCodec } from '@/codecs';
-import { stringifyJson } from '@/tools';
+import { Error as PlatformError, FileSystem, HttpClient } from '@effect/platform';
+import {
+  Array, Effect, ParseResult, pipe, Schema,
+} from 'effect';
+import { highlightCodec, highlightsCodec } from '@/codecs';
+import { HighlightProps } from '@/components/Highlights/Highlights';
+import { iiifUri, stringifyJson } from '@/tools';
 import { getItemsTopUpPage } from '@/top-up/top-up';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/covers/current';
@@ -34,4 +37,38 @@ export const highlightsTopUp = (): Effect.Effect<void, never, FileSystem.FileSys
   Effect.flatMap(highlightsTopUpWrite),
   Effect.catchAllCause(Effect.logError),
   Effect.asVoid,
+);
+
+export const getHighlights = (
+  {
+    imageWidth,
+    imageHeight,
+  }: { imageWidth?: number, imageHeight?: number } = {},
+): Effect.Effect<
+ReadonlyArray<HighlightProps>,
+PlatformError.PlatformError | ParseResult.ParseError,
+FileSystem.FileSystem
+> => pipe(
+  Effect.flatMap(
+    FileSystem.FileSystem,
+    (fs) => fs.readFileString(getCachedListFile),
+  ),
+  Effect.catchAll(() => Effect.succeed('[]')),
+  Effect.map(JSON.parse),
+  Effect.flatMap(Schema.decodeUnknown(highlightsCodec)),
+  Effect.map(Array.map((highlight) => ({
+    title: highlight.title,
+    uri: `https://doi.org/${highlight.item.doi}`,
+    image: {
+      uri: iiifUri(
+        highlight.image,
+        imageWidth ?? 463,
+        imageHeight ?? 260,
+      ),
+      alt: highlight.image.alt,
+      width: imageWidth ?? 463,
+      height: imageHeight ?? 260,
+    },
+    description: highlight.impactStatement,
+  }))),
 );
