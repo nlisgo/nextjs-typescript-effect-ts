@@ -6,7 +6,7 @@ import { getItemsTopUpPage } from '@/top-up/top-up';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/covers/current';
 const getCachedFilePath = '.cached';
-const getCachedListFile = `${getCachedFilePath}/covers.json`;
+const getCachedListFile = `${getCachedFilePath}/highlights.json`;
 
 const getHighlightsTopUpPage = () => getItemsTopUpPage(
   apiBasePath,

@@ -96,6 +96,9 @@ jobs:
       - name: Top Up Categories
         run: npm run top-up-categories
 
+      - name: Top Up Highlights
+        run: npm run top-up-highlights
+
       - name: Build Next.js app
         run: npm run build
 
