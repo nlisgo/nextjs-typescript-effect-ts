@@ -7,7 +7,11 @@ import { Page } from '@/components/Page/Page';
 import { MainLayer } from '@/services/AppRuntime';
 import { getCategories, getCategory } from '@/top-up/categories';
 
-export const generateMetadata = async ({ params }: PageProps<'/categories/[category]'>): Promise<Metadata> =>
+type CategoryPageProps = {
+  params: { category: string };
+};
+
+export const generateMetadata = async ({ params }: CategoryPageProps): Promise<Metadata> =>
   Effect.runPromise(
     pipe(
       Effect.promise(async () => params),
@@ -29,7 +33,7 @@ export const generateStaticParams = async (): Promise<Array<{ category: string }
   );
 };
 
-const CategoryPage = async ({ params }: PageProps<'/categories/[category]'>): Promise<JSX.Element> =>
+const CategoryPage = async ({ params }: CategoryPageProps): Promise<JSX.Element> =>
   Effect.runPromise(
     pipe(
       Effect.promise(async () => params),
