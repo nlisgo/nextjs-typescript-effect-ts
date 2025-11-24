@@ -76,11 +76,11 @@ jobs:
           github.event.inputs.skip_persistent_cache != 'true'
         run: |
           set -euo pipefail
-          mkdir -p .cache
-          rm -rf .cache/*
+          mkdir -p .cached
+          rm -rf .cached/*
           curl -fL "${{ github.event.inputs.persistent_cache_zip_url }}" -o /tmp/persistent-cache.zip
-          unzip -q /tmp/persistent-cache.zip -d .cache
-          ls -alF .cache/
+          unzip -q /tmp/persistent-cache.zip -d .cached
+          ls -alF .cached/
         continue-on-error: true
 
       - name: Download persistent cache
