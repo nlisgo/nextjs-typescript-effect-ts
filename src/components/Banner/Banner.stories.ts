@@ -15,7 +15,7 @@ export const Default: Story = {
   args: {
     title: 'Biochemistry and Chemical Biology',
     image: {
-      uri: dummyImage(1114, 336),
+      uri: dummyImage(1114, 336, 'biochemistry-chemical-biology'),
       alt: 'Alt text',
       width: 1114,
       height: 336,
