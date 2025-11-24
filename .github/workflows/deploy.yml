@@ -87,6 +87,9 @@ jobs:
       - name: Run tests
         run: npm run test
 
+      - name: Test Storybook build
+        run: npm run build-storybook
+
       - name: Tsup
         run: npm run tsup
 
@@ -102,15 +105,12 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
-      - name: Build Storybook
-        run: npm run build-storybook
-
-      - name: Upload artifact
+      - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: out
 
-      - name: Upload cached
+      - name: Upload cache artifact
         uses: actions/upload-artifact@v4
         with:
           name: persistent-cache
