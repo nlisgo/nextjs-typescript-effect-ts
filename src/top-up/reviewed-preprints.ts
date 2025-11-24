@@ -43,6 +43,15 @@ const retrieveIndividualReviewedPreprints = (
 
 const reviewedPreprintsTopUpPath = ({ limit = 10, page = 1 }: { limit?: number, page?: number } = {}): string => `${apiBasePath}?order=asc&page=${page}&per-page=${Math.min(limit, 100)}`;
 
+const getReviewedPreprintsTotal = () => pipe(
+  reviewedPreprintsTopUpPath({ limit: 1 }),
+  HttpClient.get,
+  Effect.flatMap((response) => response.json),
+  Effect.flatMap(Schema.decodeUnknown(Schema.Struct({ total: Schema.Int }))),
+  Effect.map(({ total }) => total),
+  Effect.catchAll(() => Effect.succeed(-1)),
+);
+
 const getReviewedPreprintsTopUpPage = (
   { limit, page = 1 }: { limit: number, page?: number },
 ) => getItemsTopUpPage(
@@ -81,9 +90,19 @@ const getReviewedPreprintsTopUp = ({ limit, offset = 0 }: { limit: number, offse
   Effect.map((results) => results.slice(offset % limit, (offset % limit) + limit)),
 );
 
-const reviewedPreprintsTopUpWrite = ({ limit }: { limit: number }) => pipe(
+const offsetFromTotalCachedAndLimit = (total: number, cached: number, limit: number) => {
+  if (total > 0 && total <= cached + limit) {
+    return total - limit;
+  }
+
+  return cached;
+};
+
+const reviewedPreprintsTopUpWrite = ({ limit, total }: { limit: number, total?: number }) => pipe(
   getCachedReviewedPreprints(),
-  Effect.flatMap((cached) => getReviewedPreprintsTopUp({ limit, offset: cached.length })),
+  Effect.flatMap((cached) => getReviewedPreprintsTopUp(
+    { limit, offset: offsetFromTotalCachedAndLimit(total ?? 0, cached.length, limit) },
+  )),
   Effect.map((reviewedPreprints) => stringifyJson(reviewedPreprints)),
   Effect.tap(
     (reviewedPreprints) => Effect.flatMap(
@@ -94,8 +113,8 @@ const reviewedPreprintsTopUpWrite = ({ limit }: { limit: number }) => pipe(
 
 const reviewedPreprintsTopUpCombine = () => pipe(
   Effect.all([
-    getCachedReviewedPreprints(),
     getCachedReviewedPreprints(getCachedListFileNew),
+    getCachedReviewedPreprints(),
   ]),
   Effect.map((lists) => Array.appendAll(...lists)),
   Effect.map(Array.dedupeWith((a, b) => a.id === b.id)),
@@ -141,7 +160,8 @@ export const reviewedPreprintsTopUp = (
   { limit }: { limit: number },
 ): Effect.Effect<void, never, FileSystem.FileSystem | HttpClient.HttpClient> => pipe(
   createCacheFolder(),
-  Effect.flatMap(() => reviewedPreprintsTopUpWrite({ limit })),
+  Effect.flatMap(getReviewedPreprintsTotal),
+  Effect.flatMap((total) => reviewedPreprintsTopUpWrite({ limit, total })),
   Effect.flatMap(reviewedPreprintsTopUpInvalidate),
   Effect.flatMap(reviewedPreprintsTopUpCombine),
   Effect.flatMap(reviewedPreprintsTopUpTidyUp),

@@ -9,7 +9,7 @@ const optionLimit = Options.integer('limit')
   .pipe(
     Options.withAlias('l'),
     Options.withSchema(Schema.Int.pipe(Schema.between(1, 100))),
-    Options.withDefault(20),
+    Options.withDefault(50),
   );
 
 const command = Command.make(
