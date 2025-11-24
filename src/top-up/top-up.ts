@@ -81,6 +81,7 @@ export const getCachedItems = <A, I = unknown, Req = never>(
   Req | FileSystem.FileSystem
   > => pipe(
     Effect.flatMap(FileSystem.FileSystem, (fs) => fs.readFileString(file ?? defaultFile)),
+    Effect.catchAll(() => Effect.succeed('[]')),
     Effect.map((input) => JSON.parse(input) as unknown),
     Effect.flatMap(Schema.decodeUnknown(schema)),
   );
