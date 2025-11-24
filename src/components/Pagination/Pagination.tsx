@@ -34,7 +34,7 @@ export const Pagination = ({ currentPage, totalItems, pageSize, hrefBuilder }: P
         Previous
       </a>
       <div className="pagination__summary">
-        {totalItems === 0 ? 'Showing 0 of 0' : `Showing ${startIndex}-${endIndex} of ${totalItems}`}
+        {totalItems === 0 ? '0 results' : `${startIndex}-${endIndex} of ${totalItems}`}
       </div>
       <a
         className={`pagination__link ${disableNext ? 'pagination__link--disabled' : ''}`}
