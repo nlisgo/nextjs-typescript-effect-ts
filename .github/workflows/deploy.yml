@@ -80,7 +80,6 @@ jobs:
           rm -rf .cached/*
           curl -fL "${{ github.event.inputs.persistent_cache_zip_url }}" -o /tmp/persistent-cache.zip
           unzip -q /tmp/persistent-cache.zip -d .cached
-          ls -alF .cached/
         continue-on-error: true
 
       - name: Download persistent cache
@@ -118,13 +117,22 @@ jobs:
         run: npm run tsup
 
       - name: Top Up Reviewed Preprints
-        run: npm run top-up-reviewed-preprints
+        run: |
+          f=.cached/reviewed-preprints.json; [ -f "$f" ] && jq 'length' "$f" || echo 0
+          npm run top-up-reviewed-preprints
+          f=.cached/reviewed-preprints.json; [ -f "$f" ] && jq 'length' "$f"
 
       - name: Top Up Categories
-        run: npm run top-up-categories
+        run: |
+          f=.cached/categories.json; [ -f "$f" ] && jq 'length' "$f" || echo 0
+          npm run top-up-categories
+          f=.cached/categories.json; [ -f "$f" ] && jq 'length' "$f"
 
       - name: Top Up Highlights
-        run: npm run top-up-highlights
+        run: |
+          f=.cached/highlights.json; [ -f "$f" ] && jq 'length' "$f" || echo 0
+          npm run top-up-highlights
+          f=.cached/highlights.json; [ -f "$f" ] && jq 'length' "$f"
 
       - name: Build Next.js app
         run: npm run build
