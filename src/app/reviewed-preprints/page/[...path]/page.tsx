@@ -3,8 +3,10 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { type JSX } from 'react';
 import { Page } from '@/components/Page/Page';
+import { Pagination } from '@/components/Pagination/Pagination';
 import { Teasers } from '@/components/Teasers/Teasers';
 import { MainLayer } from '@/services/AppRuntime';
+import { withBaseUrl } from '@/tools';
 import { getReviewedPreprints } from '@/top-up/reviewed-preprints';
 
 const ITEMS_PER_PAGE = 20;
@@ -65,17 +67,17 @@ const ReviewedPreprintsPagedPage = async ({ params }: PageProps): Promise<JSX.El
     notFound();
   }
 
-  const teasers = await Effect.runPromise(
+  const reviewedPreprints = await Effect.runPromise(
     pipe(
       getReviewedPreprints(),
-      Effect.map((rps) => {
-        const start = (pageNumber - 1) * ITEMS_PER_PAGE;
-        return rps.slice(start, start + ITEMS_PER_PAGE);
-      }),
     ).pipe(
       Effect.provide(MainLayer),
     ),
   );
+
+  const totalItems = reviewedPreprints.length;
+  const start = (pageNumber - 1) * ITEMS_PER_PAGE;
+  const teasers = reviewedPreprints.slice(start, start + ITEMS_PER_PAGE);
 
   if (teasers.length === 0) {
     notFound();
@@ -86,6 +88,12 @@ const ReviewedPreprintsPagedPage = async ({ params }: PageProps): Promise<JSX.El
       <section key={`reviewed-preprints-page-${pageNumber}`}>
         <Teasers title="Reviewed Preprints" teasers={teasers} />
       </section>
+      <Pagination
+        currentPage={pageNumber}
+        pageSize={ITEMS_PER_PAGE}
+        totalItems={totalItems}
+        hrefBuilder={(page) => withBaseUrl(`/reviewed-preprints/page/${page}`)}
+      />
     </Page>
   );
 };

@@ -1,4 +1,4 @@
-import type { JSX, MouseEvent } from 'react';
+import type { JSX } from 'react';
 import './pagination.css';
 
 export type PaginationProps = {
@@ -6,8 +6,6 @@ export type PaginationProps = {
   totalItems: number,
   pageSize: number,
   hrefBuilder?: (page: number) => string,
-  onPrevious?: () => void,
-  onNext?: () => void,
 };
 
 const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
@@ -17,8 +15,6 @@ export const Pagination = ({
   totalItems,
   pageSize,
   hrefBuilder,
-  onPrevious,
-  onNext,
 }: PaginationProps): JSX.Element => {
   const safePageSize = pageSize > 0 ? pageSize : 1;
   const totalPages = Math.max(1, Math.ceil(Math.max(totalItems, 0) / safePageSize));
@@ -32,21 +28,13 @@ export const Pagination = ({
   const previousHref = (!disablePrevious && hrefBuilder) ? hrefBuilder(page - 1) : undefined;
   const nextHref = (!disableNext && hrefBuilder) ? hrefBuilder(page + 1) : undefined;
 
-  const handleClick = (event: MouseEvent<HTMLAnchorElement>, disabled: boolean, handler?: () => void) => {
-    if (disabled) {
-      event.preventDefault();
-      return;
-    }
-    handler?.();
-  };
-
   return (
     <nav className="pagination" aria-label="Pagination">
       <a
         className={`pagination__link ${disablePrevious ? 'pagination__link--disabled' : ''}`}
-        href={previousHref ?? '#'}
+        href={previousHref}
         aria-disabled={disablePrevious}
-        onClick={(event) => handleClick(event, disablePrevious, onPrevious)}
+        tabIndex={disablePrevious ? -1 : undefined}
       >
         Previous
       </a>
@@ -57,9 +45,9 @@ export const Pagination = ({
       </div>
       <a
         className={`pagination__link ${disableNext ? 'pagination__link--disabled' : ''}`}
-        href={nextHref ?? '#'}
+        href={nextHref}
         aria-disabled={disableNext}
-        onClick={(event) => handleClick(event, disableNext, onNext)}
+        tabIndex={disableNext ? -1 : undefined}
       >
         Next
       </a>

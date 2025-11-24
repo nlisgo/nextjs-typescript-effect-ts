@@ -10,6 +10,7 @@
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --fix --ext .ts,.tsx",
     "storybook": "storybook dev --port 6006",
+    "storybook:poll": "CHOKIDAR_USEPOLLING=1 WATCHPACK_POLLING=true storybook dev --port 6006",
     "build-storybook": "storybook build",
     "check-typescript": "tsc --noEmit",
     "watch-typescript": "tsc --noEmit --watch",

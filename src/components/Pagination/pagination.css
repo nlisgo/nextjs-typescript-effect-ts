@@ -15,7 +15,7 @@
 }
 
 .pagination__link--disabled {
-  @apply cursor-not-allowed border-gray-300 bg-gray-200 text-gray-500 hover:bg-gray-200 hover:text-gray-500;
+  @apply cursor-not-allowed border-gray-300 bg-gray-200 text-gray-500 hover:bg-gray-200 hover:text-gray-500 pointer-events-none;
 }
 
 .pagination__summary {

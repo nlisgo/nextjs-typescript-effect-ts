@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn } from 'storybook/test';
 import { Pagination } from './Pagination';
 
 const meta = {
@@ -10,8 +9,6 @@ const meta = {
     totalItems: 3964,
     pageSize: 20,
     hrefBuilder: (page: number) => `#page-${page}`,
-    onPrevious: fn(),
-    onNext: fn(),
   },
   argTypes: {
     currentPage: {
