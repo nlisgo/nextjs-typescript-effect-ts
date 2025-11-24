@@ -15,6 +15,8 @@
     "watch-typescript": "tsc --noEmit --watch",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
+    "top-up-highlights:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/top-up-highlights.ts",
+    "top-up-highlights": "node dist/cli/top-up-highlights.mjs",
     "top-up-categories:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/top-up-categories.ts",
     "top-up-categories": "node dist/cli/top-up-categories.mjs",
     "top-up-reviewed-preprints:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/top-up-reviewed-preprints.ts",

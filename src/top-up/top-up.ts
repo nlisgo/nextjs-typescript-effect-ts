@@ -7,7 +7,10 @@ import {
 } from '@effect/platform';
 import {
   Array,
-  Effect, ParseResult, pipe, Schema,
+  Effect,
+  ParseResult,
+  pipe,
+  Schema,
 } from 'effect';
 import { stringifyJson } from '@/tools';
 
@@ -35,6 +38,7 @@ Req = never,
 >(
     itemsTopUpPath: string,
     itemSchema: Schema.Schema<A, I, Req>,
+    filter: boolean = false,
   ): Effect.Effect<
   ReadonlyArray<A & { hash: string }>,
   HttpClientError.HttpClientError | ParseResult.ParseError,
@@ -44,8 +48,24 @@ Req = never,
     Effect.tap(Effect.log),
     Effect.flatMap(HttpClient.get),
     Effect.flatMap((res) => res.json),
-    Effect.flatMap(Schema.decodeUnknown(Schema.Struct({ items: Schema.Array(itemSchema) }))),
-    Effect.map((response) => response.items),
+    Effect.flatMap(Schema.decodeUnknown(Schema.Struct({ items: Schema.Array(Schema.Unknown) }))),
+    Effect.map(({ items }) => items),
+    Effect.flatMap(
+      (items) => (filter
+        ? Effect.all(
+          items.map((item) => pipe(
+            Schema.decodeUnknown(itemSchema)(item),
+            Effect.option,
+          )),
+        ).pipe(
+          Effect.map(Array.filterMap((option) => option)),
+        )
+        : Effect.all(
+          items.map((item) => Schema.decodeUnknown(itemSchema)(item)),
+          { concurrency: 'unbounded' },
+        )
+      ),
+    ),
     Effect.map(Array.map((item) => ({
       ...item,
       hash: createHash('md5').update(stringifyJson(item, false)).digest('hex'),
@@ -57,15 +77,10 @@ export const getCachedItems = <A, I = unknown, Req = never>(
   schema: Schema.Schema<A, I, Req>,
 ) => (file?: string): Effect.Effect<
   A,
-  ParseResult.ParseError,
+  ParseResult.ParseError | PlatformError.PlatformError,
   Req | FileSystem.FileSystem
   > => pipe(
     Effect.flatMap(FileSystem.FileSystem, (fs) => fs.readFileString(file ?? defaultFile)),
-    Effect.flatMap((input) => Effect.try({
-      try: () => JSON.parse(input) as unknown,
-      catch: (error) => new Error(`Invalid JSON: ${stringifyJson(error, false)}`),
-    })),
-    Effect.catchAll(() => Effect.succeed([])),
+    Effect.map((input) => JSON.parse(input) as unknown),
     Effect.flatMap(Schema.decodeUnknown(schema)),
-    (foo) => foo,
   );

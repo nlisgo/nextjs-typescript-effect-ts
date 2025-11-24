@@ -9,14 +9,12 @@ export const highlightCodec = Schema.Struct({
     type: Schema.String,
     doi: Schema.String,
   }),
+  hash: Schema.optional(Schema.String),
 });
 
-export const highlightsCodec = Schema.Struct({
-  total: Schema.Int,
-  items: Schema.Array(
-    Schema.Union(
-      highlightCodec,
-      Schema.Unknown,
-    ),
+export const highlightsCodec = Schema.Array(
+  Schema.Union(
+    highlightCodec,
+    Schema.Unknown,
   ),
-});
+);
