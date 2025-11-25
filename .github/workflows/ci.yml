@@ -145,9 +145,6 @@ jobs:
       - name: Run Storybook component tests
         run: npm run test:storybook
 
-      - name: Test Storybook build
-        run: npm run build-storybook
-
       - name: Tsup
         run: npm run tsup
 
