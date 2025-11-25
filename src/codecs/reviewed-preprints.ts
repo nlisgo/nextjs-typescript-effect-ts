@@ -10,16 +10,18 @@ export const reviewedPreprintCodec = Schema.Struct({
   authorLine: Schema.optional(Schema.String),
   subjects: Schema.optional(Schema.Array(categoryIdCodec)),
   version: Schema.optional(Schema.Int),
-  elifeAssessment: Schema.optional(Schema.Struct({
-    content: Schema.NonEmptyArray(
-      Schema.Struct({
-        type: Schema.Literal('paragraph'),
-        text: Schema.String,
-      }),
-    ),
-    significance: Schema.optional(Schema.Array(Schema.String)),
-    strength: Schema.optional(Schema.Array(Schema.String)),
-  })),
+  elifeAssessment: Schema.optional(
+    Schema.Struct({
+      content: Schema.NonEmptyArray(
+        Schema.Struct({
+          type: Schema.Literal('paragraph'),
+          text: Schema.String,
+        }),
+      ),
+      significance: Schema.optional(Schema.Array(Schema.String)),
+      strength: Schema.optional(Schema.Array(Schema.String)),
+    }),
+  ),
   hash: Schema.optional(Schema.String),
 });
 

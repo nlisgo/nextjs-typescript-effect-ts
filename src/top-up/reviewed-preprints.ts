@@ -148,8 +148,10 @@ const createCacheFolder = () =>
 
 export const reviewedPreprintsTopUp = ({
   limit,
+  all = false,
 }: {
   limit: number;
+  all?: boolean;
 }): Effect.Effect<void, never, FileSystem.FileSystem | HttpClient.HttpClient> =>
   pipe(
     createCacheFolder(),

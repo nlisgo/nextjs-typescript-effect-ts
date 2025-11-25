@@ -11,8 +11,10 @@ const optionLimit = Options.integer('limit').pipe(
   Options.withDefault(50),
 );
 
-const command = Command.make('top-up-reviewed-preprints', { limit: optionLimit }, ({ limit }) =>
-  reviewedPreprintsTopUp({ limit }),
+const optionAll = Options.boolean('all').pipe(Options.withAlias('a'), Options.withDefault(false));
+
+const command = Command.make('top-up-reviewed-preprints', { limit: optionLimit, all: optionAll }, ({ limit, all }) =>
+  reviewedPreprintsTopUp({ limit, all }),
 );
 
 const cliApp = Command.run(command, {
