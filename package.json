@@ -17,6 +17,7 @@
     "watch-typescript": "tsc --noEmit --watch",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
+    "test:storybook": "vitest run --config vitest.config.ts",
     "top-up-highlights:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/top-up-highlights.ts",
     "top-up-highlights": "node dist/cli/top-up-highlights.mjs",
     "top-up-categories:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/top-up-categories.ts",
@@ -50,6 +51,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/browser": "^4.0.13",
+    "@vitest/browser-playwright": "^4.0.13",
     "babel-plugin-react-compiler": "1.0.0",
     "chromatic": "^13.3.4",
     "jest": "^30.2.0",
@@ -62,6 +65,7 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsup": "^8.5.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.13"
   }
 }
