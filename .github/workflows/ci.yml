@@ -15,7 +15,7 @@ on:
         default: false
       persistent_cache_zip_url:
         type: string
-        description: "Optional URL to a persistent-cache zip archive to seed .cache/"
+        description: "Optional URL to a persistent-cache zip archive to seed .cached/"
         required: false
         default: ""
   push:

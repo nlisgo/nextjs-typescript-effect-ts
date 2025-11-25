@@ -4,10 +4,6 @@ import { Pagination } from './Pagination';
 const meta = {
   title: 'Navigation/Pagination',
   component: Pagination,
-  tags: ['experimental'],
-  parameters: {
-    chromatic: { disableSnapshot: true },
-  },
   args: {
     currentPage: 1,
     totalItems: 3964,
