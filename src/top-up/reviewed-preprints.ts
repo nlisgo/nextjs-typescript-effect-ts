@@ -168,7 +168,7 @@ const prepareTeaser = (reviewedPreprint: ReviewedPreprint): TeaserProps => ({
   published: reviewedPreprint.statusDate,
   title: reviewedPreprint.title,
   uri: withBaseUrl(`/reviewed-preprints/${reviewedPreprint.id}`),
-  description: reviewedPreprint.authorLine,
+  description: reviewedPreprint.authorLine ?? 'Authors et al.',
   categories: reviewedPreprint.subjects,
 });
 
