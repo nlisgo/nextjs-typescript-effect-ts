@@ -6,5 +6,5 @@ export {
   paginatedCategoriesCodec,
 } from './categories';
 export { highlightCodec, highlightsCodec } from './highlights';
-export { reviewedPreprintCodec, reviewedPreprintsCodec } from './reviewed-preprints';
+export { paginatedReviewedPreprintsCodec, reviewedPreprintCodec, reviewedPreprintsCodec } from './reviewed-preprints';
 export { titleCodec } from './title';

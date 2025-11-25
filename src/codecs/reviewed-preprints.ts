@@ -1,11 +1,10 @@
 import { Schema } from 'effect';
 import { categoryIdCodec } from '@/codecs';
-import { titleCodec } from '@/codecs/title';
 
-const continuumReviewedPreprintCodec = Schema.Struct({
+export const reviewedPreprintCodec = Schema.Struct({
   id: Schema.String,
-  published: Schema.optional(Schema.String),
-  statusDate: Schema.optional(Schema.String),
+  published: Schema.optional(Schema.DateFromString),
+  statusDate: Schema.optional(Schema.DateFromString),
   title: Schema.String,
   doi: Schema.String,
   authorLine: Schema.String,
@@ -23,24 +22,9 @@ const continuumReviewedPreprintCodec = Schema.Struct({
   }),
 });
 
-const continuumReviewedPreprintsCodec = Schema.Struct({
+export const reviewedPreprintsCodec = Schema.Array(reviewedPreprintCodec);
+
+export const paginatedReviewedPreprintsCodec = Schema.Struct({
   total: Schema.Int,
-  items: Schema.Array(continuumReviewedPreprintCodec),
+  items: reviewedPreprintsCodec,
 });
-
-export const reviewedPreprintsCodec = continuumReviewedPreprintsCodec;
-
-export const eppReviewedPreprintCodec = Schema.Struct({
-  article: Schema.Struct({
-    msid: Schema.String,
-    published: Schema.String,
-    doi: Schema.String,
-    versionIdentifier: Schema.String,
-    subjects: Schema.Array(Schema.String),
-    article: Schema.Struct({
-      title: titleCodec,
-    }),
-  }),
-});
-
-export const reviewedPreprintCodec = continuumReviewedPreprintCodec;

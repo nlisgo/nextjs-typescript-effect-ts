@@ -8,6 +8,7 @@ import {
   offsetFromTotalCachedAndLimit,
   retrieveIndividualItem,
 } from '@/top-up/top-up';
+import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/reviewed-preprints';
 const getCachedFilePath = '.cached/reviewed-preprints';
@@ -15,19 +16,9 @@ const getCachedListFile = `${getCachedFilePath}.json`;
 const getCachedListFileNew = `${getCachedFilePath}-new.json`;
 const getCachedFile = (msid: string) => `${getCachedFilePath}/${msid}.json`;
 
-const reviewedPreprintItemCodec = Schema.Struct({
-  id: Schema.String,
-  title: Schema.String,
-  published: Schema.DateFromString,
-  statusDate: Schema.DateFromString,
-  hash: Schema.optional(Schema.String),
-});
+type ReviewedPreprint = Schema.Schema.Type<typeof reviewedPreprintCodec>;
 
-type ReviewedPreprint = Schema.Schema.Type<typeof reviewedPreprintItemCodec>;
-
-const reviewedPreprintsCodec = Schema.Array(reviewedPreprintItemCodec);
-
-const retrieveIndividualReviewedPreprint = retrieveIndividualItem(apiBasePath, reviewedPreprintItemCodec);
+const retrieveIndividualReviewedPreprint = retrieveIndividualItem(apiBasePath, reviewedPreprintCodec);
 
 const retrieveIndividualReviewedPreprints = (reviewedPreprints: Array<{ msid: string; path: string }>) =>
   pipe(
@@ -57,7 +48,7 @@ const getReviewedPreprintsTotal = () =>
   );
 
 const getReviewedPreprintsTopUpPage = ({ limit, page = 1 }: { limit: number; page?: number }) =>
-  getItemsTopUpPage(reviewedPreprintsTopUpPath({ limit, page }), reviewedPreprintItemCodec);
+  getItemsTopUpPage(reviewedPreprintsTopUpPath({ limit, page }), reviewedPreprintCodec);
 
 const getCachedReviewedPreprints = getCachedItems(getCachedListFile, reviewedPreprintsCodec);
 
@@ -125,7 +116,7 @@ const reviewedPreprintsTopUpCombine = () =>
     Effect.map(
       Array.sort(
         Order.reverse(
-          Order.mapInput(Order.number, (item) => item.statusDate.getTime()),
+          Order.mapInput(Order.number, (item) => (item.statusDate ? item.statusDate.getTime() : 0)),
         ) as Order.Order<ReviewedPreprint>,
       ),
     ),
@@ -188,7 +179,7 @@ export const getReviewedPreprint = ({
   pipe(
     Effect.flatMap(FileSystem.FileSystem, (fs) => fs.readFileString(getCachedFile(id))),
     Effect.map(JSON.parse),
-    Effect.flatMap(Schema.decodeUnknown(reviewedPreprintItemCodec)),
+    Effect.flatMap(Schema.decodeUnknown(reviewedPreprintCodec)),
     Effect.map(prepareTeaser),
   );
 
