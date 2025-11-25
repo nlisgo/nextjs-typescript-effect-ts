@@ -55,7 +55,7 @@ export const Default: Story = {
       exampleTeaser({
         title: 'Complete',
         image: exampleTeaserImage(),
-        published: new Date(),
+        published: new Date('2025-01-01'),
         categories: [
           { id: 'category-one', name: 'Category One' },
           { id: 'category-two', name: 'Category Two' },
