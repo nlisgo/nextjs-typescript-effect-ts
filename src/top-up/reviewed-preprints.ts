@@ -1,5 +1,5 @@
 import { FileSystem, HttpClient, Error as PlatformError } from '@effect/platform';
-import { Array, Effect, Order, ParseResult, pipe, Schema } from 'effect';
+import { Array, Effect, Order, ParseResult, pipe, Schedule, Schema } from 'effect';
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { stringifyJson, withBaseUrl } from '@/tools';
 import {
@@ -18,15 +18,27 @@ const getCachedFile = (msid: string) => `${getCachedFilePath}/${msid}.json`;
 
 type ReviewedPreprint = Schema.Schema.Type<typeof reviewedPreprintCodec>;
 
-const retrieveIndividualReviewedPreprint = retrieveIndividualItem(apiBasePath, reviewedPreprintCodec);
+const retrySchedule = Schedule.exponential('2 seconds').pipe(Schedule.intersect(Schedule.recurs(7)), Schedule.jittered);
+
+const retrieveIndividualReviewedPreprint = (item: { id: string; path: string; suffix?: string }) =>
+  pipe(
+    item,
+    retrieveIndividualItem(apiBasePath, reviewedPreprintCodec),
+    Effect.retry(retrySchedule),
+    Effect.tap(() =>
+      Effect.log(`Retrieved individual Reviewed Preprint: ${item.id}${item.suffix ? ` (${item.suffix})` : ''}`),
+    ),
+    Effect.tapError((error) =>
+      Effect.log(`Failed to retrieve reviewed preprint ${item.id} after retries: ${JSON.stringify(error)}`),
+    ),
+  );
 
 const retrieveIndividualReviewedPreprints = (reviewedPreprints: Array<{ msid: string; path: string }>) =>
-  pipe(
-    reviewedPreprints.map(({ msid: id, path }) => ({ id, path })),
-    Effect.forEach(retrieveIndividualReviewedPreprint, {
-      // this is the default, but you can be explicit:
-      concurrency: 'unbounded',
-    }),
+  Effect.all(
+    reviewedPreprints.map(({ msid: id, path }, i) =>
+      retrieveIndividualReviewedPreprint({ id, path, suffix: `${i + 1} of ${reviewedPreprints.length}` }),
+    ),
+    { concurrency: 100 },
   );
 
 const reviewedPreprintsTopUpPath = ({
@@ -44,11 +56,17 @@ const getReviewedPreprintsTotal = () =>
     Effect.flatMap((response) => response.json),
     Effect.flatMap(Schema.decodeUnknown(Schema.Struct({ total: Schema.Int }))),
     Effect.map(({ total }) => total),
+    Effect.retry(retrySchedule),
+    Effect.tapError((error) => Effect.log(`Failed to get total after retries: ${JSON.stringify(error)}`)),
     Effect.catchAll(() => Effect.succeed(-1)),
   );
 
 const getReviewedPreprintsTopUpPage = ({ limit, page = 1 }: { limit: number; page?: number }) =>
-  getItemsTopUpPage(reviewedPreprintsTopUpPath({ limit, page }), reviewedPreprintCodec);
+  pipe(
+    getItemsTopUpPage(reviewedPreprintsTopUpPath({ limit, page }), reviewedPreprintCodec),
+    Effect.retry(retrySchedule),
+    Effect.tapError((error) => Effect.log(`Failed to get page ${page} after retries: ${JSON.stringify(error)}`)),
+  );
 
 const getCachedReviewedPreprints = getCachedItems(getCachedListFile, reviewedPreprintsCodec);
 
@@ -77,7 +95,11 @@ const missingIndividualReviewedPreprints = pipe(
 );
 
 const retrieveMissingIndividualReviewedPreprints = () =>
-  pipe(missingIndividualReviewedPreprints, Effect.flatMap(retrieveIndividualReviewedPreprints));
+  pipe(
+    missingIndividualReviewedPreprints,
+    Effect.tap((rps) => Effect.log(`Retrieving ${rps.length} missing individual Reviewed Preprints`)),
+    Effect.flatMap(retrieveIndividualReviewedPreprints),
+  );
 
 const getReviewedPreprintsTopUp = ({ limit, offset = 0 }: { limit: number; offset?: number }) =>
   pipe(
@@ -152,7 +174,6 @@ const reviewedPreprintsTopUpOnePass = ({ limit, total }: { limit: number; total:
     Effect.flatMap(reviewedPreprintsTopUpInvalidate),
     Effect.flatMap(reviewedPreprintsTopUpCombine),
     Effect.flatMap(reviewedPreprintsTopUpTidyUp),
-    Effect.flatMap(retrieveMissingIndividualReviewedPreprints),
     Effect.flatMap(() =>
       pipe(
         getCachedReviewedPreprints(),
@@ -195,6 +216,8 @@ export const reviewedPreprintsTopUp = ({
     Effect.catchAllCause(Effect.logError),
     Effect.flatMap(getReviewedPreprintsTotal),
     Effect.flatMap((total) => reviewedPreprintsTopUpLoop({ limit, total, all })),
+    Effect.flatMap(retrieveMissingIndividualReviewedPreprints),
+    Effect.catchAllCause(Effect.logError),
     Effect.asVoid,
   );
 
