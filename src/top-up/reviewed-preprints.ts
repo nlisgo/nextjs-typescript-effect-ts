@@ -146,6 +146,43 @@ const reviewedPreprintsTopUpTidyUp = () =>
 const createCacheFolder = () =>
   Effect.flatMap(FileSystem.FileSystem, (fs) => fs.makeDirectory(getCachedFilePath, { recursive: true }));
 
+const reviewedPreprintsTopUpOnePass = ({ limit, total }: { limit: number; total: number }) =>
+  pipe(
+    reviewedPreprintsTopUpWrite({ limit, total }),
+    Effect.flatMap(reviewedPreprintsTopUpInvalidate),
+    Effect.flatMap(reviewedPreprintsTopUpCombine),
+    Effect.flatMap(reviewedPreprintsTopUpTidyUp),
+    Effect.flatMap(retrieveMissingIndividualReviewedPreprints),
+    Effect.flatMap(() =>
+      pipe(
+        getCachedReviewedPreprints(),
+        Effect.map((cached) => total - cached.length),
+      ),
+    ),
+  );
+
+const reviewedPreprintsTopUpLoop = ({
+  limit,
+  total,
+  all,
+}: {
+  limit: number;
+  total: number;
+  all: boolean;
+}): Effect.Effect<void, never, FileSystem.FileSystem | HttpClient.HttpClient> =>
+  pipe(
+    reviewedPreprintsTopUpOnePass({ limit, total }),
+    Effect.flatMap((remaining) =>
+      all && remaining > 0
+        ? pipe(
+            Effect.log(`Remaining: ${remaining}. Continuing...`),
+            Effect.flatMap(() => reviewedPreprintsTopUpLoop({ limit, total, all })),
+          )
+        : Effect.log(`Remaining: ${remaining}. Done.`),
+    ),
+    Effect.catchAllCause(Effect.logError),
+  );
+
 export const reviewedPreprintsTopUp = ({
   limit,
   all = false,
@@ -155,13 +192,9 @@ export const reviewedPreprintsTopUp = ({
 }): Effect.Effect<void, never, FileSystem.FileSystem | HttpClient.HttpClient> =>
   pipe(
     createCacheFolder(),
-    Effect.flatMap(getReviewedPreprintsTotal),
-    Effect.flatMap((total) => reviewedPreprintsTopUpWrite({ limit, total })),
-    Effect.flatMap(reviewedPreprintsTopUpInvalidate),
-    Effect.flatMap(reviewedPreprintsTopUpCombine),
-    Effect.flatMap(reviewedPreprintsTopUpTidyUp),
-    Effect.flatMap(retrieveMissingIndividualReviewedPreprints),
     Effect.catchAllCause(Effect.logError),
+    Effect.flatMap(getReviewedPreprintsTotal),
+    Effect.flatMap((total) => reviewedPreprintsTopUpLoop({ limit, total, all })),
     Effect.asVoid,
   );
 

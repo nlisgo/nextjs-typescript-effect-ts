@@ -8,6 +8,11 @@ on:
         description: "Start fresh: do not download the previous persistent cache"
         required: false
         default: false
+      import_all_reviewed_preprints:
+        type: boolean
+        description: "Import all reviewed preprints"
+        required: false
+        default: false
       persistent_cache_zip_url:
         type: string
         description: "Optional URL to a persistent-cache zip archive to seed .cache/"
@@ -146,7 +151,20 @@ jobs:
       - name: Tsup
         run: npm run tsup
 
+      - name: Import all Reviewed Preprints
+        if: >
+          (
+            github.event_name == 'workflow_dispatch' &&
+            github.event.inputs.import_all_reviewed_preprints == 'true'
+          )
+        run: npm run top-up-highlights --all
+
       - name: Top Up Reviewed Preprints
+        if: >
+          !(
+            github.event_name == 'workflow_dispatch' &&
+            github.event.inputs.import_all_reviewed_preprints == 'true'
+          )
         run: npm run top-up-reviewed-preprints
 
       - name: Top Up Categories
