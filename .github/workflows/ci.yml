@@ -54,7 +54,7 @@ jobs:
           buildScriptName: build-storybook
           exitZeroOnChanges: false
 
-  build:
+  test-and-build:
     runs-on: ubuntu-latest
     env:
       NEXT_TELEMETRY_DISABLED: 1
@@ -171,7 +171,7 @@ jobs:
           include-hidden-files: true
 
   deploy:
-    needs: [chromatic, build]
+    needs: [chromatic, test-and-build]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
