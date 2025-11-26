@@ -11,7 +11,7 @@ const outputFile = (output: Option.Option<string>, fallback: string) =>
 
 const optionOutput = Options.text('output').pipe(Options.withAlias('o'), Options.optional);
 
-const argCacheFolder = Args.text();
+const argCacheFolder = Args.text({ name: 'Cache folder' });
 
 const cached7zFolder = (cached: string) => `${cached}-7z`;
 
@@ -30,8 +30,9 @@ const uploadFile = (filename: string, folder?: string) =>
 
 const compressCached = (cached: string) =>
   pipe(
-    Effect.flatMap(FileSystem.FileSystem, (fs) => fs.remove(cached7zFolder(cached), { recursive: true })),
-    Effect.catchAll(() => Effect.void),
+    Effect.flatMap(FileSystem.FileSystem, (fs) =>
+      fs.remove(cached7zFolder(cached), { recursive: true }).pipe(Effect.catchAll(() => Effect.void)),
+    ),
     Effect.flatMap(() => Effect.flatMap(FileSystem.FileSystem, (fs) => fs.readDirectory(cached))),
     Effect.catchAllCause(Effect.logError),
     Effect.map(() =>
