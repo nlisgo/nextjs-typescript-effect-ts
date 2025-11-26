@@ -129,21 +129,6 @@ jobs:
           run-id: ${{ steps.get-run-id.outputs.result }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
-        
-      - name: Download persistent cache from whalebone
-        if: >
-          steps.get-run-id.outputs.result != '' &&
-          !(
-            github.event_name == 'workflow_dispatch' &&
-            github.event.inputs.skip_persistent_cache == 'true'
-          ) &&
-          !(
-            github.event_name == 'workflow_dispatch' &&
-            steps.download-cache-zip.outcome == 'success'
-          )
-        run: |
-          cat .cached-7z.json
-          npm run restore-cached -- .cached-7z.json
 
       - name: Install dependencies
         run: npm ci
@@ -162,6 +147,21 @@ jobs:
 
       - name: Tsup
         run: npm run tsup
+        
+      - name: Download persistent cache from whalebone
+        if: >
+          steps.get-run-id.outputs.result != '' &&
+          !(
+            github.event_name == 'workflow_dispatch' &&
+            github.event.inputs.skip_persistent_cache == 'true'
+          ) &&
+          !(
+            github.event_name == 'workflow_dispatch' &&
+            steps.download-cache-zip.outcome == 'success'
+          )
+        run: |
+          cat .cached-7z.json
+          npm run restore-cached -- .cached-7z.json
 
       - name: Import all Reviewed Preprints
         if: >
