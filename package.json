@@ -26,6 +26,8 @@
     "top-up-reviewed-preprints": "node dist/cli/top-up-reviewed-preprints.mjs",
     "backup-cached:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/backup-cached.ts",
     "backup-cached": "node dist/cli/backup-cached.mjs",
+    "restore-cached:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/restore-cached.ts",
+    "restore-cached": "node dist/cli/restore-cached.mjs",
     "chromatic": "sh ./scripts/run-chromatic.sh"
   },
   "dependencies": {
