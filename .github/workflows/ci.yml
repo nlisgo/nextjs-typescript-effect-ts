@@ -3,16 +3,6 @@ name: CI and Deploy Next app to GitHub Pages
 on:
   workflow_dispatch:
     inputs:
-      skip_persistent_cache:
-        type: boolean
-        description: "Start fresh: do not download the previous persistent cache"
-        required: false
-        default: false
-      import_all_reviewed_preprints:
-        type: boolean
-        description: "Import all reviewed preprints"
-        required: false
-        default: false
       persistent_cache_zip_url:
         type: string
         description: "Optional URL to a persistent-cache zip archive to seed .cached/"
@@ -22,7 +12,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: "0 * * * *"
+    - cron: "0 0 * * *"
 
 permissions:
   contents: read
@@ -76,58 +66,17 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
 
-      - name: Get latest successful run ID
-        id: get-run-id
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const runs = await github.rest.actions.listWorkflowRuns({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'ci.yml',
-              // Ask only for successful runs so we don't accidentally pick a failed one
-              status: 'success',
-              branch: context.ref.replace('refs/heads/', ''),
-              per_page: 1
-            });
-            if (runs.data.workflow_runs.length > 0) {
-              return runs.data.workflow_runs[0].id;
-            } else {
-              return '';
-            }
-          result-encoding: string
-
       - name: Download persistent cache from provided zip
         id: download-cache-zip
         if: >
           github.event_name == 'workflow_dispatch' &&
-          github.event.inputs.persistent_cache_zip_url != '' &&
-          github.event.inputs.skip_persistent_cache != 'true'
+          github.event.inputs.persistent_cache_zip_url != ''
         run: |
           set -euo pipefail
           mkdir -p .cached
           rm -rf .cached/*
           curl -fL "${{ github.event.inputs.persistent_cache_zip_url }}" -o /tmp/persistent-cache.zip
           unzip -q /tmp/persistent-cache.zip -d .cached
-        continue-on-error: true
-
-      - name: Download persistent cache
-        if: >
-          steps.get-run-id.outputs.result != '' &&
-          !(
-            github.event_name == 'workflow_dispatch' &&
-            github.event.inputs.skip_persistent_cache == 'true'
-          ) &&
-          !(
-            github.event_name == 'workflow_dispatch' &&
-            steps.download-cache-zip.outcome == 'success'
-          )
-        uses: actions/download-artifact@v4
-        with:
-          name: persistent-cache
-          path: .cached
-          run-id: ${{ steps.get-run-id.outputs.result }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
       - name: Install dependencies
@@ -149,20 +98,7 @@ jobs:
         run: npm run tsup
 
       - name: Import all Reviewed Preprints
-        if: >
-          (
-            github.event_name == 'workflow_dispatch' &&
-            github.event.inputs.import_all_reviewed_preprints == 'true'
-          )
         run: npm run top-up-reviewed-preprints -- --limit 100 --all
-
-      - name: Top Up Reviewed Preprints
-        if: >
-          !(
-            github.event_name == 'workflow_dispatch' &&
-            github.event.inputs.import_all_reviewed_preprints == 'true'
-          )
-        run: npm run top-up-reviewed-preprints
 
       - name: Top Up Categories
         run: npm run top-up-categories
@@ -172,18 +108,6 @@ jobs:
 
       - name: Build Next.js app
         run: npm run build
-
-      - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: out
-
-      - name: Upload cache artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: persistent-cache
-          path: .cached
-          include-hidden-files: true
 
   deploy:
     needs: [chromatic, test-and-build]
