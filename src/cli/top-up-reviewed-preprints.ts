@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { CliConfig, Command, Options } from '@effect/cli';
-import { FetchHttpClient } from '@effect/platform';
-import { NodeContext, NodeFileSystem, NodeRuntime } from '@effect/platform-node';
+import { Command, Options } from '@effect/cli';
+import { NodeRuntime } from '@effect/platform-node';
 import { Effect, Schema } from 'effect';
 import { reviewedPreprintsTopUp } from '@/top-up/reviewed-preprints';
+import { CliMainLayer } from '@/services/CliRuntime';
 
 const optionLimit = Options.integer('limit').pipe(
   Options.withAlias('l'),
@@ -22,17 +22,8 @@ const cliApp = Command.run(command, {
   version: '0.1.0',
 });
 
-const AppLayer = [
-  NodeFileSystem.layer,
-  NodeContext.layer,
-  CliConfig.layer({
-    showBuiltIns: false,
-  }),
-  FetchHttpClient.layer,
-] as const;
-
 cliApp(process.argv).pipe(
-  Effect.provide(AppLayer),
+  Effect.provide(CliMainLayer),
   NodeRuntime.runMain({
     disableErrorReporting: true,
   }),

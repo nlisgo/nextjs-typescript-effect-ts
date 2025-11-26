@@ -4,7 +4,7 @@ import { type JSX } from 'react';
 import { CategoryTags } from '@/components/Categories/Categories';
 import { Page } from '@/components/Page/Page';
 import { Title } from '@/components/Title/Title';
-import { MainLayer } from '@/services/AppRuntime';
+import { AppMainLayer } from '@/services/AppRuntime';
 import { titleContentToText } from '@/tools';
 import { getReviewedPreprint, getReviewedPreprints } from '@/top-up/reviewed-preprints';
 
@@ -22,7 +22,7 @@ export const generateMetadata = async ({ params }: PageProps): Promise<Metadata>
       Effect.map((rp) => ({
         title: titleContentToText(rp.title),
       })),
-    ).pipe(Effect.provide(MainLayer)),
+    ).pipe(Effect.provide(AppMainLayer)),
   );
 
 // Static params required for `output: "export"`. Update this list with real reviewedPreprint IDs.
@@ -31,7 +31,9 @@ export const dynamicParams = false;
 export const generateStaticParams = async (): Promise<Array<{ msid: string }>> => {
   console.log('Generating static params for reviewed preprints...');
   return Effect.runPromise(
-    pipe(getReviewedPreprints(), Effect.map(Array.map(({ id: msid }) => ({ msid })))).pipe(Effect.provide(MainLayer)),
+    pipe(getReviewedPreprints(), Effect.map(Array.map(({ id: msid }) => ({ msid })))).pipe(
+      Effect.provide(AppMainLayer),
+    ),
   );
 };
 
@@ -54,7 +56,7 @@ const ReviewedPreprintPage = async ({ params }: PageProps): Promise<JSX.Element>
           )}
         </Page>
       )),
-    ).pipe(Effect.provide(MainLayer)),
+    ).pipe(Effect.provide(AppMainLayer)),
   );
 
 export default ReviewedPreprintPage;

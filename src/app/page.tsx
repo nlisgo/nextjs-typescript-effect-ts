@@ -5,7 +5,7 @@ import { Categories } from '@/components/Categories/Categories';
 import { Highlights } from '@/components/Highlights/Highlights';
 import { Page } from '@/components/Page/Page';
 import { Teasers } from '@/components/Teasers/Teasers';
-import { MainLayer } from '@/services/AppRuntime';
+import { AppMainLayer } from '@/services/AppRuntime';
 import { withBaseUrl } from '@/tools';
 import { getCategories } from '@/top-up/categories';
 import { getHighlights } from '@/top-up/highlights';
@@ -57,7 +57,7 @@ const Home = async (): Promise<JSX.Element> =>
         ),
       ]),
       Effect.map((sections) => <Page>{sections}</Page>),
-    ).pipe(Effect.provide(MainLayer)),
+    ).pipe(Effect.provide(AppMainLayer)),
   );
 
 export default Home;

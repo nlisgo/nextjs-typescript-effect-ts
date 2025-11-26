@@ -5,7 +5,7 @@ import { type JSX } from 'react';
 import { Page } from '@/components/Page/Page';
 import { Pagination } from '@/components/Pagination/Pagination';
 import { Teasers } from '@/components/Teasers/Teasers';
-import { MainLayer } from '@/services/AppRuntime';
+import { AppMainLayer } from '@/services/AppRuntime';
 import { withBaseUrl } from '@/tools';
 import { getReviewedPreprints } from '@/top-up/reviewed-preprints';
 
@@ -41,7 +41,7 @@ export const generateStaticParams = async (): Promise<Array<{ path: Array<string
           path: [`${index + 1}`],
         })),
       ),
-    ).pipe(Effect.provide(MainLayer)),
+    ).pipe(Effect.provide(AppMainLayer)),
   );
 };
 
@@ -64,7 +64,7 @@ const ReviewedPreprintsPagedPage = async ({ params }: PageProps): Promise<JSX.El
     notFound();
   }
 
-  const reviewedPreprints = await Effect.runPromise(pipe(getReviewedPreprints()).pipe(Effect.provide(MainLayer)));
+  const reviewedPreprints = await Effect.runPromise(pipe(getReviewedPreprints()).pipe(Effect.provide(AppMainLayer)));
 
   const totalItems = reviewedPreprints.length;
   const start = (pageNumber - 1) * ITEMS_PER_PAGE;

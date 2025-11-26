@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import type { JSX } from 'react';
 import { Categories } from '@/components/Categories/Categories';
 import { Page } from '@/components/Page/Page';
-import { MainLayer } from '@/services/AppRuntime';
+import { AppMainLayer } from '@/services/AppRuntime';
 import { getCategories } from '@/top-up/categories';
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ const CategoriesPage = async (): Promise<JSX.Element> =>
           )),
         ),
       )
-      .pipe(Effect.provide(MainLayer)),
+      .pipe(Effect.provide(AppMainLayer)),
   );
 
 export default CategoriesPage;

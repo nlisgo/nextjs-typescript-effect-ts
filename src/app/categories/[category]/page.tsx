@@ -4,7 +4,7 @@ import type { JSX } from 'react';
 import { Banner } from '@/components/Banner/Banner';
 import { Content } from '@/components/Content/Content';
 import { Page } from '@/components/Page/Page';
-import { MainLayer } from '@/services/AppRuntime';
+import { AppMainLayer } from '@/services/AppRuntime';
 import { getCategories, getCategory } from '@/top-up/categories';
 
 type CategoryPageProps = {
@@ -19,7 +19,7 @@ export const generateMetadata = async ({ params }: CategoryPageProps): Promise<M
       Effect.map((cat) => ({
         title: cat.name,
       })),
-      Effect.provide(MainLayer),
+      Effect.provide(AppMainLayer),
     ),
   );
 
@@ -29,7 +29,9 @@ export const dynamicParams = false;
 export const generateStaticParams = async (): Promise<Array<{ category: string }>> => {
   console.log('Generating static params for categories...');
   return Effect.runPromise(
-    pipe(getCategories(), Effect.map(Array.map(({ id: category }) => ({ category })))).pipe(Effect.provide(MainLayer)),
+    pipe(getCategories(), Effect.map(Array.map(({ id: category }) => ({ category })))).pipe(
+      Effect.provide(AppMainLayer),
+    ),
   );
 };
 
@@ -45,7 +47,7 @@ const CategoryPage = async ({ params }: CategoryPageProps): Promise<JSX.Element>
           {cat.aimsAndScope && <Content content={cat.aimsAndScope} />}
         </Page>
       )),
-    ).pipe(Effect.provide(MainLayer)),
+    ).pipe(Effect.provide(AppMainLayer)),
   );
 
 export default CategoryPage;
