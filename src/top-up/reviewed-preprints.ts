@@ -1,5 +1,5 @@
 import { FileSystem, HttpClient, Error as PlatformError } from '@effect/platform';
-import { Array, Effect, Order, ParseResult, pipe, Schedule, Schema } from 'effect';
+import { Array, Effect, Order, ParseResult, pipe, Ref, Schedule, Schema } from 'effect';
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { stringifyJson, withBaseUrl } from '@/tools';
 import {
@@ -21,7 +21,15 @@ type ReviewedPreprint = Schema.Schema.Type<typeof reviewedPreprintCodec>;
 
 const retrySchedule = Schedule.exponential('2 seconds').pipe(Schedule.intersect(Schedule.recurs(7)), Schedule.jittered);
 
-const retrieveIndividualReviewedPreprint = (item: { id: string; path: string; suffix?: string }) =>
+const retrieveIndividualReviewedPreprint = (
+  item: {
+    id: string;
+    path: string;
+    total?: number;
+    position?: number;
+  },
+  completionCounter: Ref.Ref<number>,
+) =>
   pipe(
     item,
     retrieveIndividualItem(apiBasePath, reviewedPreprintCodec),
@@ -34,7 +42,14 @@ const retrieveIndividualReviewedPreprint = (item: { id: string; path: string; su
       ),
     ),
     Effect.tap(() =>
-      Effect.log(`Retrieved individual Reviewed Preprint: ${item.id}${item.suffix ? ` (${item.suffix})` : ''}`),
+      pipe(
+        Ref.updateAndGet(completionCounter, (n) => n + 1),
+        Effect.flatMap((completionOrder) =>
+          Effect.log(
+            `Retrieved individual Reviewed Preprint: ${item.id} - (${completionOrder}${item.total ? ` of ${item.total}` : ''})${item.position ? ` #${item.position}` : ''}`,
+          ),
+        ),
+      ),
     ),
     Effect.tapError((error) =>
       Effect.log(`Failed to retrieve reviewed preprint ${item.id} after retries: ${stringifyJson(error)}`),
@@ -42,11 +57,19 @@ const retrieveIndividualReviewedPreprint = (item: { id: string; path: string; su
   );
 
 const retrieveIndividualReviewedPreprints = (reviewedPreprints: Array<{ msid: string; path: string }>) =>
-  Effect.all(
-    reviewedPreprints.map(({ msid: id, path }, i) =>
-      retrieveIndividualReviewedPreprint({ id, path, suffix: `${i + 1} of ${reviewedPreprints.length}` }),
+  pipe(
+    Ref.make(0),
+    Effect.flatMap((completionCounter) =>
+      Effect.all(
+        reviewedPreprints.map(({ msid: id, path }, i) =>
+          retrieveIndividualReviewedPreprint(
+            { id, path, total: reviewedPreprints.length, position: i + 1 },
+            completionCounter,
+          ),
+        ),
+        { concurrency: 100 },
+      ),
     ),
-    { concurrency: 100 },
   );
 
 const reviewedPreprintsTopUpPath = ({
