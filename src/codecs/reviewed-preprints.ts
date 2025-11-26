@@ -20,6 +20,7 @@ export const reviewedPreprintCodec = Schema.Struct({
     significance: Schema.Array(Schema.String),
     strength: Schema.optional(Schema.Array(Schema.String)),
   }),
+  article: Schema.optional(Schema.Unknown),
   hash: Schema.optional(Schema.String),
 });
 

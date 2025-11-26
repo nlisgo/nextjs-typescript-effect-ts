@@ -11,6 +11,7 @@ import {
 import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/reviewed-preprints';
+const apiBasePathEpp = 'https://prod--epp.elifesciences.org/api/preprints';
 const getCachedFilePath = '.cached/reviewed-preprints';
 const getCachedListFile = `${getCachedFilePath}.json`;
 const getCachedListFileNew = `${getCachedFilePath}-new.json`;
@@ -25,11 +26,18 @@ const retrieveIndividualReviewedPreprint = (item: { id: string; path: string; su
     item,
     retrieveIndividualItem(apiBasePath, reviewedPreprintCodec),
     Effect.retry(retrySchedule),
+    Effect.flatMap((firstResult) =>
+      pipe(
+        item,
+        retrieveIndividualItem(apiBasePathEpp, Schema.Struct({ article: Schema.Unknown }), firstResult),
+        Effect.retry(retrySchedule),
+      ),
+    ),
     Effect.tap(() =>
       Effect.log(`Retrieved individual Reviewed Preprint: ${item.id}${item.suffix ? ` (${item.suffix})` : ''}`),
     ),
     Effect.tapError((error) =>
-      Effect.log(`Failed to retrieve reviewed preprint ${item.id} after retries: ${JSON.stringify(error)}`),
+      Effect.log(`Failed to retrieve reviewed preprint ${item.id} after retries: ${stringifyJson(error)}`),
     ),
   );
 
@@ -57,7 +65,7 @@ const getReviewedPreprintsTotal = () =>
     Effect.flatMap(Schema.decodeUnknown(Schema.Struct({ total: Schema.Int }))),
     Effect.map(({ total }) => total),
     Effect.retry(retrySchedule),
-    Effect.tapError((error) => Effect.log(`Failed to get total after retries: ${JSON.stringify(error)}`)),
+    Effect.tapError((error) => Effect.log(`Failed to get total after retries: ${stringifyJson(error)}`)),
     Effect.catchAll(() => Effect.succeed(-1)),
   );
 
@@ -65,7 +73,7 @@ const getReviewedPreprintsTopUpPage = ({ limit, page = 1 }: { limit: number; pag
   pipe(
     getItemsTopUpPage(reviewedPreprintsTopUpPath({ limit, page }), reviewedPreprintCodec),
     Effect.retry(retrySchedule),
-    Effect.tapError((error) => Effect.log(`Failed to get page ${page} after retries: ${JSON.stringify(error)}`)),
+    Effect.tapError((error) => Effect.log(`Failed to get page ${page} after retries: ${stringifyJson(error)}`)),
   );
 
 const getCachedReviewedPreprints = getCachedItems(getCachedListFile, reviewedPreprintsCodec);

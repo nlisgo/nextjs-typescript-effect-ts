@@ -4,7 +4,7 @@ import { Array, Effect, ParseResult, pipe, Schema } from 'effect';
 import { stringifyJson } from '@/tools';
 
 export const retrieveIndividualItem =
-  <A, I = unknown, Req = never>(basePath: string, schema: Schema.Schema<A, I, Req>) =>
+  <A, I = unknown, Req = never>(basePath: string, schema: Schema.Schema<A, I, Req>, addTo: object = {}) =>
   ({
     id,
     path,
@@ -21,7 +21,7 @@ export const retrieveIndividualItem =
       Effect.flatMap((response) => response.json),
       Effect.flatMap(Schema.decodeUnknown(schema)),
       Effect.tap((result) =>
-        Effect.flatMap(FileSystem.FileSystem, (fs) => fs.writeFileString(path, stringifyJson(result))),
+        Effect.flatMap(FileSystem.FileSystem, (fs) => fs.writeFileString(path, stringifyJson({ ...addTo, ...result }))),
       ),
     );
 
