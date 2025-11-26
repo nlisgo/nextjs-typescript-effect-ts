@@ -1,9 +1,44 @@
 import { Args, Command } from '@effect/cli';
-import { Effect, pipe } from 'effect';
+import { Array, Chunk, Effect, pipe, Schema, Stream } from 'effect';
 import { CliMainLayer } from '@/services/CliRuntime';
 import { NodeRuntime } from '@effect/platform-node';
-import { FileSystem } from '@effect/platform';
+import { Command as ProcCommand, FileSystem, HttpClient, HttpClientRequest } from '@effect/platform';
 import { NoSuchElementException } from 'effect/Cause';
+
+const downloadFile = (url: string, folder: string) =>
+  pipe(
+    HttpClientRequest.get(url),
+    (request) =>
+      pipe(
+        HttpClient.HttpClient,
+        Effect.flatMap((client) => client.execute(request)),
+      ),
+    Effect.flatMap((response) =>
+      pipe(
+        response.stream,
+        Stream.runCollect,
+        Effect.map((chunks) => {
+          const arrayChunks = Chunk.toReadonlyArray(chunks);
+          const totalLength = arrayChunks.reduce((acc, chunk) => acc + chunk.length, 0);
+          const result = new Uint8Array(totalLength);
+          let offset = 0;
+          for (const chunk of arrayChunks) {
+            result.set(chunk, offset);
+            offset += chunk.length;
+          }
+          return result;
+        }),
+        Effect.flatMap((data) =>
+          Effect.flatMap(FileSystem.FileSystem, (fs) =>
+            pipe(
+              getFilenameFromRegistry(url),
+              Effect.flatMap(({ name }) => fs.writeFile(`${folder}/${name}`, data)),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 
 const getFilenameFromRegistry = (registry: string) =>
   pipe(
@@ -12,6 +47,7 @@ const getFilenameFromRegistry = (registry: string) =>
     Effect.map(([, stub, ext]) => ({
       name: `${stub}.${ext}`,
       stub,
+      dest: stub.replace(/\.7z$/, ''),
       ext,
       path: registry,
     })),
@@ -37,7 +73,18 @@ const command = Command.make('backup-cached', { registry: argCacheRegistry }, ({
         ),
       ),
     ),
-    Effect.tap(Effect.log),
+    Effect.flatMap(
+      Schema.decodeUnknown(
+        Schema.Struct({
+          name: Schema.String,
+          stub: Schema.String,
+          dest: Schema.String,
+          ext: Schema.String,
+          path: Schema.String,
+          contents: Schema.NonEmptyArray(Schema.String),
+        }),
+      ),
+    ),
     Effect.tap((file) =>
       Effect.flatMap(FileSystem.FileSystem, (fs) =>
         fs.remove(file.stub, { recursive: true }).pipe(Effect.catchAll(() => Effect.void)),
@@ -46,7 +93,45 @@ const command = Command.make('backup-cached', { registry: argCacheRegistry }, ({
     Effect.tap((file) =>
       Effect.flatMap(FileSystem.FileSystem, (fs) => fs.makeDirectory(file.stub, { recursive: true })),
     ),
-    Effect.catchAllCause(Effect.logError),
+    Effect.tap(({ stub: folder, contents: backups }) =>
+      Effect.all(backups.map((backup) => downloadFile(backup, folder))),
+    ),
+    Effect.flatMap(({ stub: folder, contents: backups }) =>
+      pipe(
+        Effect.forEach(backups, (backup) => getFilenameFromRegistry(backup)),
+        Effect.map(Array.map(({ name, dest }) => ({ name, dest }))),
+        Effect.flatMap(
+          Array.findFirst(
+            Schema.is(
+              Schema.Struct({
+                name: Schema.String.pipe(Schema.pattern(/\.7z\.001$/)),
+                dest: Schema.String,
+              }),
+            ),
+          ),
+        ),
+        Effect.tap(({ dest }) =>
+          Effect.flatMap(FileSystem.FileSystem, (fs) =>
+            fs.remove(dest, { recursive: true }).pipe(Effect.catchAll(() => Effect.void)),
+          ),
+        ),
+        Effect.map(({ name, dest }) =>
+          pipe(
+            ProcCommand.make('bash', '-c', `7z x ./${folder}/${name} -o./${dest}`),
+            ProcCommand.stdout('inherit'),
+            ProcCommand.stderr('inherit'),
+          ),
+        ),
+        Effect.flatMap(ProcCommand.exitCode),
+        Effect.tapErrorCause(Effect.logError),
+        Effect.flatMap((exitCode) =>
+          exitCode === 0
+            ? Effect.succeed(exitCode)
+            : Effect.fail(new Error(`Command failed with exit code ${exitCode}`)),
+        ),
+      ),
+    ),
+    Effect.tapErrorCause(Effect.logError),
   ),
 );
 

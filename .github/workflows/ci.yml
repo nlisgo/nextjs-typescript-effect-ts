@@ -8,6 +8,11 @@ on:
         description: "Start fresh: do not download the previous persistent cache"
         required: false
         default: false
+      import_all_reviewed_preprints:
+        type: boolean
+        description: "Import all reviewed preprints"
+        required: false
+        default: false
       persistent_cache_zip_url:
         type: string
         description: "Optional URL to a persistent-cache zip archive to seed .cached/"
@@ -17,7 +22,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 * * * *"
 
 permissions:
   contents: read
@@ -106,7 +111,7 @@ jobs:
           unzip -q /tmp/persistent-cache.zip -d .cached
         continue-on-error: true
 
-      - name: Download persistent cache
+      - name: Download persistent cache whalebone details
         if: >
           steps.get-run-id.outputs.result != '' &&
           !(
@@ -125,7 +130,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
         
-      - name: Download persistent confirmation
+      - name: Download persistent cache from whalebone
         if: >
           steps.get-run-id.outputs.result != '' &&
           !(
@@ -136,7 +141,9 @@ jobs:
             github.event_name == 'workflow_dispatch' &&
             steps.download-cache-zip.outcome == 'success'
           )
-        run: cat .cached-7z.json
+        run: |
+          cat .cached-7z.json
+          npm run restore-cached:dev -- ./.cached-7z.json
 
       - name: Install dependencies
         run: npm ci
@@ -157,7 +164,20 @@ jobs:
         run: npm run tsup
 
       - name: Import all Reviewed Preprints
+        if: >
+          (
+            github.event_name == 'workflow_dispatch' &&
+            github.event.inputs.import_all_reviewed_preprints == 'true'
+          )
         run: npm run top-up-reviewed-preprints -- --limit 100 --all
+
+      - name: Top Up Reviewed Preprints
+        if: >
+          !(
+            github.event_name == 'workflow_dispatch' &&
+            github.event.inputs.import_all_reviewed_preprints == 'true'
+          )
+        run: npm run top-up-reviewed-preprints
 
       - name: Top Up Categories
         run: npm run top-up-categories
