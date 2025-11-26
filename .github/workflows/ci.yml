@@ -114,6 +114,16 @@ jobs:
         with:
           path: out
 
+      - name: Upload cache to whalebone
+        run: npm run backup-cached -- --output .cached-7z.json .cached
+
+      - name: Upload cache artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: persistent-cache
+          path: .cached-7z.json
+          include-hidden-files: true
+
   deploy:
     needs: [chromatic, test-and-build]
     runs-on: ubuntu-latest
