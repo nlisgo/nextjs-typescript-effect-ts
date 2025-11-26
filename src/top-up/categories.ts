@@ -99,7 +99,6 @@ const categoriesTopUpWrite = ({ limit, total }: { limit: number; total?: number 
 const categoriesTopUpCombine = () =>
   pipe(
     Effect.all([getCachedCategories(getCachedListFileNew), getCachedCategories()]),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Effect.tap(([_, before]) => Effect.log(`Total before: ${before.length}`)),
     Effect.map((lists) => Array.appendAll(...lists)),
     Effect.map(Array.dedupeWith((a, b) => a.id === b.id)),

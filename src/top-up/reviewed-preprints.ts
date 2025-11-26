@@ -162,7 +162,6 @@ const reviewedPreprintsTopUpWrite = ({ limit, total }: { limit: number; total?: 
 const reviewedPreprintsTopUpCombine = () =>
   pipe(
     Effect.all([getCachedReviewedPreprints(getCachedListFileNew), getCachedReviewedPreprints()]),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Effect.tap(([_, before]) => Effect.log(`Total before: ${before.length}`)),
     Effect.map((lists) => Array.appendAll(...lists)),
     Effect.map(Array.dedupeWith((a, b) => a.id === b.id)),
