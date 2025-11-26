@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Args, Command, Options } from '@effect/cli';
 import { NodeRuntime } from '@effect/platform-node';
-import { Array, Effect, Effectable, Option, pipe } from 'effect';
+import { Array, Effect, Option, pipe } from 'effect';
 import { CliMainLayer } from '@/services/CliRuntime';
 import { FileSystem, Command as ProcCommand, HttpClient, HttpClientRequest } from '@effect/platform';
 import { stringifyJson } from '@/tools';
@@ -31,6 +31,7 @@ const uploadFile = (filename: string, folder?: string) =>
 const compressCached = (cached: string) =>
   pipe(
     Effect.flatMap(FileSystem.FileSystem, (fs) => fs.remove(cached7zFolder(cached), { recursive: true })),
+    Effect.catchAll(() => Effect.void),
     Effect.flatMap(() => Effect.flatMap(FileSystem.FileSystem, (fs) => fs.readDirectory(cached))),
     Effect.catchAllCause(Effect.logError),
     Effect.map(() =>
