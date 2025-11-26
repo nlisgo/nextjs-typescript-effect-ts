@@ -45,7 +45,6 @@ next-env.d.ts
 storybook-static
 
 # cache
-.cache
-.cached
+.cache*
 
 dist/
