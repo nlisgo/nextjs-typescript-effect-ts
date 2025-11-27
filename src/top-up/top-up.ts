@@ -1,7 +1,8 @@
-import { FileSystem, HttpClient, HttpClientError, Error as PlatformError } from '@effect/platform';
+import { FileSystem, HttpClient, HttpClientError, HttpClientRequest, Error as PlatformError } from '@effect/platform';
 import { createHash } from 'crypto';
 import { Array, Effect, ParseResult, pipe, Schema } from 'effect';
 import { stringifyJson } from '@/tools';
+import { formatIsoOffset } from 'effect/DateTime';
 
 export const createItemHash = (item: unknown) => createHash('md5').update(stringifyJson(item, false)).digest('hex');
 
@@ -19,7 +20,8 @@ export const retrieveIndividualItem =
     Req | HttpClient.HttpClient | FileSystem.FileSystem
   > =>
     pipe(
-      HttpClient.get(`${basePath}/${id}`),
+      HttpClientRequest.get(`${basePath}/${id}`),
+      (request) => Effect.flatMap(HttpClient.HttpClient, (client) => client.execute(request)),
       Effect.flatMap((response) => response.json),
       Effect.flatMap(Schema.decodeUnknown(schema)),
       Effect.tap((result) =>
