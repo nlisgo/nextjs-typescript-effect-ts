@@ -58,7 +58,7 @@ const retrieveIndividualReviewedPreprint = (
         ),
       ),
     ),
-    Effect.catchAll((error) =>
+    Effect.tapError((error) =>
       Effect.log(`Failed to retrieve reviewed preprint ${item.id} after retries: ${stringifyJson(error)}`),
     ),
   );

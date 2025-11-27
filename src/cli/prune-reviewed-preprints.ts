@@ -41,10 +41,12 @@ const command = Command.make('prune-reviewed-preprints', { msids: argMsids }, ({
               ...snippet,
               hash: createItemHash(snippet),
             })),
+            Effect.option,
           ),
         ),
       ),
     ),
+    Effect.map(Array.getSomes),
     Effect.map(stringifyJson),
     Effect.tap((reviewedPreprints) =>
       Effect.flatMap(FileSystem.FileSystem, (fs) => fs.writeFileString(getCachedListFileNew, reviewedPreprints)),
