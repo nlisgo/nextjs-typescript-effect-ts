@@ -121,7 +121,9 @@ jobs:
           startsWith(github.event.inputs.persistent_cache_archive_url, '[') &&
           endsWith(github.event.inputs.persistent_cache_archive_url, ']')
         run: |
-          echo "${{ github.event.inputs.persistent_cache_archive_url }}" >> .cached-7z.json
+          cat > .cached-7z.json << 'EOF'
+          ${{ github.event.inputs.persistent_cache_archive_url }}
+          EOF
           cat .cached-7z.json
           echo "This will be picked up later in the \"Download persistent cache from whalebone\" step"
         continue-on-error: true
