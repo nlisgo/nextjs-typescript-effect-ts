@@ -30,20 +30,33 @@ const command = Command.make('prune-reviewed-preprints', { msids: argMsids }, ({
       ),
     ),
     Effect.tap(() => createCacheFolder()),
-    Effect.tap(retrieveIndividualReviewedPreprints),
     Effect.flatMap((msids) =>
-      Effect.forEach(msids, (rp) =>
-        Effect.flatMap(FileSystem.FileSystem, (fs) =>
-          fs.readFileString(rp.path).pipe(
-            Effect.map(JSON.parse),
-            Effect.flatMap(Schema.decodeUnknown(reviewedPreprintCodec)),
-            Effect.map(({ article, ...snippet }) => ({
-              ...snippet,
-              hash: createItemHash(snippet),
-            })),
-          ),
-        ),
+      pipe(
+        retrieveIndividualReviewedPreprints(msids),
+        Effect.catchAll((error) => {
+          // Log the error but continue - some MSIDs might 404
+          return Effect.log(`Some MSIDs failed to retrieve (possibly 404): ${JSON.stringify(error)}`);
+        }),
+        Effect.map(() => msids),
       ),
+    ),
+    Effect.flatMap((msids) =>
+      Effect.forEach(
+        msids,
+        (rp) =>
+          Effect.flatMap(FileSystem.FileSystem, (fs) =>
+            fs.readFileString(rp.path).pipe(
+              Effect.map(JSON.parse),
+              Effect.flatMap(Schema.decodeUnknown(reviewedPreprintCodec)),
+              Effect.map(({ article, ...snippet }) => ({
+                ...snippet,
+                hash: createItemHash(snippet),
+              })),
+              Effect.option, // Convert failures to None
+            ),
+          ),
+        { concurrency: 'unbounded' },
+      ).pipe(Effect.map(Array.filterMap((option) => option))),
     ),
     Effect.map(stringifyJson),
     Effect.tap((reviewedPreprints) =>

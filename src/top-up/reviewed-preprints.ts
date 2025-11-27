@@ -2,11 +2,7 @@ import { FileSystem, HttpClient, Error as PlatformError, HttpClientError } from 
 import { Array, Effect, Order, ParseResult, pipe, Ref, Schedule, Schema } from 'effect';
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { stringifyJson, withBaseUrl } from '@/tools';
-import {
-  getCachedItems,
-  getItemsTopUpPage,
-  offsetFromTotalCachedAndLimit,
-} from '@/top-up/top-up';
+import { getCachedItems, getItemsTopUpPage, offsetFromTotalCachedAndLimit } from '@/top-up/top-up';
 import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs';
 
 const apiBasePath = 'https://api.prod.elifesciences.org/reviewed-preprints';
@@ -44,10 +40,11 @@ const retryExcept404 = <A, E, R>(effect: Effect.Effect<A, E, R>): Effect.Effect<
       schedule: retrySchedule,
       while: (error) => {
         // Don't retry on 404
-        return !(HttpClientError.isHttpClientError(error) &&
+        return !(
+          HttpClientError.isHttpClientError(error) &&
           error._tag === 'ResponseError' &&
-          error.response.status === 404);
-        
+          error.response.status === 404
+        );
       },
     }),
   );
