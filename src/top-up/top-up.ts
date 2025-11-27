@@ -3,6 +3,8 @@ import { createHash } from 'crypto';
 import { Array, Effect, ParseResult, pipe, Schema } from 'effect';
 import { stringifyJson } from '@/tools';
 
+export const createItemHash = (item: unknown) => createHash('md5').update(stringifyJson(item, false)).digest('hex');
+
 export const retrieveIndividualItem =
   <A, I = unknown, Req = never>(basePath: string, schema: Schema.Schema<A, I, Req>, addTo: object = {}) =>
   ({
@@ -54,7 +56,7 @@ export const getItemsTopUpPage = <A, I = unknown, Req = never>(
     Effect.map(
       Array.map((item) => ({
         ...item,
-        hash: createHash('md5').update(stringifyJson(item, false)).digest('hex'),
+        hash: createItemHash(item),
       })),
     ),
   );

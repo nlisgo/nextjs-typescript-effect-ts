@@ -14,8 +14,8 @@ const apiBasePath = 'https://api.prod.elifesciences.org/reviewed-preprints';
 const apiBasePathEpp = 'https://prod--epp.elifesciences.org/api/preprints';
 const getCachedFilePath = '.cached/reviewed-preprints';
 const getCachedListFile = `${getCachedFilePath}.json`;
-const getCachedListFileNew = `${getCachedFilePath}-new.json`;
-const getCachedFile = (msid: string) => `${getCachedFilePath}/${msid}.json`;
+export const getCachedListFileNew = `${getCachedFilePath}-new.json`;
+export const getCachedFile = (msid: string) => `${getCachedFilePath}/${msid}.json`;
 
 type ReviewedPreprint = Schema.Schema.Type<typeof reviewedPreprintCodec>;
 
@@ -56,7 +56,7 @@ const retrieveIndividualReviewedPreprint = (
     ),
   );
 
-const retrieveIndividualReviewedPreprints = (reviewedPreprints: Array<{ msid: string; path: string }>) =>
+export const retrieveIndividualReviewedPreprints = (reviewedPreprints: Array<{ msid: string; path: string }>) =>
   pipe(
     Ref.make(0),
     Effect.flatMap((completionCounter) =>
@@ -123,6 +123,7 @@ const missingIndividualReviewedPreprints = pipe(
     ),
   ),
   Effect.map((results) => results.filter(({ exists }) => !exists).map(({ msid, path }) => ({ msid, path }))),
+  Effect.tap(Effect.log),
 );
 
 const retrieveMissingIndividualReviewedPreprints = () =>
@@ -159,10 +160,10 @@ const reviewedPreprintsTopUpWrite = ({ limit, total }: { limit: number; total?: 
     ),
   );
 
-const reviewedPreprintsTopUpCombine = () =>
+export const reviewedPreprintsTopUpCombine = () =>
   pipe(
     Effect.all([getCachedReviewedPreprints(getCachedListFileNew), getCachedReviewedPreprints()]),
-    Effect.tap(([_, before]) => Effect.log(`Total before: ${before.length}`)),
+    Effect.tap(([, before]) => Effect.log(`Total before: ${before.length}`)),
     Effect.map((lists) => Array.appendAll(...lists)),
     Effect.map(Array.dedupeWith((a, b) => a.id === b.id)),
     Effect.map(
@@ -192,10 +193,10 @@ const reviewedPreprintsTopUpInvalidate = () =>
     ),
   );
 
-const reviewedPreprintsTopUpTidyUp = () =>
+export const reviewedPreprintsTopUpTidyUp = () =>
   Effect.flatMap(FileSystem.FileSystem, (fs) => fs.remove(getCachedListFileNew, { force: true }));
 
-const createCacheFolder = () =>
+export const createCacheFolder = () =>
   Effect.flatMap(FileSystem.FileSystem, (fs) => fs.makeDirectory(getCachedFilePath, { recursive: true }));
 
 const reviewedPreprintsTopUpOnePass = ({ limit, total }: { limit: number; total: number }) =>

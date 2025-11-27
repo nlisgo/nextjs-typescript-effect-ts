@@ -18,6 +18,11 @@ on:
         description: "Optional URL to a persistent-cache archive (.zip) to seed .cached/"
         required: false
         default: ""
+      prune_reviewed_preprints:
+        type: string
+        description: "Optional comma separated list of MSIDs to reimport"
+        required: false
+        default: ""
   push:
     branches:
       - main
@@ -201,6 +206,13 @@ jobs:
             github.event.inputs.import_all_reviewed_preprints == 'true'
           )
         run: npm run top-up-reviewed-preprints
+
+      - name: Reimport specified MSIDs
+        if: >
+          github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.prune_reviewed_preprints != ''
+        run: npm run prune-reviewed-preprints "${{ github.event.inputs.prune_reviewed_preprints }}"
+        continue-on-error: true
 
       - name: Top Up Categories
         run: npm run top-up-categories

@@ -24,6 +24,8 @@
     "top-up-categories": "node dist/cli/top-up-categories.mjs",
     "top-up-reviewed-preprints:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/top-up-reviewed-preprints.ts",
     "top-up-reviewed-preprints": "node dist/cli/top-up-reviewed-preprints.mjs",
+    "prune-reviewed-preprints:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/prune-reviewed-preprints.ts",
+    "prune-reviewed-preprints": "node dist/cli/prune-reviewed-preprints.mjs",
     "backup-cached:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/backup-cached.ts",
     "backup-cached": "node dist/cli/backup-cached.mjs",
     "restore-cached:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/restore-cached.ts",
