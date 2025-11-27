@@ -1,4 +1,4 @@
-import { FileSystem, HttpClient, Error as PlatformError, HttpClientError } from '@effect/platform';
+import { FileSystem, HttpClient, Error as PlatformError } from '@effect/platform';
 import { Array, Effect, Order, ParseResult, pipe, Ref, Schedule, Schema } from 'effect';
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { stringifyJson, withBaseUrl } from '@/tools';
@@ -6,6 +6,7 @@ import {
   getCachedItems,
   getItemsTopUpPage,
   offsetFromTotalCachedAndLimit,
+  retrieveIndividualItem,
 } from '@/top-up/top-up';
 import { reviewedPreprintCodec, reviewedPreprintsCodec } from '@/codecs';
 
@@ -20,38 +21,6 @@ type ReviewedPreprint = Schema.Schema.Type<typeof reviewedPreprintCodec>;
 
 const retrySchedule = Schedule.exponential('2 seconds').pipe(Schedule.intersect(Schedule.recurs(7)), Schedule.jittered);
 
-// Custom retrieval that checks status before parsing
-const retrieveIndividualItemWith404Check =
-  <A, I = unknown, Req = never>(basePath: string, schema: Schema.Schema<A, I, Req>, addTo: object = {}) =>
-  ({ id, path }: { id: string; path: string }) =>
-    pipe(
-      HttpClient.get(`${basePath}/${id}`),
-      Effect.filterOrFail(
-        (response) => response.status !== 404,
-        (response) => new HttpClientError.ResponseError({ request: response.request, response, reason: 'StatusCode' }),
-      ),
-      Effect.flatMap((response) => response.json),
-      Effect.flatMap(Schema.decodeUnknown(schema)),
-      Effect.tap((result) =>
-        Effect.flatMap(FileSystem.FileSystem, (fs) => fs.writeFileString(path, stringifyJson({ ...addTo, ...result }))),
-      ),
-    );
-
-const retryExcept404 = <A, E, R>(effect: Effect.Effect<A, E, R>): Effect.Effect<A, E, R> =>
-  pipe(
-    effect,
-    Effect.retry({
-      schedule: retrySchedule,
-      while: (error) => {
-        // Don't retry on 404
-        return !(HttpClientError.isHttpClientError(error) &&
-          error._tag === 'ResponseError' &&
-          error.response.status === 404);
-        
-      },
-    }),
-  );
-
 const retrieveIndividualReviewedPreprint = (
   item: {
     id: string;
@@ -63,13 +32,13 @@ const retrieveIndividualReviewedPreprint = (
 ) =>
   pipe(
     item,
-    retrieveIndividualItemWith404Check(apiBasePath, reviewedPreprintCodec),
-    retryExcept404,
+    retrieveIndividualItem(apiBasePath, reviewedPreprintCodec),
+    Effect.retry(retrySchedule),
     Effect.flatMap((firstResult) =>
       pipe(
         item,
-        retrieveIndividualItemWith404Check(apiBasePathEpp, Schema.Struct({ article: Schema.Unknown }), firstResult),
-        retryExcept404,
+        retrieveIndividualItem(apiBasePathEpp, Schema.Struct({ article: Schema.Unknown }), firstResult),
+        Effect.retry(retrySchedule),
       ),
     ),
     Effect.tap(() =>
