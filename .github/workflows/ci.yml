@@ -168,11 +168,22 @@ jobs:
 
       - name: Tsup
         run: npm run tsup
-        
-      - name: Download persistent cache from whalebone (if .cached-7z.json exists)
+
+      - name: Check if .cached-7z.json exists
+        id: check-cached-json
         run: |
-          [ -f .cached-7z.json ] && cat .cached-7z.json
-          [ -f .cached-7z.json ] && npm run restore-cached -- .cached-7z.json
+          if [ -f .cached-7z.json ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      - name: Download persistent cache from whalebone
+        if: steps.check-cached-json.outputs.exists == 'true'
+        run: |
+          cat .cached-7z.json
+          npm run restore-cached -- .cached-7z.json
         continue-on-error: true
 
       - name: Import all Reviewed Preprints
