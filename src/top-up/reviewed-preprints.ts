@@ -1,10 +1,11 @@
 import { FileSystem, HttpClient, Error as PlatformError } from '@effect/platform';
-import { Array, Effect, Order, ParseResult, pipe, Ref, Schedule, Schema } from 'effect';
+import { Array, Effect, Option, Order, ParseResult, pipe, Ref, Schedule, Schema } from 'effect';
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { stringifyJson, withBaseUrl } from '@/tools';
 import {
   getCachedItems,
   getItemsTopUpPage,
+  is404,
   offsetFromTotalCachedAndLimit,
   retrieveIndividualItem,
 } from '@/top-up/top-up';
@@ -33,12 +34,18 @@ const retrieveIndividualReviewedPreprint = (
   pipe(
     item,
     retrieveIndividualItem(apiBasePath, reviewedPreprintCodec),
-    Effect.retry(retrySchedule),
+    Effect.retry({
+      schedule: retrySchedule,
+      while: (error) => !is404(error),
+    }),
     Effect.flatMap((firstResult) =>
       pipe(
         item,
         retrieveIndividualItem(apiBasePathEpp, Schema.Struct({ article: Schema.Unknown }), firstResult),
-        Effect.retry(retrySchedule),
+        Effect.retry({
+          schedule: retrySchedule,
+          while: (error) => !is404(error),
+        }),
       ),
     ),
     Effect.tap(() =>
@@ -51,7 +58,7 @@ const retrieveIndividualReviewedPreprint = (
         ),
       ),
     ),
-    Effect.tapError((error) =>
+    Effect.catchAll((error) =>
       Effect.log(`Failed to retrieve reviewed preprint ${item.id} after retries: ${stringifyJson(error)}`),
     ),
   );
@@ -62,14 +69,23 @@ export const retrieveIndividualReviewedPreprints = (reviewedPreprints: Array<{ m
     Effect.flatMap((completionCounter) =>
       Effect.all(
         reviewedPreprints.map(({ msid: id, path }, i) =>
-          retrieveIndividualReviewedPreprint(
-            { id, path, total: reviewedPreprints.length, position: i + 1 },
-            completionCounter,
+          pipe(
+            retrieveIndividualReviewedPreprint(
+              { id, path, total: reviewedPreprints.length, position: i + 1 },
+              completionCounter,
+            ),
+            Effect.retry({
+              schedule: retrySchedule,
+              while: (error) => !is404(error),
+            }),
+            Effect.catchIf(is404, () => pipe(Effect.log(`Skipping 404 for ${id}`), Effect.as(Option.none<void>()))),
+            Effect.option,
           ),
         ),
         { concurrency: 100 },
       ),
     ),
+    Effect.map(Array.getSomes),
   );
 
 const reviewedPreprintsTopUpPath = ({
@@ -123,7 +139,6 @@ const missingIndividualReviewedPreprints = pipe(
     ),
   ),
   Effect.map((results) => results.filter(({ exists }) => !exists).map(({ msid, path }) => ({ msid, path }))),
-  Effect.tap(Effect.log),
 );
 
 const retrieveMissingIndividualReviewedPreprints = () =>

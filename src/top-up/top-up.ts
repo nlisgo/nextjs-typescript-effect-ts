@@ -1,10 +1,35 @@
-import { FileSystem, HttpClient, HttpClientError, HttpClientRequest, Error as PlatformError } from '@effect/platform';
+import {
+  FileSystem,
+  HttpClient,
+  HttpClientError,
+  HttpClientRequest,
+  Error as PlatformError,
+  HttpClientResponse,
+} from '@effect/platform';
 import { createHash } from 'crypto';
 import { Array, Effect, ParseResult, pipe, Schema } from 'effect';
 import { stringifyJson } from '@/tools';
-import { formatIsoOffset } from 'effect/DateTime';
+
+export const is404 = (error: unknown): boolean =>
+  HttpClientError.isHttpClientError(error) && error._tag === 'ResponseError' && error.response.status === 404;
 
 export const createItemHash = (item: unknown) => createHash('md5').update(stringifyJson(item, false)).digest('hex');
+
+export const retrieveIndividualItemRequestOnly = (
+  basePath: string,
+  id: string,
+): Effect.Effect<
+  Record<string, unknown>,
+  HttpClientError.HttpClientError | ParseResult.ParseError,
+  HttpClient.HttpClient
+> =>
+  pipe(
+    HttpClientRequest.get(`${basePath}/${id}`),
+    HttpClient.execute,
+    Effect.flatMap(HttpClientResponse.filterStatus((status) => status !== 404)),
+    Effect.flatMap((res) => res.json),
+    Effect.flatMap(Schema.decodeUnknown(Schema.Record({ key: Schema.String, value: Schema.Unknown }))),
+  );
 
 export const retrieveIndividualItem =
   <A, I = unknown, Req = never>(basePath: string, schema: Schema.Schema<A, I, Req>, addTo: object = {}) =>
@@ -20,9 +45,7 @@ export const retrieveIndividualItem =
     Req | HttpClient.HttpClient | FileSystem.FileSystem
   > =>
     pipe(
-      HttpClientRequest.get(`${basePath}/${id}`),
-      (request) => Effect.flatMap(HttpClient.HttpClient, (client) => client.execute(request)),
-      Effect.flatMap((response) => response.json),
+      retrieveIndividualItemRequestOnly(basePath, id),
       Effect.flatMap(Schema.decodeUnknown(schema)),
       Effect.tap((result) =>
         Effect.flatMap(FileSystem.FileSystem, (fs) => fs.writeFileString(path, stringifyJson({ ...addTo, ...result }))),
