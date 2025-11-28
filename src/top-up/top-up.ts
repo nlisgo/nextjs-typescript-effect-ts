@@ -7,11 +7,47 @@ import {
   HttpClientResponse,
 } from '@effect/platform';
 import { createHash } from 'crypto';
-import { Array, Effect, ParseResult, pipe, Schema } from 'effect';
+import { Array, Effect, Option, ParseResult, pipe, Schema } from 'effect';
 import { stringifyJson } from '@/tools';
 
-export const is404 = (error: unknown): boolean =>
-  HttpClientError.isHttpClientError(error) && error._tag === 'ResponseError' && error.response.status === 404;
+export const isRequestError = (error: unknown): Option.Option<HttpClientRequest.HttpClientRequest> =>
+  pipe(
+    error,
+    Option.liftPredicate(
+      (e: unknown): e is HttpClientError.RequestError =>
+        HttpClientError.isHttpClientError(e) && e._tag === 'RequestError',
+    ),
+    Option.map((e) => e.request),
+  );
+
+export const isResponseError = (error: unknown): Option.Option<HttpClientResponse.HttpClientResponse> =>
+  pipe(
+    error,
+    Option.liftPredicate(
+      (e: unknown): e is HttpClientError.ResponseError =>
+        HttpClientError.isHttpClientError(e) && e._tag === 'ResponseError',
+    ),
+    Option.map((e) => e.response),
+  );
+
+export const isResponseErrorStatus = (error: unknown): Option.Option<number> =>
+  pipe(
+    error,
+    isResponseError,
+    Option.map((r) => r.status),
+  );
+
+export const isResponseErrorStatusWithCode = (error: unknown, status: number): boolean =>
+  pipe(
+    error,
+    isResponseErrorStatus,
+    Option.match({
+      onNone: () => false,
+      onSome: (s) => s === status,
+    }),
+  );
+
+export const is404 = (error: unknown): boolean => isResponseErrorStatusWithCode(error, 404);
 
 export const createItemHash = (item: unknown) => createHash('md5').update(stringifyJson(item, false)).digest('hex');
 

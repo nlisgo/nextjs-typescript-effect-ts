@@ -34,19 +34,8 @@ const retrieveIndividualReviewedPreprint = (
   pipe(
     item,
     retrieveIndividualItem(apiBasePath, reviewedPreprintCodec),
-    Effect.retry({
-      schedule: retrySchedule,
-      while: (error) => !is404(error),
-    }),
     Effect.flatMap((firstResult) =>
-      pipe(
-        item,
-        retrieveIndividualItem(apiBasePathEpp, Schema.Struct({ article: Schema.Unknown }), firstResult),
-        Effect.retry({
-          schedule: retrySchedule,
-          while: (error) => !is404(error),
-        }),
-      ),
+      pipe(item, retrieveIndividualItem(apiBasePathEpp, Schema.Struct({ article: Schema.Unknown }), firstResult)),
     ),
     Effect.tap(() =>
       pipe(
@@ -59,7 +48,7 @@ const retrieveIndividualReviewedPreprint = (
       ),
     ),
     Effect.tapError((error) =>
-      Effect.log(`Failed to retrieve reviewed preprint ${item.id} after retries: ${stringifyJson(error)}`),
+      Effect.log(`Failed to retrieve reviewed preprint ${item.id} will retry: ${stringifyJson(error, true)}`),
     ),
   );
 
