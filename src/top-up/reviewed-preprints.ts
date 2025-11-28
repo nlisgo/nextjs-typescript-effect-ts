@@ -211,12 +211,8 @@ const reviewedPreprintsTopUpOnePass = ({ limit, total }: { limit: number; total:
     Effect.flatMap(reviewedPreprintsTopUpInvalidate),
     Effect.flatMap(reviewedPreprintsTopUpCombine),
     Effect.flatMap(reviewedPreprintsTopUpTidyUp),
-    Effect.flatMap(() =>
-      pipe(
-        getCachedReviewedPreprints(),
-        Effect.map((cached) => total - cached.length),
-      ),
-    ),
+    Effect.flatMap(() => getCachedReviewedPreprints()),
+    Effect.map((cached) => total - cached.length),
   );
 
 const reviewedPreprintsTopUpLoop = ({
