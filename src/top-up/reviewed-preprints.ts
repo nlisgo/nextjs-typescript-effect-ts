@@ -218,23 +218,29 @@ const reviewedPreprintsTopUpOnePass = ({ limit, total }: { limit: number; total:
 const reviewedPreprintsTopUpLoop = ({
   limit,
   total,
+  remaining,
   all,
 }: {
   limit: number;
   total: number;
+  remaining?: number;
   all: boolean;
-}): Effect.Effect<void, never, FileSystem.FileSystem | HttpClient.HttpClient> =>
+}): Effect.Effect<number, never, FileSystem.FileSystem | HttpClient.HttpClient> =>
   pipe(
     reviewedPreprintsTopUpOnePass({ limit, total }),
-    Effect.flatMap((remaining) =>
-      all && remaining > 0
+    Effect.flatMap((remainingAfterPass) =>
+      all && remainingAfterPass < (remaining ?? total) && remainingAfterPass > 0
         ? pipe(
-            Effect.log(`Remaining: ${remaining}. Continuing...`),
-            Effect.flatMap(() => reviewedPreprintsTopUpLoop({ limit, total, all })),
+            Effect.log(`Remaining: ${remainingAfterPass}. Continuing...`),
+            Effect.flatMap(() => reviewedPreprintsTopUpLoop({ limit, total, all, remaining: remainingAfterPass })),
           )
-        : Effect.log(`Remaining: ${remaining}. Done.`),
+        : pipe(
+            Effect.log(`Remaining: ${remainingAfterPass}. Done.`),
+            Effect.map(() => remainingAfterPass),
+          ),
     ),
-    Effect.catchAllCause(Effect.logError),
+    Effect.tapErrorCause(Effect.logError),
+    Effect.orElseSucceed(() => 0),
   );
 
 export const reviewedPreprintsTopUp = ({
