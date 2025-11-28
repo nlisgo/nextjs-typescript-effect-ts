@@ -7,7 +7,7 @@ import {
   HttpClientResponse,
 } from '@effect/platform';
 import { createHash } from 'crypto';
-import { Array, Effect, Option, ParseResult, pipe, Schema } from 'effect';
+import { Array, Effect, Equal, Option, ParseResult, pipe, Schema } from 'effect';
 import { stringifyJson } from '@/tools';
 
 export const isResponseError = (error: unknown): Option.Option<HttpClientResponse.HttpClientResponse> =>
@@ -20,16 +20,16 @@ export const isResponseError = (error: unknown): Option.Option<HttpClientRespons
     Option.map((e) => e.response),
   );
 
-export const hasResponseStatusCode =
+export const hasStatusCode =
   (status: number) =>
-  (response: HttpClientResponse.HttpClientResponse): boolean =>
-    response.status === status;
+  (withStatus: { status: number }): boolean =>
+    Equal.equals(status)(withStatus.status);
 
-export const is404 = (error: unknown): boolean =>
+export const isResponseErrorWithStatusCode404 = (error: unknown): boolean =>
   pipe(
     error,
     isResponseError,
-    Option.map(hasResponseStatusCode(404)),
+    Option.map(hasStatusCode(404)),
     Option.getOrElse(() => false),
   );
 
@@ -46,7 +46,7 @@ export const retrieveIndividualItemRequestOnly = (
   pipe(
     HttpClientRequest.get(`${basePath}/${id}`),
     HttpClient.execute,
-    Effect.flatMap(HttpClientResponse.filterStatus((status) => status !== 404)),
+    Effect.flatMap(HttpClientResponse.filterStatus((status) => !Equal.equals(404)(status))),
     Effect.flatMap((res) => res.json),
     Effect.flatMap(Schema.decodeUnknown(Schema.Record({ key: Schema.String, value: Schema.Unknown }))),
   );

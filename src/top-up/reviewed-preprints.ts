@@ -5,7 +5,7 @@ import { stringifyJson, withBaseUrl } from '@/tools';
 import {
   getCachedItems,
   getItemsTopUpPage,
-  is404,
+  isResponseErrorWithStatusCode404,
   offsetFromTotalCachedAndLimit,
   retrieveIndividualItem,
 } from '@/top-up/top-up';
@@ -65,9 +65,11 @@ export const retrieveIndividualReviewedPreprints = (reviewedPreprints: Array<{ m
             ),
             Effect.retry({
               schedule: retrySchedule,
-              while: (error) => !is404(error),
+              while: (error) => !isResponseErrorWithStatusCode404(error),
             }),
-            Effect.catchIf(is404, () => pipe(Effect.log(`Skipping 404 for ${id}`), Effect.as(Option.none<void>()))),
+            Effect.catchIf(isResponseErrorWithStatusCode404, () =>
+              pipe(Effect.log(`Skipping 404 for ${id}`), Effect.as(Option.none<void>())),
+            ),
             Effect.option,
           ),
         ),
