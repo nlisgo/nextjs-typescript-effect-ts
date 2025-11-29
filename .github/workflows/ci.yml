@@ -267,14 +267,12 @@ jobs:
       - name: Get sha with 8 chars long
         id: commit_sha
         run: echo "commit_sha=${GITHUB_SHA:0:8}" >> $GITHUB_OUTPUT
-        
-      - name: Check 'out' folder is still here
-        run: ls -alF out
 
       - name: Build and push client image
         uses: docker/build-push-action@v6
         id: build-push
         with:
+          context: .
           push: true
           load: false
           platforms: linux/amd64,linux/arm64
