@@ -28,6 +28,8 @@
     "calibrate-reviewed-preprints": "node dist/cli/calibrate-reviewed-preprints.mjs",
     "prune-reviewed-preprints:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/prune-reviewed-preprints.ts",
     "prune-reviewed-preprints": "node dist/cli/prune-reviewed-preprints.mjs",
+    "purge-reviewed-preprints:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/purge-reviewed-preprints.ts",
+    "purge-reviewed-preprints": "node dist/cli/purge-reviewed-preprints.mjs",
     "backup-cached:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/backup-cached.ts",
     "backup-cached": "node dist/cli/backup-cached.mjs",
     "restore-cached:dev": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' -r tsconfig-paths/register src/cli/restore-cached.ts",

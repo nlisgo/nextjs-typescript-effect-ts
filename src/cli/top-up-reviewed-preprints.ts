@@ -13,8 +13,12 @@ const optionLimit = Options.integer('limit').pipe(
 
 const optionAll = Options.boolean('all').pipe(Options.withAlias('a'));
 
-const command = Command.make('top-up-reviewed-preprints', { limit: optionLimit, all: optionAll }, ({ limit, all }) =>
-  reviewedPreprintsTopUp({ limit, all }),
+const optionCalibrate = Options.boolean('calibrate').pipe(Options.withAlias('c'));
+
+const command = Command.make(
+  'top-up-reviewed-preprints',
+  { limit: optionLimit, all: optionAll, calibrate: optionCalibrate },
+  ({ limit, all, calibrate }) => reviewedPreprintsTopUp({ limit, all, calibrate }),
 );
 
 const cliApp = Command.run(command, {

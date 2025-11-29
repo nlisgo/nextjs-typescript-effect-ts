@@ -23,6 +23,11 @@ on:
         description: "Optional comma separated list of MSIDs to reimport"
         required: false
         default: ""
+      purge_reviewed_preprints:
+        type: string
+        description: "Optional comma separated list of MSIDs to purge"
+        required: false
+        default: ""
   push:
     branches:
       - main
@@ -197,7 +202,7 @@ jobs:
             github.event_name == 'workflow_dispatch' &&
             github.event.inputs.import_all_reviewed_preprints == 'true'
           )
-        run: npm run top-up-reviewed-preprints -- --limit 100 --all
+        run: npm run top-up-reviewed-preprints -- --limit 100 --all --calibrate
 
       - name: Top Up Reviewed Preprints
         if: >
@@ -212,6 +217,13 @@ jobs:
           github.event_name == 'workflow_dispatch' &&
           github.event.inputs.prune_reviewed_preprints != ''
         run: npm run prune-reviewed-preprints "${{ github.event.inputs.prune_reviewed_preprints }}"
+        continue-on-error: true
+
+      - name: Purge specified MSIDs
+        if: >
+          github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.purge_reviewed_preprints != ''
+        run: npm run purge-reviewed-preprints "${{ github.event.inputs.purge_reviewed_preprints }}"
         continue-on-error: true
 
       - name: Top Up Categories

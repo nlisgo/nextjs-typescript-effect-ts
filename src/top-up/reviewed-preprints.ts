@@ -21,6 +21,12 @@ export const getCachedFile = (msid: string) => `${getCachedFilePath}/${msid}.jso
 
 type ReviewedPreprint = Schema.Schema.Type<typeof reviewedPreprintCodec>;
 
+export const cleanMsidsCommaSeparated = (msidsCommaSeparated: string): Array<string> =>
+  pipe(
+    msidsCommaSeparated.split(/\s*,\s*/).map((msid) => msid.trim()),
+    Array.filter(Schema.is(Schema.String.pipe(Schema.pattern(/^[0-9]+$/)))),
+  );
+
 const retrySchedule = Schedule.exponential('2 seconds').pipe(Schedule.intersect(Schedule.recurs(7)), Schedule.jittered);
 
 const retrieveIndividualReviewedPreprint = (
@@ -271,12 +277,33 @@ const reviewedPreprintsTopUpLoop = ({
     Effect.orElseSucceed(() => 0),
   );
 
+export const calibrateReviewedPreprints = ({
+  limit,
+}: {
+  limit: number;
+}): Effect.Effect<
+  { api: Array<string>; cached: Array<string> },
+  PlatformError.PlatformError | ParseResult.ParseError,
+  FileSystem.FileSystem | HttpClient.HttpClient
+> =>
+  pipe(
+    Effect.all([getReviewedPreprintsMsids({ limit }), getCachedReviewedPreprintsMsids]),
+    Effect.map(([api, cached]) => ({
+      api: Array.difference(api, cached),
+      cached: Array.difference(cached, api),
+    })),
+    Effect.tap(({ api }) => (api.length > 0 ? pruneReviewedPreprints(api) : Effect.log('Nothing to prune'))),
+    Effect.tap(({ cached }) => (cached.length > 0 ? purgeReviewedPreprints(cached) : Effect.log('Nothing to purge'))),
+  );
+
 export const reviewedPreprintsTopUp = ({
   limit,
   all = false,
+  calibrate = false,
 }: {
   limit: number;
   all?: boolean;
+  calibrate?: boolean;
 }): Effect.Effect<void, never, FileSystem.FileSystem | HttpClient.HttpClient> =>
   pipe(
     createCacheFolder(),
@@ -284,7 +311,14 @@ export const reviewedPreprintsTopUp = ({
     Effect.flatMap(getReviewedPreprintsTotal),
     Effect.flatMap((total) => reviewedPreprintsTopUpLoop({ limit, total, all })),
     Effect.tap(retrieveMissingIndividualReviewedPreprints),
-    Effect.tap((remaining) => remaining > 0 )
+    Effect.tap((remaining) =>
+      all && calibrate && remaining > 0
+        ? pipe(
+            Effect.log(`Calibrating as 'all' flag is set and ${remaining} remaining found! (0 expected)`),
+            Effect.flatMap(() => calibrateReviewedPreprints({ limit })),
+          )
+        : Effect.asVoid,
+    ),
     Effect.catchAllCause(Effect.logError),
     Effect.asVoid,
   );
