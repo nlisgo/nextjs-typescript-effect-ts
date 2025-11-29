@@ -3,6 +3,7 @@ import { Array, Effect, Option, Order, ParseResult, pipe, Ref, Schedule, Schema 
 import { TeaserProps } from '@/components/Teasers/Teasers';
 import { stringifyJson, withBaseUrl } from '@/tools';
 import {
+  createItemHash,
   getCachedItems,
   getItemsTopUpPage,
   isResponseErrorWithStatusCode404,
@@ -87,7 +88,7 @@ const reviewedPreprintsTopUpPath = ({
   page?: number;
 } = {}): string => `${apiBasePath}?order=asc&page=${page}&per-page=${Math.min(limit, 100)}`;
 
-const getReviewedPreprintsTotal = () =>
+export const getReviewedPreprintsTotal = (): Effect.Effect<number, never, HttpClient.HttpClient> =>
   pipe(
     reviewedPreprintsTopUpPath({ limit: 1 }),
     HttpClient.get,
@@ -107,6 +108,33 @@ const getReviewedPreprintsTopUpPage = ({ limit, page = 1 }: { limit: number; pag
   );
 
 const getCachedReviewedPreprints = getCachedItems(getCachedListFile, reviewedPreprintsCodec);
+
+export const getReviewedPreprintsMsids = ({
+  limit,
+  page = 1,
+  addTo = [],
+}: {
+  limit: number;
+  page?: number;
+  addTo?: Array<string>;
+}): Effect.Effect<Array<string>, never, HttpClient.HttpClient> =>
+  pipe(
+    { limit, page },
+    getReviewedPreprintsTopUpPage,
+    Effect.map(Array.map(({ id: msid }) => msid)),
+    Effect.flatMap((msids) =>
+      msids.length === limit
+        ? getReviewedPreprintsMsids({ limit, page: page + 1, addTo: Array.prependAll(addTo)(msids) })
+        : Effect.succeed(Array.prependAll(addTo)(msids)),
+    ),
+    Effect.catchAll(() => Effect.succeed<Array<string>>([])),
+  );
+
+export const getCachedReviewedPreprintsMsids: Effect.Effect<Array<string>, never, FileSystem.FileSystem> = pipe(
+  getCachedReviewedPreprints(),
+  Effect.map(Array.map(({ id }) => id)),
+  Effect.catchAll(() => Effect.succeed<Array<string>>([])),
+);
 
 const missingIndividualReviewedPreprints = pipe(
   getCachedReviewedPreprints(),
@@ -255,7 +283,8 @@ export const reviewedPreprintsTopUp = ({
     Effect.catchAllCause(Effect.logError),
     Effect.flatMap(getReviewedPreprintsTotal),
     Effect.flatMap((total) => reviewedPreprintsTopUpLoop({ limit, total, all })),
-    Effect.flatMap(retrieveMissingIndividualReviewedPreprints),
+    Effect.tap(retrieveMissingIndividualReviewedPreprints),
+    Effect.tap((remaining) => remaining > 0 )
     Effect.catchAllCause(Effect.logError),
     Effect.asVoid,
   );
@@ -292,4 +321,68 @@ export const getReviewedPreprints = (): Effect.Effect<
     Effect.map(JSON.parse),
     Effect.flatMap(Schema.decodeUnknown(reviewedPreprintsCodec)),
     Effect.map(Array.map(prepareTeaser)),
+  );
+
+export const purgeReviewedPreprints = (msidsToPurge: Array<string>) =>
+  pipe(
+    msidsToPurge,
+    Effect.succeed,
+    Effect.map(Array.map((msid) => ({ msid, path: getCachedFile(msid) }))),
+    Effect.tap((msids) =>
+      Effect.forEach(msids, ({ path }) =>
+        Effect.flatMap(FileSystem.FileSystem, (fs) => fs.remove(path).pipe(Effect.catchAll(() => Effect.void))),
+      ),
+    ),
+    Effect.flatMap(() => getCachedReviewedPreprints()),
+    Effect.tap(() => Effect.log(`Purging: ${msidsToPurge.join(', ')}`)),
+    Effect.tap((before) => Effect.log(`Total before: ${before.length}`)),
+    Effect.map(Array.filter(({ id: msid }) => !msidsToPurge.includes(msid))),
+    Effect.tap((after) => Effect.log(`Total after: ${after.length}`)),
+    Effect.map(stringifyJson),
+    Effect.tap((reviewedPreprints) =>
+      Effect.flatMap(FileSystem.FileSystem, (fs) => fs.writeFileString(getCachedListFile, reviewedPreprints)),
+    ),
+  );
+
+export const pruneReviewedPreprints = (
+  msids: Array<string>,
+): Effect.Effect<
+  string,
+  PlatformError.PlatformError | ParseResult.ParseError,
+  FileSystem.FileSystem | HttpClient.HttpClient
+> =>
+  pipe(
+    msids,
+    Effect.succeed,
+    Effect.map(Array.map((msid) => ({ msid, path: getCachedFile(msid) }))),
+    Effect.tap((msids) =>
+      Effect.forEach(msids, ({ path }) =>
+        Effect.flatMap(FileSystem.FileSystem, (fs) => fs.remove(path).pipe(Effect.catchAll(() => Effect.void))),
+      ),
+    ),
+    Effect.tap(() => createCacheFolder()),
+    Effect.tap(retrieveIndividualReviewedPreprints),
+    Effect.flatMap((msids) =>
+      Effect.forEach(msids, (rp) =>
+        Effect.flatMap(FileSystem.FileSystem, (fs) =>
+          fs.readFileString(rp.path).pipe(
+            Effect.map(JSON.parse),
+            Effect.flatMap(Schema.decodeUnknown(reviewedPreprintCodec)),
+            Effect.map(({ article, ...snippet }) => ({
+              ...snippet,
+              hash: createItemHash(snippet),
+            })),
+            Effect.option,
+          ),
+        ),
+      ),
+    ),
+    Effect.map(Array.getSomes),
+    Effect.map(stringifyJson),
+    Effect.tap((reviewedPreprints) =>
+      Effect.flatMap(FileSystem.FileSystem, (fs) => fs.writeFileString(getCachedListFileNew, reviewedPreprints)),
+    ),
+    Effect.tap(() => reviewedPreprintsTopUpCombine()),
+    Effect.tap(() => reviewedPreprintsTopUpTidyUp()),
+    Effect.tapErrorCause(Effect.logError),
   );

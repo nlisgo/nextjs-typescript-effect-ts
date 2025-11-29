@@ -3,18 +3,7 @@ import { Args, Command } from '@effect/cli';
 import { NodeRuntime } from '@effect/platform-node';
 import { Array, Effect, pipe, Schema } from 'effect';
 import { CliMainLayer } from '@/services/CliRuntime';
-import { FileSystem } from '@effect/platform';
-import {
-  createCacheFolder,
-  getCachedFile,
-  getCachedListFileNew,
-  retrieveIndividualReviewedPreprints,
-  reviewedPreprintsTopUpCombine,
-  reviewedPreprintsTopUpTidyUp,
-} from '@/top-up/reviewed-preprints';
-import { reviewedPreprintCodec } from '@/codecs';
-import { stringifyJson } from '@/tools';
-import { createItemHash } from '@/top-up/top-up';
+import { pruneReviewedPreprints } from '@/top-up/reviewed-preprints';
 
 const argMsids = Args.text({ name: 'Comma separated MSIDs' });
 
@@ -22,38 +11,7 @@ const command = Command.make('prune-reviewed-preprints', { msids: argMsids }, ({
   pipe(
     msids.split(/\s*,\s*/).map((msid) => msid.trim()),
     Array.filter(Schema.is(Schema.String.pipe(Schema.pattern(/^[0-9]+$/)))),
-    Effect.succeed,
-    Effect.map(Array.map((msid) => ({ msid, path: getCachedFile(msid) }))),
-    Effect.tap((msids) =>
-      Effect.forEach(msids, ({ path }) =>
-        Effect.flatMap(FileSystem.FileSystem, (fs) => fs.remove(path).pipe(Effect.catchAll(() => Effect.void))),
-      ),
-    ),
-    Effect.tap(() => createCacheFolder()),
-    Effect.tap(retrieveIndividualReviewedPreprints),
-    Effect.flatMap((msids) =>
-      Effect.forEach(msids, (rp) =>
-        Effect.flatMap(FileSystem.FileSystem, (fs) =>
-          fs.readFileString(rp.path).pipe(
-            Effect.map(JSON.parse),
-            Effect.flatMap(Schema.decodeUnknown(reviewedPreprintCodec)),
-            Effect.map(({ article, ...snippet }) => ({
-              ...snippet,
-              hash: createItemHash(snippet),
-            })),
-            Effect.option,
-          ),
-        ),
-      ),
-    ),
-    Effect.map(Array.getSomes),
-    Effect.map(stringifyJson),
-    Effect.tap((reviewedPreprints) =>
-      Effect.flatMap(FileSystem.FileSystem, (fs) => fs.writeFileString(getCachedListFileNew, reviewedPreprints)),
-    ),
-    Effect.tap(() => reviewedPreprintsTopUpCombine()),
-    Effect.tap(() => reviewedPreprintsTopUpTidyUp()),
-    Effect.tapErrorCause(Effect.logError),
+    pruneReviewedPreprints,
   ),
 );
 
