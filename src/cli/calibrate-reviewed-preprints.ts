@@ -2,8 +2,8 @@
 import { Command, Options } from '@effect/cli';
 import { NodeRuntime } from '@effect/platform-node';
 import { Effect, Schema } from 'effect';
-import { reviewedPreprintsTopUp } from '@/top-up/reviewed-preprints';
 import { CliMainLayer } from '@/services/CliRuntime';
+import { calibrateReviewedPreprints } from '@/top-up/reviewed-preprints';
 
 const optionLimit = Options.integer('limit').pipe(
   Options.withAlias('l'),
@@ -11,18 +11,12 @@ const optionLimit = Options.integer('limit').pipe(
   Options.withDefault(50),
 );
 
-const optionAll = Options.boolean('all').pipe(Options.withAlias('a'));
-
-const optionCalibrate = Options.boolean('calibrate').pipe(Options.withAlias('c'));
-
-const command = Command.make(
-  'top-up-reviewed-preprints',
-  { limit: optionLimit, all: optionAll, calibrate: optionCalibrate },
-  ({ limit, all, calibrate }) => reviewedPreprintsTopUp({ limit, all, calibrate }),
+const command = Command.make('calibrate-reviewed-preprints', { limit: optionLimit }, ({ limit }) =>
+  calibrateReviewedPreprints({ limit }),
 );
 
 const cliApp = Command.run(command, {
-  name: 'top-up-reviewed-preprints',
+  name: 'calibrate-reviewed-preprints',
   version: '0.1.0',
 });
 

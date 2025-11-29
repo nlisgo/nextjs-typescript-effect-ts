@@ -3,16 +3,16 @@ import { Args, Command } from '@effect/cli';
 import { NodeRuntime } from '@effect/platform-node';
 import { Effect, pipe } from 'effect';
 import { CliMainLayer } from '@/services/CliRuntime';
-import { cleanMsidsCommaSeparated, pruneReviewedPreprints } from '@/top-up/reviewed-preprints';
+import { cleanMsidsCommaSeparated, purgeReviewedPreprints } from '@/top-up/reviewed-preprints';
 
 const argMsids = Args.text({ name: 'Comma separated MSIDs' });
 
-const command = Command.make('prune-reviewed-preprints', { msids: argMsids }, ({ msids }) =>
-  pipe(msids, cleanMsidsCommaSeparated, pruneReviewedPreprints),
+const command = Command.make('purge-reviewed-preprints', { msids: argMsids }, ({ msids }) =>
+  pipe(msids, cleanMsidsCommaSeparated, purgeReviewedPreprints),
 );
 
 const cliApp = Command.run(command, {
-  name: 'prune-reviewed-preprints',
+  name: 'purge-reviewed-preprints',
   version: '0.1.0',
 });
 
