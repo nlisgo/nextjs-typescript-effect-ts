@@ -1,5 +1,3 @@
-FROM node:20-alpine AS builder
-
 FROM nginx:stable-alpine
 
 COPY out /usr/share/nginx/html
@@ -13,7 +11,7 @@ server {
     index index.html;
 
     location / {
-        try_files $uri $uri/index.html $uri.html /index.html;
+        try_files \$uri \$uri/index.html \$uri.html /index.html;
     }
 
     location /_next/ {
