@@ -342,7 +342,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: on-render
-      url: ${{ steps.render-service-url.page_url }}
+      url: ${{ steps.render-service-url.outputs.page_url }}
     steps:
       - name: Deploy to Render
         env:
@@ -362,9 +362,7 @@ jobs:
             -H "Authorization: Bearer ${{ env.RENDER_API_KEY }}" \
             -H "Accept: application/json" \
             "https://api.render.com/v1/services/${{ env.RENDER_SERVICE_ID }}")
-          
           SERVICE_URL=$(echo "$SERVICE_DETAILS" | jq -r '.serviceDetail.url')
-          
           echo "page_url=${SERVICE_URL}" >> $GITHUB_OUTPUT
 
   deploy-to-github-pages:
