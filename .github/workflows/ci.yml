@@ -308,14 +308,6 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.ref_name }}-${{ steps.commit_sha.outputs.commit_sha }}-${{ steps.date.outputs.date }}
 
-      - name: Deploy to Render
-        env:
-          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-        if: env.RENDER_DEPLOY_HOOK_URL != ''
-        run: |
-          deploy_url="${{ env.RENDER_DEPLOY_HOOK_URL }}&imgURL=ghcr.io%2F${{ github.repository_owner }}%2F${{ github.event.repository.name }}%3A${{ github.ref_name }}-${{ steps.commit_sha.outputs.commit_sha }}-${{ steps.date.outputs.date }}"
-          curl "$deploy_url"
-
       - name: Generate artefact attestation
         uses: actions/attest-build-provenance@v3
         with:
@@ -345,7 +337,37 @@ jobs:
               core.info(`Artifact 'cached-dir' not found for deletion.`);
             }
 
-  deploy:
+  deploy-to-render:
+    needs: [build-and-push-docker]
+    runs-on: ubuntu-latest
+    environment:
+      name: on-render
+      url: ${{ steps.render-service-url.page_url }}
+    steps:
+      - name: Deploy to Render
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        if: env.RENDER_DEPLOY_HOOK_URL != ''
+        run: |
+          deploy_url="${{ env.RENDER_DEPLOY_HOOK_URL }}&imgURL=ghcr.io%2F${{ github.repository_owner }}%2F${{ github.event.repository.name }}%3Alatest"
+          curl "$deploy_url"
+      - name: Retrieve service url
+        id: render-service-url
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        if: env.RENDER_API_KEY != '' && env.RENDER_SERVICE_ID != ''
+        run: |
+          SERVICE_DETAILS=$(curl --fail-with-body -s \
+            -H "Authorization: Bearer ${{ env.RENDER_API_KEY }}" \
+            -H "Accept: application/json" \
+            "https://api.render.com/v1/services/${{ env.RENDER_SERVICE_ID }}")
+          
+          SERVICE_URL=$(echo "$SERVICE_DETAILS" | jq -r '.serviceDetail.url')
+          
+          echo "page_url=${SERVICE_URL}" >> $GITHUB_OUTPUT
+
+  deploy-to-github-pages:
     needs: [chromatic, test]
     runs-on: ubuntu-latest
     environment:
