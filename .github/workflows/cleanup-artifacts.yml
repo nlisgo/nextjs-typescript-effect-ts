@@ -2,6 +2,8 @@ name: Cleanup Cancelled Artifacts
 
 on:
   workflow_run:
+    workflows:
+      - "CI and Deploy Next app to GitHub Pages"
     types:
       - completed
 
