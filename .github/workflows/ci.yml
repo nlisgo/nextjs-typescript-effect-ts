@@ -265,6 +265,8 @@ jobs:
     permissions:
       packages: write
       attestations: write
+      id-token: write
+      actions: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -306,7 +308,7 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.ref_name }}-${{ steps.commit_sha.outputs.commit_sha }}-${{ steps.date.outputs.date }}
 
-      - name: Deploy
+      - name: Deploy to Render
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         if: env.RENDER_DEPLOY_HOOK_URL != ''
