@@ -72,7 +72,7 @@ jobs:
           buildScriptName: build-storybook
           exitZeroOnChanges: false
 
-  test:
+  test-and-import:
     runs-on: ubuntu-latest
     outputs:
       cache_was_changed: ${{ steps.cached-folder-comparison.outputs.cache_was_changed }}
@@ -330,12 +330,12 @@ jobs:
 
   build-and-push-docker:
     runs-on: ubuntu-latest
-    needs: [chromatic, test]
+    needs: [chromatic, test-and-import]
     if: >
       always() &&
-      (needs.test.result == 'success') &&
+      (needs.test-and-import.result == 'success') &&
       (needs.chromatic.result == 'success' || needs.chromatic.result == 'skipped') &&
-      (github.event_name == 'push' || needs.test.outputs.cache_was_changed == 'true')
+      (github.event_name == 'push' || needs.test-and-import.outputs.cache_was_changed == 'true')
     permissions:
       packages: write
       attestations: write
@@ -419,6 +419,9 @@ jobs:
 
   deploy-to-render:
     needs: [build-and-push-docker]
+    if: >
+      always() &&
+      (needs.build-and-push-docker.result == 'success')
     runs-on: ubuntu-latest
     environment:
       name: render
@@ -455,12 +458,12 @@ jobs:
           echo "page_url=${SERVICE_URL}" >> $GITHUB_OUTPUT
 
   deploy-to-github-pages:
-    needs: [chromatic, test]
+    needs: [chromatic, test-and-import]
     if: >
       always() &&
-      (needs.test.result == 'success') &&
+      (needs.test-and-import.result == 'success') &&
       (needs.chromatic.result == 'success' || needs.chromatic.result == 'skipped') &&
-      (github.event_name == 'push' || needs.test.outputs.cache_was_changed == 'true')
+      (github.event_name == 'push' || needs.test-and-import.outputs.cache_was_changed == 'true')
     runs-on: ubuntu-latest
     environment:
       name: github-pages
