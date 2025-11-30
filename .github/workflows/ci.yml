@@ -300,11 +300,18 @@ jobs:
           context: .
           push: true
           load: false
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: |
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.sha }}
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.ref_name }}-${{ steps.commit_sha.outputs.commit_sha }}-${{ steps.date.outputs.date }}
+
+      - name: Deploy
+        if: ${{ secrets.RENDER_DEPLOY_HOOK_URL != '' }}
+        env:
+          deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}&imgURL=${{ github.repository_owner }}%2F${{ github.event.repository.name }}%3A${{ github.ref_name }}-${{ steps.commit_sha.outputs.commit_sha }}-${{ steps.date.outputs.date }}
+        run: |
+          curl "$deploy_url"
 
       - name: Generate artefact attestation
         uses: actions/attest-build-provenance@v3
