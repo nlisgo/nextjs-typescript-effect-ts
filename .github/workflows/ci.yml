@@ -363,6 +363,7 @@ jobs:
             -H "Accept: application/json" \
             "https://api.render.com/v1/services/${{ env.RENDER_SERVICE_ID }}")
           SERVICE_URL=$(echo "$SERVICE_DETAILS" | jq -r '.serviceDetail.url')
+          echo "Service url: ${SERVICE_URL}"
           echo "page_url=${SERVICE_URL}" >> $GITHUB_OUTPUT
 
   deploy-to-github-pages:
