@@ -213,7 +213,7 @@ jobs:
         run: |
           mkdir -p .cached-before-import
           if [ -d ".cached" ]; then
-            cp -rf .cached .cached-before-import                                                                                                                                                                                                                            │
+            cp -rf .cached .cached-before-import
           fi
 
       - name: Top Up Reviewed Preprints
