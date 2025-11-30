@@ -226,7 +226,16 @@ jobs:
         run: |
           cat .cached-7z.json
           npm run restore-cached -- .cached-7z.json
+          echo ".cached restored"
         continue-on-error: true
+
+      - name: Copy cached folder for later comparison                                                                                                                                                                                                  │
+        run: |
+          mkdir -p .cached-before-import
+          if [ -d ".cached" ]; then
+            echo "copy .cached to .cached-before-import"
+            cp -rf .cached .cached-before-import
+          fi
 
       - name: Import all Reviewed Preprints
         if: >
@@ -235,13 +244,6 @@ jobs:
             github.event.inputs.import_all_reviewed_preprints == 'true'
           )
         run: npm run top-up-reviewed-preprints -- --limit 100 --all --calibrate
-
-      - name: Copy cached folder for later comparison                                                                                                                                                                                                  │
-        run: |
-          mkdir -p .cached-before-import
-          if [ -d ".cached" ]; then
-            cp -rf .cached .cached-before-import
-          fi
 
       - name: Top Up Reviewed Preprints
         if: >
