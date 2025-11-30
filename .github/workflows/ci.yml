@@ -74,6 +74,8 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    outputs:
+      cache_was_changed: ${{ steps.cached-folder-comparison.outputs.same == 'false' }}
     env:
       NEXT_TELEMETRY_DISABLED: 1
       NEXT_USE_TURBOPACK: 0
@@ -207,6 +209,13 @@ jobs:
           )
         run: npm run top-up-reviewed-preprints -- --limit 100 --all --calibrate
 
+      - name: Copy cached folder for later comparison                                                                                                                                                                                                  │
+        run: |
+          mkdir -p .cached-before-import
+          if [ -d ".cached" ]; then
+            cp -rf .cached .cached-before-import                                                                                                                                                                                                                            │
+          fi
+
       - name: Top Up Reviewed Preprints
         if: >
           !(
@@ -234,6 +243,15 @@ jobs:
 
       - name: Top Up Highlights
         run: npm run top-up-highlights
+        
+      - name: Perform cached comparison
+        id: cached-folder-comparison
+        run: |
+          if diff -r .cached .cached-before-import > /dev/null; then
+            echo "same=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "same=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build Next.js app
         run: npm run build
@@ -246,14 +264,17 @@ jobs:
           include-hidden-files: true
 
       - name: Upload pages artifact
+        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
         uses: actions/upload-pages-artifact@v3
         with:
           path: out
 
       - name: Upload cache to whalebone
+        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
         run: npm run backup-cached -- --output .cached-7z.json .cached
 
       - name: Upload cache artifact
+        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: persistent-cache
@@ -263,7 +284,9 @@ jobs:
   build-and-push-docker:
     runs-on: ubuntu-latest
     needs: [chromatic, test]
-    if: needs.chromatic.result == 'success' || needs.chromatic.result == 'skipped'
+    if: >
+      (needs.chromatic.result == 'success' || needs.chromatic.result == 'skipped') &&
+      (github.event_name == 'push' || needs.test.outputs.cache_was_changed == 'true')
     permissions:
       packages: write
       attestations: write
@@ -381,7 +404,9 @@ jobs:
 
   deploy-to-github-pages:
     needs: [chromatic, test]
-    if: needs.chromatic.result == 'success' || needs.chromatic.result == 'skipped'
+    if: >
+      (needs.chromatic.result == 'success' || needs.chromatic.result == 'skipped') &&
+      (github.event_name == 'push' || needs.test.outputs.cache_was_changed == 'true')
     runs-on: ubuntu-latest
     environment:
       name: github-pages
