@@ -271,6 +271,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
       - name: Download .cached directory
         uses: actions/download-artifact@v4
         with:
@@ -344,6 +350,12 @@ jobs:
       name: render
       url: ${{ steps.render-service-url.outputs.page_url }}
     steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
       - name: Deploy to Render
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
@@ -372,6 +384,12 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
       - name: Deploy to GitHub Pages
         id: deploy
         uses: actions/deploy-pages@v4
