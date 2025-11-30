@@ -275,10 +275,10 @@ jobs:
         id: cached-folder-comparison
         run: |
           if diff -r .cached .cached-before-import > /dev/null; then
+            echo "same=true" >> "$GITHUB_OUTPUT"
+          else
             diff -r .cached .cached-before-import || true
             echo "same=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "same=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build Next.js app
