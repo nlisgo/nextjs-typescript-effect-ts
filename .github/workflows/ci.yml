@@ -340,7 +340,7 @@ jobs:
       packages: write
       attestations: write
       id-token: write
-      actions: write
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -393,6 +393,7 @@ jobs:
         with:
           subject-name: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
           subject-digest: ${{ steps.build-push.outputs.digest }}
+          push-to-registry: true
 
       - name: Delete cached-dir artifact
         uses: actions/github-script@v7
