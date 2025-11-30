@@ -277,6 +277,8 @@ jobs:
         id: cached-folder-comparison
         run: |
           if diff -r .cached .cached-before-import > /dev/null; then
+            echo "no differences detected between .cached and .cached-before-import"
+            diff -r .cached .cached-before-import
             echo "same=true" >> "$GITHUB_OUTPUT"
           else
             diff -r .cached .cached-before-import || true
