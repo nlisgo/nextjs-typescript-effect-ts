@@ -280,12 +280,16 @@ jobs:
         run: |
           if diff -r .cached .cached-before-import > /dev/null; then
             echo "no differences detected between .cached and .cached-before-import"
-            diff -r .cached .cached-before-import
+            echo "if this was a dispatch or scheduled run no deployment will triggered"
             echo "same=true" >> "$GITHUB_OUTPUT"
           else
-            diff -r .cached .cached-before-import || true
+            echo "differences detected between .cached and .cached-before-import"
+            echo "a deployment will triggered"
             echo "same=false" >> "$GITHUB_OUTPUT"
           fi
+      - name: Log cached-folder-comparison output
+        run: |
+          echo "Output 'same' from cached-folder-comparison step: ${{ steps.cached-folder-comparison.outputs.same }}"
 
       - name: Build Next.js app
         if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
@@ -339,6 +343,12 @@ jobs:
       id-token: write
       actions: write
     steps:
+      - name: Log If Condition Variables
+        run: |
+          echo "Debug needs.chromatic.result: ${{ needs.chromatic.result }}"
+          echo "Debug github.event_name: ${{ github.event_name }}"
+          echo "Debug needs.test.outputs.cache_was_changed: ${{ needs.test.outputs.cache_was_changed }}"
+          
       - name: Checkout repository
         uses: actions/checkout@v4
 
