@@ -341,7 +341,7 @@ jobs:
     needs: [build-and-push-docker]
     runs-on: ubuntu-latest
     environment:
-      name: on-render
+      name: render
       url: ${{ steps.render-service-url.outputs.page_url }}
     steps:
       - name: Deploy to Render
