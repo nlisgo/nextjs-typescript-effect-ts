@@ -255,9 +255,11 @@ jobs:
           fi
 
       - name: Build Next.js app
+        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
         run: npm run build
 
       - name: Upload .cached directory
+        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: cached-dir
@@ -274,8 +276,18 @@ jobs:
         if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
         run: npm run backup-cached -- --output .cached-7z.json .cached
 
+      - name: Check again if .cached-7z.json exists
+        id: check-again-cached-json
+        run: |
+          if [ -f .cached-7z.json ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
       - name: Upload cache artifact
-        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
+        if: steps.check-again-cached-json.outputs.exists == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: persistent-cache
