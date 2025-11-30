@@ -307,10 +307,11 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.ref_name }}-${{ steps.commit_sha.outputs.commit_sha }}-${{ steps.date.outputs.date }}
 
       - name: Deploy
-        if: secrets.RENDER_DEPLOY_HOOK_URL != ''
         env:
-          deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}&imgURL=${{ github.repository_owner }}%2F${{ github.event.repository.name }}%3A${{ github.ref_name }}-${{ steps.commit_sha.outputs.commit_sha }}-${{ steps.date.outputs.date }}
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        if: env.RENDER_DEPLOY_HOOK_URL != ''
         run: |
+          deploy_url="${{ env.RENDER_DEPLOY_HOOK_URL }}&imgURL=${{ github.repository_owner }}%2F${{ github.event.repository.name }}%3A${{ github.ref_name }}-${{ steps.commit_sha.outputs.commit_sha }}-${{ steps.date.outputs.date }}"
           curl "$deploy_url"
 
       - name: Generate artefact attestation
