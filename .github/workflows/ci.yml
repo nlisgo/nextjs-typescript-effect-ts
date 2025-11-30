@@ -75,7 +75,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     outputs:
-      cache_was_changed: ${{ steps.cached-folder-comparison.outputs.same == 'false' }}
+      cache_was_changed: ${{ steps.cached-folder-comparison.outputs.cache_was_changed }}
     env:
       NEXT_TELEMETRY_DISABLED: 1
       NEXT_USE_TURBOPACK: 0
@@ -281,22 +281,19 @@ jobs:
           if diff -r .cached .cached-before-import > /dev/null; then
             echo "no differences detected between .cached and .cached-before-import"
             echo "if this was a dispatch or scheduled run no deployment will triggered"
-            echo "same=true" >> "$GITHUB_OUTPUT"
+            echo "cache_was_changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "differences detected between .cached and .cached-before-import"
             echo "a deployment will triggered"
-            echo "same=false" >> "$GITHUB_OUTPUT"
+            echo "cache_was_changed=true" >> "$GITHUB_OUTPUT"
           fi
-      - name: Log cached-folder-comparison output
-        run: |
-          echo "Output 'same' from cached-folder-comparison step: ${{ steps.cached-folder-comparison.outputs.same }}"
 
       - name: Build Next.js app
-        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
+        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.cache_was_changed == 'true'
         run: npm run build
 
       - name: Upload .cached directory
-        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
+        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.cache_was_changed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: cached-dir
@@ -304,13 +301,13 @@ jobs:
           include-hidden-files: true
 
       - name: Upload pages artifact
-        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
+        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.cache_was_changed == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: out
 
       - name: Upload cache to whalebone
-        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.same == 'false'
+        if: github.event_name == 'push' || steps.cached-folder-comparison.outputs.cache_was_changed == 'true'
         run: npm run backup-cached -- --output .cached-7z.json .cached
 
       - name: Check again if .cached-7z.json exists
@@ -343,12 +340,6 @@ jobs:
       id-token: write
       actions: write
     steps:
-      - name: Log If Condition Variables
-        run: |
-          echo "Debug needs.chromatic.result: ${{ needs.chromatic.result }}"
-          echo "Debug github.event_name: ${{ github.event_name }}"
-          echo "Debug needs.test.outputs.cache_was_changed: ${{ needs.test.outputs.cache_was_changed }}"
-          
       - name: Checkout repository
         uses: actions/checkout@v4
 
