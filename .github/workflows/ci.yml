@@ -49,6 +49,7 @@ concurrency:
 jobs:
   chromatic:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -262,6 +263,7 @@ jobs:
   build-and-push-docker:
     runs-on: ubuntu-latest
     needs: [chromatic, test]
+    if: needs.chromatic.result == 'success' || needs.chromatic.result == 'skipped'
     permissions:
       packages: write
       attestations: write
@@ -379,6 +381,7 @@ jobs:
 
   deploy-to-github-pages:
     needs: [chromatic, test]
+    if: needs.chromatic.result == 'success' || needs.chromatic.result == 'skipped'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
