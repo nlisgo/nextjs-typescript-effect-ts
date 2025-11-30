@@ -362,8 +362,7 @@ jobs:
             -H "Authorization: Bearer ${{ env.RENDER_API_KEY }}" \
             -H "Accept: application/json" \
             "https://api.render.com/v1/services/${{ env.RENDER_SERVICE_ID }}")
-          SERVICE_URL=$(echo "$SERVICE_DETAILS" | jq -r '.serviceDetail.url')
-          echo "Service url: ${SERVICE_URL}"
+          SERVICE_URL=$(echo "$SERVICE_DETAILS" | jq -r '.serviceDetails.url')
           echo "page_url=${SERVICE_URL}" >> $GITHUB_OUTPUT
 
   deploy-to-github-pages:
