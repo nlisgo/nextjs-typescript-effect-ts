@@ -231,10 +231,12 @@ jobs:
 
       - name: Copy cached folder for later comparison                                                                                                                                                                                                  │
         run: |
-          mkdir -p .cached-before-import
           if [ -d ".cached" ]; then
             echo "copy .cached to .cached-before-import"
             cp -rf .cached .cached-before-import
+          else
+            echo "create empty .cached-before-import"
+            mkdir .cached-before-import
           fi
 
       - name: Import all Reviewed Preprints
