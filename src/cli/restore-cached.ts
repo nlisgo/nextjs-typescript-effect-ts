@@ -101,7 +101,7 @@ const command = Command.make('backup-cached', { registry: argCacheRegistry, outp
     Effect.flatMap(({ stub: folder, contents: backups }) =>
       pipe(
         Effect.forEach(backups, (backup) => getFilenameFromRegistry(backup)),
-        Effect.map(Array.map(({ name, dest }) => ({ name, dest }))),
+        Effect.map(Array.map(({ name, dest }) => ({ name, dest: Option.getOrElse(() => dest)(output) }))),
         Effect.flatMap(
           Array.findFirst(
             Schema.is(
@@ -119,7 +119,7 @@ const command = Command.make('backup-cached', { registry: argCacheRegistry, outp
         ),
         Effect.map(({ name, dest }) =>
           pipe(
-            ProcCommand.make('bash', '-c', `7z x ./${folder}/${name} -o${Option.isSome(output) ? output.value : `./${dest}`}`),
+            ProcCommand.make('bash', '-c', `7z x ./${folder}/${name} -o${dest}`),
             ProcCommand.stdout('inherit'),
             ProcCommand.stderr('inherit'),
           ),
