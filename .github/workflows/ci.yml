@@ -345,8 +345,10 @@ jobs:
             echo "cache_was_changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "differences detected between .cached and .cached-before-import"
-            echo "a deployment will triggered"
+            echo "a deployment will be triggered"
             echo "cache_was_changed=true" >> "$GITHUB_OUTPUT"
+            npx dircompare -d .cached .cached-before-import
+            diff <(jq . .cached/reviewed-preprints.json) <(jq . .cached-before-import/reviewed-preprints.json)
           fi
 
       - name: Build Next.js app
