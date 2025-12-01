@@ -313,7 +313,7 @@ jobs:
 
       - name: Download cached comparison for 'skip persistent cache' and 'import all reviewed preprints'
         if: ${{
-              !(
+              (
                 github.event_name == 'workflow_dispatch' &&
                 github.event.inputs.import_all_reviewed_preprints == 'true'
               )
@@ -328,10 +328,10 @@ jobs:
 
       - name: Unpack cached comparison for 'skip persistent cache' and 'import all reviewed preprints'
         if: ${{
-          !(
-          github.event_name == 'workflow_dispatch' &&
-          github.event.inputs.import_all_reviewed_preprints == 'true'
-          )
+            (
+              github.event_name == 'workflow_dispatch' &&
+              github.event.inputs.import_all_reviewed_preprints == 'true'
+            )
           }}
         run: npm run restore-cached -- --output ./.cached-before-import .cached-7z.json
         continue-on-error: true
