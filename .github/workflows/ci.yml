@@ -72,8 +72,43 @@ jobs:
           buildScriptName: build-storybook
           exitZeroOnChanges: false
 
-  test-and-import:
+  test:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Storybook component tests
+        run: npm run test:storybook
+
+      - name: Tsup
+        run: npm run tsup
+
+  import-and-build:
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: >
+      always() &&
+      (needs.test.result == 'success')
     outputs:
       cache_was_changed: ${{ steps.cached-folder-comparison.outputs.cache_was_changed }}
     env:
@@ -195,18 +230,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Run lint
-        run: npm run lint
-
-      - name: Run tests
-        run: npm run test
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run Storybook component tests
-        run: npm run test:storybook
 
       - name: Tsup
         run: npm run tsup
@@ -330,12 +353,12 @@ jobs:
 
   build-and-push-docker:
     runs-on: ubuntu-latest
-    needs: [chromatic, test-and-import]
+    needs: [chromatic, import-and-build]
     if: >
       always() &&
-      (needs.test-and-import.result == 'success') &&
+      (needs.import-and-build.result == 'success') &&
       (needs.chromatic.result == 'success' || needs.chromatic.result == 'skipped') &&
-      (github.event_name == 'push' || needs.test-and-import.outputs.cache_was_changed == 'true')
+      (github.event_name == 'push' || needs.import-and-build.outputs.cache_was_changed == 'true')
     permissions:
       packages: write
       attestations: write
@@ -460,12 +483,12 @@ jobs:
           echo "page_url=${SERVICE_URL}" >> $GITHUB_OUTPUT
 
   deploy-to-github-pages:
-    needs: [chromatic, test-and-import]
+    needs: [chromatic, import-and-build]
     if: >
       always() &&
-      (needs.test-and-import.result == 'success') &&
+      (needs.import-and-build.result == 'success') &&
       (needs.chromatic.result == 'success' || needs.chromatic.result == 'skipped') &&
-      (github.event_name == 'push' || needs.test-and-import.outputs.cache_was_changed == 'true')
+      (github.event_name == 'push' || needs.import-and-build.outputs.cache_was_changed == 'true')
     runs-on: ubuntu-latest
     environment:
       name: github-pages
