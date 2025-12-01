@@ -311,6 +311,31 @@ jobs:
       - name: Top Up Highlights
         run: npm run top-up-highlights
 
+      - name: Download cached comparison for 'skip persistent cache' and 'import all reviewed preprints'
+        if: ${{
+              !(
+                github.event_name == 'workflow_dispatch' &&
+                github.event.inputs.import_all_reviewed_preprints == 'true'
+              )
+            }}
+        uses: actions/download-artifact@v4
+        with:
+          name: persistent-cache
+          path: .
+          run-id: ${{ steps.get-run-id.outputs.result }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Unpack cached comparison for 'skip persistent cache' and 'import all reviewed preprints'
+        if: ${{
+          !(
+          github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.import_all_reviewed_preprints == 'true'
+          )
+          }}
+        run: npm run restore-cached -- --output ./.cached-before-import .cached-7z.json
+        continue-on-error: true
+
       - name: Perform cached comparison
         id: cached-folder-comparison
         run: |

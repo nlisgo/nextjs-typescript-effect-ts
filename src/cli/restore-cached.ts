@@ -1,5 +1,5 @@
-import { Args, Command } from '@effect/cli';
-import { Array, Chunk, Effect, pipe, Schema, Stream } from 'effect';
+import {Args, Command, Options} from '@effect/cli';
+import { Array, Chunk, Effect, Option, pipe, Schema, Stream } from 'effect';
 import { CliMainLayer } from '@/services/CliRuntime';
 import { NodeRuntime } from '@effect/platform-node';
 import { Command as ProcCommand, FileSystem, HttpClient, HttpClientRequest } from '@effect/platform';
@@ -57,9 +57,11 @@ const getFilenameFromRegistry = (registry: string) =>
     ),
   );
 
+const optionOutput = Options.text('output').pipe(Options.withAlias('o'), Options.optional);
+
 const argCacheRegistry = Args.text({ name: 'Cache registry' });
 
-const command = Command.make('backup-cached', { registry: argCacheRegistry }, ({ registry }) =>
+const command = Command.make('backup-cached', { registry: argCacheRegistry, output: optionOutput }, ({ registry, output }) =>
   pipe(
     registry,
     getFilenameFromRegistry,
@@ -117,7 +119,7 @@ const command = Command.make('backup-cached', { registry: argCacheRegistry }, ({
         ),
         Effect.map(({ name, dest }) =>
           pipe(
-            ProcCommand.make('bash', '-c', `7z x ./${folder}/${name} -o./${dest}`),
+            ProcCommand.make('bash', '-c', `7z x ./${folder}/${name} -o${Option.isSome(output) ? output.value : `./${dest}`}`),
             ProcCommand.stdout('inherit'),
             ProcCommand.stderr('inherit'),
           ),
