@@ -5,34 +5,34 @@ on:
     inputs:
       skip_persistent_cache:
         type: boolean
-        description: "Start fresh: do not download the previous persistent cache"
+        description: 'Start fresh: do not download the previous persistent cache'
         required: false
         default: false
       import_all_reviewed_preprints:
         type: boolean
-        description: "Import all reviewed preprints"
+        description: 'Import all reviewed preprints'
         required: false
         default: false
       persistent_cache_archive_url:
         type: string
-        description: "Optional URL to a persistent-cache archive (.zip) to seed .cached/"
+        description: 'Optional URL to a persistent-cache archive (.zip) to seed .cached/'
         required: false
-        default: ""
+        default: ''
       prune_reviewed_preprints:
         type: string
-        description: "Optional comma separated list of MSIDs to reimport"
+        description: 'Optional comma separated list of MSIDs to reimport'
         required: false
-        default: ""
+        default: ''
       purge_reviewed_preprints:
         type: string
-        description: "Optional comma separated list of MSIDs to purge"
+        description: 'Optional comma separated list of MSIDs to purge'
         required: false
-        default: ""
+        default: ''
   push:
     branches:
       - main
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '0 * * * *'
 
 permissions:
   contents: read
@@ -274,7 +274,7 @@ jobs:
 
       - name: Top Up Highlights
         run: npm run top-up-highlights
-        
+
       - name: Perform cached comparison
         id: cached-folder-comparison
         run: |
@@ -431,7 +431,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-    
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -473,7 +473,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-    
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
