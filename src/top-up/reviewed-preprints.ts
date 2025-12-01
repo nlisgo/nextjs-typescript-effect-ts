@@ -42,7 +42,26 @@ const retrieveIndividualReviewedPreprint = (
     item,
     retrieveIndividualItem(apiBasePath, reviewedPreprintCodec),
     Effect.flatMap((firstResult) =>
-      pipe(item, retrieveIndividualItem(apiBasePathEpp, Schema.Struct({ article: Schema.Unknown }), firstResult)),
+      pipe(
+        item,
+        retrieveIndividualItem(
+          apiBasePathEpp,
+          Schema.Struct({ article: Schema.Unknown }).pipe(
+            Schema.transform(Schema.Struct({ article: Schema.Unknown }), {
+              strict: true,
+              decode: ({ article, ...rest }) => {
+                if (article && typeof article === 'object' && 'pdfUrl' in article) {
+                  const { _pdfUrl, ...articleWithoutPdfUrl } = article as Record<string, unknown>;
+                  return { ...rest, article: articleWithoutPdfUrl };
+                }
+                return { ...rest, article };
+              },
+              encode: (value) => value,
+            }),
+          ),
+          firstResult,
+        ),
+      ),
     ),
     Effect.tap(() =>
       pipe(
