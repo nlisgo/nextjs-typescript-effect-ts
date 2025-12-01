@@ -311,6 +311,9 @@ jobs:
       - name: Top Up Highlights
         run: npm run top-up-highlights
 
+      - name: Check contents of .cached
+        run: ls -alF .cached/
+
       - name: Download cached comparison for 'skip persistent cache' and 'import all reviewed preprints'
         if: ${{
               (
