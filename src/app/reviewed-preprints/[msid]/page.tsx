@@ -43,7 +43,6 @@ const ReviewedPreprintPage = async ({ params }: PageProps): Promise<JSX.Element>
       Effect.promise(async () => params),
       Effect.tap(({ msid }) => Effect.sync(() => console.log(`[Page Generation] Building Reviewed Preprint: ${msid}`))),
       Effect.flatMap(({ msid: id }) => getReviewedPreprint({ id })),
-      (foo) => foo,
       Effect.map((reviewedPreprint) => (
         <Page>
           {reviewedPreprint.categories && <CategoryTags categories={reviewedPreprint.categories} />}
