@@ -284,13 +284,13 @@ const reviewedPreprintsTopUpLoop = ({
     Effect.flatMap((remainingAfterPass) =>
       all && remainingAfterPass < (remaining ?? total) && remainingAfterPass > 0
         ? pipe(
-            Effect.log(`Remaining: ${remainingAfterPass}. Continuing...`),
-            Effect.flatMap(() => reviewedPreprintsTopUpLoop({ limit, total, all, remaining: remainingAfterPass })),
-          )
+          Effect.log(`Remaining: ${remainingAfterPass}. Continuing...`),
+          Effect.flatMap(() => reviewedPreprintsTopUpLoop({ limit, total, all, remaining: remainingAfterPass })),
+        )
         : pipe(
-            Effect.log(`Remaining: ${remainingAfterPass}. Done.`),
-            Effect.map(() => remainingAfterPass),
-          ),
+          Effect.log(`Remaining: ${remainingAfterPass}. Done.`),
+          Effect.map(() => remainingAfterPass),
+        ),
     ),
     Effect.tapErrorCause(Effect.logError),
     Effect.orElseSucceed(() => 0),
@@ -333,9 +333,9 @@ export const reviewedPreprintsTopUp = ({
     Effect.tap((remaining) =>
       all && calibrate && remaining > 0
         ? pipe(
-            Effect.log(`Calibrating as 'all' flag is set and ${remaining} remaining found! (0 expected)`),
-            Effect.flatMap(() => calibrateReviewedPreprints({ limit })),
-          )
+          Effect.log(`Calibrating as 'all' flag is set and ${remaining} remaining found! (0 expected)`),
+          Effect.flatMap(() => calibrateReviewedPreprints({ limit })),
+        )
         : Effect.asVoid,
     ),
     Effect.catchAllCause(Effect.logError),
@@ -349,6 +349,7 @@ const prepareTeaser = (reviewedPreprint: ReviewedPreprint): TeaserProps => ({
   uri: withBaseUrl(`/reviewed-preprints/${reviewedPreprint.id}`),
   description: reviewedPreprint.authorLine ?? 'Authors et al.',
   categories: reviewedPreprint.subjects,
+  evaluationSummary: reviewedPreprint.elifeAssessment.content[0].text,
 });
 
 export const getReviewedPreprint = ({
@@ -357,7 +358,8 @@ export const getReviewedPreprint = ({
   id: string;
 }): Effect.Effect<TeaserProps, PlatformError.PlatformError | ParseResult.ParseError, FileSystem.FileSystem> =>
   pipe(
-    Effect.flatMap(FileSystem.FileSystem, (fs) => fs.readFileString(getCachedFile(id))),
+    FileSystem.FileSystem,
+    Effect.flatMap((fs) => fs.readFileString(getCachedFile(id))),
     Effect.map(JSON.parse),
     Effect.flatMap(Schema.decodeUnknown(reviewedPreprintCodec)),
     Effect.map(prepareTeaser),

@@ -20,6 +20,7 @@ export type TeaserProps = {
   description: string;
   image?: TeaserImageProps;
   categories?: ReadonlyArray<CategoryId>;
+  evaluationSummary?: string;
 };
 
 export type TeasersProps = {

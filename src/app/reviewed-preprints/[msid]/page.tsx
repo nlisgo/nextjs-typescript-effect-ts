@@ -53,6 +53,13 @@ const ReviewedPreprintPage = async ({ params }: PageProps): Promise<JSX.Element>
           {reviewedPreprint.published && (
             <time dateTime={reviewedPreprint.published.toISOString()}>{reviewedPreprint.published.toDateString()}</time>
           )}
+          {reviewedPreprint.evaluationSummary && (
+            <p
+              dangerouslySetInnerHTML={{
+                __html: reviewedPreprint.evaluationSummary,
+              }}
+            />
+          )}
         </Page>
       )),
     ).pipe(Effect.provide(AppMainLayer)),
