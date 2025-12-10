@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import type { JSX } from 'react';
 import './highlights.css';
+import { Card, CardSection, Flex, Group, Image, Text } from '@mantine/core';
 
 export type HighlightProps = {
   title: string;
@@ -27,30 +27,32 @@ export const Highlights = ({ title, highlights }: HighlightsProps): JSX.Element 
         <ul className="highlights__list">
           {highlights.map((highlight, i) => (
             <li key={i} className="highlights__list_item">
-              <div className="highlight">
-                <a href={highlight.uri} className="highlight__image-link">
-                  <Image
-                    className="highlight__image"
-                    src={highlight.image.uri}
-                    alt={highlight.image.alt}
-                    width={highlight.image.width}
-                    height={highlight.image.height}
-                  />
-                </a>
-                <h2 className="highlight__title">
-                  <a href={highlight.uri} className="highlight__title_link">
-                    {highlight.title}
-                  </a>
-                </h2>
-                {highlight.description && (
-                  <p
-                    className="highlight__description"
-                    dangerouslySetInnerHTML={{
-                      __html: highlight.description,
-                    }}
-                  />
-                )}
-              </div>
+              <Flex className="highlight">
+                <Card shadow="sm" padding="lg" radius="md" withBorder>
+                  <CardSection component="a" href={highlight.uri}>
+                    <Image
+                      src={highlight.image.uri}
+                      alt={highlight.image.alt}
+                      width={highlight.image.width}
+                      height={highlight.image.height}
+                    />
+                  </CardSection>
+
+                  <Group justify="space-between" mt="md" mb="xs">
+                    <Text fw={500} component="a" href={highlight.uri}>{highlight.title}</Text>
+                  </Group>
+
+                  {highlight.description && (
+                    <Text
+                      size="sm"
+                      c="dimmed"
+                      dangerouslySetInnerHTML={{
+                        __html: highlight.description,
+                      }}
+                    />
+                  )}
+                </Card>
+              </Flex>
             </li>
           ))}
         </ul>
