@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import type { JSX } from 'react';
 import './banner.css';
+import { BackgroundImage, Box, Center, Text, Title } from '@mantine/core';
 
 export type BannerProps = {
   image: {
@@ -16,23 +17,20 @@ export type BannerProps = {
 
 export const Banner = ({ image, title, description }: BannerProps): JSX.Element => (
   <>
-    <div className="banner">
-      <Image
+    <Box className="banner">
+      <BackgroundImage
         className="banner__image"
         src={image.uri}
-        alt={image.alt}
-        width={image.width}
-        height={image.height}
-        loading="eager"
-      />
-      <div className="banner__content">
-        <h2>{title}</h2>
-        {description && <div className="banner__description" dangerouslySetInnerHTML={{ __html: description }} />}
-      </div>
-    </div>
+      >
+        <Box className="banner__content">
+          <Title order={2}>{title}</Title>
+          {description && <Text className="banner__description" c="white" dangerouslySetInnerHTML={{ __html: description }} />}
+        </Box>
+      </BackgroundImage>
+    </Box>
     {image.credit && (
-      <div
-        className="banner-credit"
+      <Text
+        className="banner__credit"
         dangerouslySetInnerHTML={{
           __html: image.credit,
         }}

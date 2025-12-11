@@ -7,27 +7,25 @@
 
 .banner::after {
   content: '';
-  @apply absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none;
+  @apply absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent pointer-events-none;
 }
 
 .banner__image {
-  @apply block h-full w-full object-cover;
-  min-height: 220px;
+  @apply block h-full w-full object-cover lg:min-h-96;
 }
 
 .banner__content {
-  @apply absolute inset-0 flex flex-col justify-end gap-3 px-4 pb-4 pt-8 md:px-8 md:pb-8;
-  max-width: 960px;
+  @apply inset-0 flex flex-col justify-end gap-3 px-4 pb-4 pt-8 md:px-8 lg:absolute;
 }
 
 .banner__content h2 {
-  @apply text-2xl font-semibold leading-tight drop-shadow md:text-3xl;
+  @apply text-2xl font-semibold leading-tight text-white drop-shadow bg-black/50 md:text-3xl;
 }
 
 .banner__description {
-  @apply text-sm leading-relaxed text-white/90 md:text-base;
+  @apply text-sm leading-relaxed text-white/90 bg-black/50 md:text-base;
 }
 
-.banner-credit {
+.banner__credit {
   @apply mt-2 text-xs text-gray-500;
 }
