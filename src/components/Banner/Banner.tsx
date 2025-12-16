@@ -2,6 +2,7 @@ import Image from 'next/image';
 import type { JSX } from 'react';
 import './banner.css';
 import { BackgroundImage, Box, Center, Text, Title } from '@mantine/core';
+import parse from 'html-react-parser';
 
 export type BannerProps = {
   image: {
@@ -24,7 +25,7 @@ export const Banner = ({ image, title, description }: BannerProps): JSX.Element 
       >
         <Box className="banner__content">
           <Title order={2}>{title}</Title>
-          {description && <Text className="banner__description" c="white" dangerouslySetInnerHTML={{ __html: description }} />}
+          {description && <Text className="banner__description" c="white">{parse(description)}</Text>}
         </Box>
       </BackgroundImage>
     </Box>
